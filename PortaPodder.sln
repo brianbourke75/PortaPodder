@@ -1,0 +1,86 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortaPodderTester", "PortaPodderTester\PortaPodderTester.csproj", "{4EC15FDF-2AFE-41BF-957C-CAF30F9B5CB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GPodder", "GPodder\GPodder.csproj", "{453328E7-75B4-4CB2-ABED-5A7851C5BBC0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortaPodder", "PortaPodder\PortaPodder.csproj", "{E7A91710-2D33-4792-BD3A-BC89E69F02A1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Debug Fake|Any CPU = Debug Fake|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{453328E7-75B4-4CB2-ABED-5A7851C5BBC0}.Debug Fake|Any CPU.ActiveCfg = Debug Fake|Any CPU
+		{453328E7-75B4-4CB2-ABED-5A7851C5BBC0}.Debug Fake|Any CPU.Build.0 = Debug Fake|Any CPU
+		{453328E7-75B4-4CB2-ABED-5A7851C5BBC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{453328E7-75B4-4CB2-ABED-5A7851C5BBC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{453328E7-75B4-4CB2-ABED-5A7851C5BBC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{453328E7-75B4-4CB2-ABED-5A7851C5BBC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EC15FDF-2AFE-41BF-957C-CAF30F9B5CB7}.Debug Fake|Any CPU.ActiveCfg = Debug Fake|Any CPU
+		{4EC15FDF-2AFE-41BF-957C-CAF30F9B5CB7}.Debug Fake|Any CPU.Build.0 = Debug Fake|Any CPU
+		{4EC15FDF-2AFE-41BF-957C-CAF30F9B5CB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EC15FDF-2AFE-41BF-957C-CAF30F9B5CB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EC15FDF-2AFE-41BF-957C-CAF30F9B5CB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EC15FDF-2AFE-41BF-957C-CAF30F9B5CB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7A91710-2D33-4792-BD3A-BC89E69F02A1}.Debug Fake|Any CPU.ActiveCfg = Debug Fake|Any CPU
+		{E7A91710-2D33-4792-BD3A-BC89E69F02A1}.Debug Fake|Any CPU.Build.0 = Debug Fake|Any CPU
+		{E7A91710-2D33-4792-BD3A-BC89E69F02A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7A91710-2D33-4792-BD3A-BC89E69F02A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7A91710-2D33-4792-BD3A-BC89E69F02A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7A91710-2D33-4792-BD3A-BC89E69F02A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7A91710-2D33-4792-BD3A-BC89E69F02A1}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{E7A91710-2D33-4792-BD3A-BC89E69F02A1}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = PortaPodder\PortaPodder.csproj
+		Policies = $0
+		$0.TextStylePolicy = $1
+		$1.inheritsSet = null
+		$1.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $2
+		$2.NamespaceBraceStyle = EndOfLine
+		$2.ClassBraceStyle = EndOfLine
+		$2.InterfaceBraceStyle = EndOfLine
+		$2.StructBraceStyle = EndOfLine
+		$2.EnumBraceStyle = EndOfLine
+		$2.MethodBraceStyle = EndOfLine
+		$2.ConstructorBraceStyle = EndOfLine
+		$2.DestructorBraceStyle = EndOfLine
+		$2.AllowPropertyGetBlockInline = False
+		$2.ElseIfNewLinePlacement = SameLine
+		$2.BeforeMethodDeclarationParentheses = False
+		$2.BeforeMethodCallParentheses = False
+		$2.BeforeConstructorDeclarationParentheses = False
+		$2.BeforeIndexerDeclarationBracket = False
+		$2.BeforeDelegateDeclarationParentheses = False
+		$2.NewParentheses = False
+		$2.IfParentheses = False
+		$2.WhileParentheses = False
+		$2.ForParentheses = False
+		$2.ForeachParentheses = False
+		$2.CatchParentheses = False
+		$2.SwitchParentheses = False
+		$2.LockParentheses = False
+		$2.UsingParentheses = False
+		$2.SpacesBeforeBrackets = False
+		$2.inheritsSet = Mono
+		$2.inheritsScope = text/x-csharp
+		$2.scope = text/x-csharp
+		$0.TextStylePolicy = $3
+		$3.FileWidth = 120
+		$3.TabWidth = 2
+		$3.IndentWidth = 2
+		$3.NoTabsAfterNonTabs = True
+		$3.inheritsSet = VisualStudio
+		$3.inheritsScope = text/plain
+		$3.scope = text/plain
+		version = 0.0.1
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
