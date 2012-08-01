@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Android;
+
 using Android.App;
 using Android.Content;
 using Android.Runtime;
@@ -14,18 +15,8 @@ namespace PortaPodder.Activities {
   /// <summary>
   /// Activity for showing the directory of current podcasts
   /// </summary>
-  [Activity (Label = "Directory", MainLauncher = true)]
+  [Activity (Label = "Episode List", MainLauncher = true)]
   public class Directory : Activity {
-
-    /// <summary>
-    /// the portapodder app name
-    /// </summary>
-    public const string APP_NAME = "PortaPodder";
-
-    /// <summary>
-    /// the new line
-    /// </summary>
-    private readonly static string NewLine = System.Environment.NewLine;
 
     /// <summary>
     /// Raises the create event.
@@ -33,16 +24,34 @@ namespace PortaPodder.Activities {
     /// <param name='bundle'>Bundle.</param>
     protected override void OnCreate (Bundle bundle) {
       base.OnCreate(bundle);
-      try {
-        LinearLayout layout = new LinearLayout(this);
-        layout.Orientation = Orientation.Horizontal;
-        
-        SetContentView(layout);
-      }
-      catch (Exception exc) {
-        Console.Out.WriteLine(APP_NAME,"Type: " + exc.GetType());
-        Console.Out.WriteLine(APP_NAME,"Message: " + exc.Message);
-        Console.Out.WriteLine(APP_NAME,"Stack Trace: " + NewLine + exc.StackTrace);
+
+      // create the layout
+      LinearLayout layout = new LinearLayout(this);
+      layout.Orientation = Orientation.Horizontal;
+            
+      SetContentView(layout);
+    }
+
+    /// <param name='menu'>
+    /// The options menu in which you place your items.
+    /// </param>
+    /// <summary>Raises the create options menu event.</summary>
+    public override bool OnCreateOptionsMenu(IMenu menu) {
+      MenuInflater.Inflate(Resource.Menu.episodes, menu);
+      return true;
+    }
+
+    /// <param name='item'>
+    /// The menu item that was selected.
+    /// </param>
+    /// <summary>Derived classes should call through to the base class for it to perform the default menu handling.</summary>
+    public override bool OnOptionsItemSelected(IMenuItem item) {
+      switch(item.ItemId) {
+      case Resource.Id.subscription:
+        StartActivity(new Intent(this, typeof(SubscriptionInteraction)));
+        return true;
+      default:
+        return base.OnOptionsItemSelected(item);
       }
     }
 
@@ -52,18 +61,11 @@ namespace PortaPodder.Activities {
     protected override void OnStart() {
       base.OnStart();
 
-      // check to see if we have selected a user
-      if(GPodder.ConnectedUser == null) {
-        StartActivity(typeof(Authentication));
-        return;
-      }
-
       // check to see if we have a valid device
       if (GPodder.SelectedDevice == null) {
         StartActivity(typeof(SelectDevice));
         return;
       }
-
     }
   }
 }

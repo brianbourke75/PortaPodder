@@ -17,7 +17,7 @@ namespace PortaPodder.Activities {
   /// <summary>
   /// Authentication activity for username, password and device selection
   /// </summary>
-  [Activity (Label = "Authentication")]      
+  [Activity (Label = "gpodder.net Authentication")]      
   public class Authentication : Activity {
 
     #region members
@@ -48,6 +48,11 @@ namespace PortaPodder.Activities {
     private EditText passwordEdit = null;
 
     /// <summary>
+    /// The explaination text.
+    /// </summary>
+    private TextView explainationText = null;
+
+    /// <summary>
     /// The login button.
     /// </summary>
     private Button loginButton = null;
@@ -63,6 +68,7 @@ namespace PortaPodder.Activities {
     protected override void OnCreate(Bundle bundle) {
       base.OnCreate(bundle);
 
+      // create the layout
       layout = new LinearLayout(this);
       layout.Orientation = Orientation.Vertical;
 
@@ -86,10 +92,14 @@ namespace PortaPodder.Activities {
       // create the edit box for the password
       passwordEdit = new EditText(this);
       passwordEdit.Gravity = GravityFlags.Center;
-      passwordEdit.InputType = Android.Text.InputTypes.ClassText | Android.Text.InputTypes.TextVariationPassword;
-      //passwordEdit.TransformationMethod = new PasswordTransformationMethod();
+      passwordEdit.InputType = Android.Text.InputTypes.ClassText| Android.Text.InputTypes.TextFlagNoSuggestions | Android.Text.InputTypes.TextVariationPassword;
       usernameEdit.SetMaxLines(1);
       layout.AddView(passwordEdit);
+
+      // we need to create a label to explain to people that this is only for linking into gpodder.net
+      explainationText = new TextView(this);
+      explainationText.Text = "PortaPodder is a client for the server gpodder.net and does not exist in a standalone environment.  You will need to visit gpodder.net and create an account in order to use this application.";
+      layout.AddView(explainationText);
 
       // create a login button
       loginButton = new Button(this);
@@ -121,7 +131,7 @@ namespace PortaPodder.Activities {
       }
       catch(Exception exc){
         GPodder.ConnectedUser = null;
-        Log.Debug(Directory.APP_NAME, exc.Message);
+        Log.Debug(GetString(Resource.String.app_name), exc.Message);
         Toast.MakeText(this, "Unable to authenticate user with this password.", ToastLength.Short).Show();
       }
       

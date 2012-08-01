@@ -18,7 +18,7 @@ namespace PortaPodder {
     /// <summary>
     /// The website of the podcast
     /// </summary>
-    private string website = string.Empty;
+    private Uri website = null;
 
     /// <summary>
     /// The description of the podcast
@@ -83,8 +83,9 @@ namespace PortaPodder {
     /// Gets the website.
     /// </summary>
     /// <value>The website.</value>
+    [JsonConverter(typeof(UriConverter))]
     [DataMember(Name="website")]
-    public string Website {
+    public Uri Website {
       get {
         return website;
       }
@@ -228,16 +229,14 @@ namespace PortaPodder {
     #region methods
 
     /// <summary>
-    /// Gets the subcriptions for device.
+    /// Returns a <see cref="System.String"/> that represents the current <see cref="PortaPodder.Subscription"/>.
     /// </summary>
-    /// <returns>The subcriptions for device.</returns>
-    public static List<Subscription> GetSubcriptions(){
-      string jsonString = getResponse(new Uri (GPodder.GPodderLocation + "subscriptions/" + ConnectedUser.Username + JSONExtension));
-      return JsonConvert.DeserializeObject<List<Subscription>> (jsonString);
+    /// <returns>A <see cref="System.String"/> that represents the current <see cref="PortaPodder.Subscription"/>.</returns>
+    public override string ToString() {
+      return title;
     }
 
     #endregion
-
   }
 }
 

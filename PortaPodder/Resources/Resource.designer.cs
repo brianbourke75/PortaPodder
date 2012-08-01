@@ -38,20 +38,20 @@ namespace PortaPodder
 		{
 			
 			// aapt resource value: 0x7f050000
-			public const int group = 2131034112;
+			public const int subscription = 2131034112;
 			
 			private Id()
 			{
 			}
 		}
 		
-		public partial class Layout
+		public partial class Menu
 		{
 			
-			// aapt resource value: 0x7f030000
-			public const int Main = 2130903040;
+			// aapt resource value: 0x7f040000
+			public const int episodes = 2130968576;
 			
-			private Layout()
+			private Menu()
 			{
 			}
 		}
@@ -59,11 +59,8 @@ namespace PortaPodder
 		public partial class String
 		{
 			
-			// aapt resource value: 0x7f040001
-			public const int app_name = 2130968577;
-			
-			// aapt resource value: 0x7f040000
-			public const int hello = 2130968576;
+			// aapt resource value: 0x7f030000
+			public const int app_name = 2130903040;
 			
 			private String()
 			{

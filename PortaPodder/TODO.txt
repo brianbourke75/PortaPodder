@@ -1,0 +1,12 @@
+* Create Icon
+
+* GUI
+** Convert to xml layouts
+
+* gpodder.net integration
+** Get Episodes
+** Push Episode state
+
+* Local Database
+* Background Download
+* Media Player Integration

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 using Android.App;
@@ -40,6 +41,7 @@ namespace PortaPodder.Activities {
     protected override void OnCreate(Bundle bundle) {
       base.OnCreate(bundle);
 
+      // create the layout
       layout = new LinearLayout(this);
       layout.Orientation = Orientation.Vertical;
 
@@ -50,7 +52,7 @@ namespace PortaPodder.Activities {
 
       // create a list view and populate it with the devices
       deviceListView = new ListView(this);
-      deviceListView.Adapter = new ArrayAdapter<Device>(this, Android.Resource.Layout.SimpleListItemSingleChoice, GPodder.Devices);
+      deviceListView.Adapter = new ArrayAdapter<Device>(this, Android.Resource.Layout.SimpleListItem1);
       deviceListView.ItemClick += new EventHandler<AdapterView.ItemClickEventArgs>(deviceSelected);
 
       layout.AddView(deviceListView);
@@ -59,17 +61,34 @@ namespace PortaPodder.Activities {
     }
 
     /// <summary>
+    /// Raises the start event.
+    /// </summary>
+    protected override void OnStart() {
+      base.OnStart();
+
+      // check to see if we have selected a user
+      if(GPodder.ConnectedUser == null) {
+        StartActivity(typeof(Authentication));
+        return;
+      }
+
+      // add all items to the adapter list
+      ArrayAdapter<Device> adapter = ((ArrayAdapter<Device>)deviceListView.Adapter);
+      foreach(Device device in GPodder.Devices) {
+        adapter.Add(device);
+      }
+    }
+
+    /// <summary>
     /// occurs when the list is selected
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void deviceSelected(object sender, AdapterView.ItemClickEventArgs e) {
-      TextView selectedItem = e.View as TextView;
-      if(selectedItem != null) {
-        return;
-      }
-
-      Toast.MakeText(this, selectedItem.Text, ToastLength.Long).Show();
+      object selectedObject = e.Parent.GetItemAtPosition(e.Position);
+      PropertyInfo propertyInfo = selectedObject.GetType().GetProperty("Instance");
+      GPodder.SelectedDevice = propertyInfo.GetValue(selectedObject, null) as Device;
+      Finish();
     }
   }
 }

@@ -48,11 +48,38 @@ namespace PortaPodder {
     /// <summary>
     /// a list of devices for the selected device
     /// </summary>
-    public static List<Device> devices = null;
+    private static List<Device> devices = null;
+
+    /// <summary>
+    /// The subscriptions.
+    /// </summary>
+    private static List<Subscription> subscriptions = null;
 
     #endregion
 
     #region properties
+
+    /// <summary>
+    /// Gets the subcriptions for device.
+    /// </summary>
+    /// <returns>The subcriptions for device.</returns>
+    public static List<Subscription> Subcriptions {
+      get {
+        if(subscriptions == null) {
+          // if there is no connected user this is an error condition
+          if (connectedUser == null) {
+            throw new Exception("Cannot get devices without a user");
+          }
+#if(FAKE)
+          subscriptions = getFakeSubscriptions();
+#else
+          string jsonString = getResponse(new Uri(GPodderLocation + "subscriptions/" + ConnectedUser.Username + JSONExtension));
+          subscriptions = JsonConvert.DeserializeObject<List<Subscription>>(jsonString);
+#endif
+        }
+        return subscriptions;
+      }
+    }
 
     /// <summary>
     /// the selected device id
@@ -116,35 +143,59 @@ namespace PortaPodder {
 
     #region methods
 
+    #region methods for getting fake data
+
     /// <summary>
     /// helper method for getting some fake devices
     /// </summary>
     /// <returns></returns>
     private static List<Device> getFakeDevices() {
-      Device first = new Device();
-      first.Caption = "First Device";
-      first.Id = "first";
-      first.Subscriptions = 10;
-      first.Type = Device.DeviceType.desktop;
+      List<Device> devices = new List<Device>();
 
-      Device second = new Device();
-      first.Caption = "Second Device";
-      first.Id = "second";
-      first.Subscriptions = 20;
-      first.Type = Device.DeviceType.laptop;
+      // auto generate a number of devices
+      for(int ci = 0; ci < 3; ci++) {
+        Device device = new Device();
+        device.Caption = ci + " Device";
+        device.Id = ci.ToString();
+        device.Subscriptions = 1;
+        device.Type = Device.DeviceType.desktop;
+        devices.Add(device);
+      }
 
-      return new List<Device>(new Device[] { first, second });
+      return devices;
     }
+
+    /// <summary>
+    /// Gets the fake subscriptions.
+    /// </summary>
+    /// <returns>
+    /// The fake subscriptions.
+    /// </returns>
+    private static List<Subscription> getFakeSubscriptions(){
+      List<Subscription> subscriptions = new List<Subscription>();
+
+      Subscription fake = new Subscription();
+      fake.Description = "Cool fake subscription";
+      fake.LogoUrl = new Uri(@"http://localhost/logo.png");
+      fake.MygpoLink = new Uri(@"http://gpodder.net/fakey");
+      fake.PositionLastWeek = 1;
+      fake.ScaledLogoUrl = new Uri(@"http://localhost/scaled_logo.png");
+      fake.Title = "Super duper fake postcast show!";
+      fake.Uri = new Uri(@"http://localhost");
+      fake.Website = new Uri(@"http://localhost");
+      subscriptions.Add(fake);
+
+      return subscriptions;
+    }
+
+    #endregion
 
     /// <summary>
     /// Creates the web request.
     /// </summary>
     /// <param name="location"></param>
     /// <returns>The web request.</returns>
-    protected static string getResponse(Uri location) {
-#if DEBUG
-      Console.Out.WriteLine(location.ToString());
-#endif
+    private static string getResponse(Uri location) {
       // create the credential cache if it has not been
       if (myCache == null) {
         myCache = new CredentialCache();

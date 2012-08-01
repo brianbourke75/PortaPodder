@@ -1,13 +1,15 @@
 ﻿<Properties>
   <AuthorInfo Name="Brian Bourke-Martin" Email="brianbourke75@gmail.com" Copyright="Brian Bourke-Martin" Company="" Trademark="" />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug Fake" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="PortaPodder\Activities\Authentication.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="PortaPodder\Activities\Directory.cs">
     <Files>
-      <File FileName="GPodder\Subscription.cs" Line="213" Column="19" />
-      <File FileName="GPodder\Device.cs" Line="135" Column="6" />
-      <File FileName="GPodder\GPodder.cs" Line="102" Column="6" />
-      <File FileName="c:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\Activities\SelectDevice.cs" Line="53" Column="113" />
-      <File FileName="PortaPodder\Activities\Authentication.cs" Line="1" Column="1" />
+      <File FileName="GPodder\Subscription.cs" Line="224" Column="8" />
+      <File FileName="GPodder\Device.cs" Line="107" Column="5" />
+      <File FileName="GPodder\GPodder.cs" Line="186" Column="13" />
+      <File FileName="c:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\Activities\SelectDevice.cs" Line="64" Column="32" />
+      <File FileName="PortaPodder\Activities\SubscriptionInteraction.cs" Line="76" Column="67" />
+      <File FileName="PortaPodder\Activities\Directory.cs" Line="30" Column="51" />
+      <File FileName="PortaPodder\Activities\Authentication.cs" Line="96" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ClassPad">
