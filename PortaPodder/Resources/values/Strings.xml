@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">PortaPodder</string>
+  <string name="no_devices">There are no devices listed on this account.  Please go to gpodder.net and create one!</string>
+  <string name="select_devices">Please select device.</string>
 </resources>

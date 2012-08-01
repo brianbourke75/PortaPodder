@@ -58,9 +58,10 @@
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
     <Compile Include="Device.cs" />
-    <Compile Include="GPodder.cs" />
     <Compile Include="Subscription.cs" />
     <Compile Include="User.cs" />
     <Compile Include="UriConverter.cs" />
+    <Compile Include="Episode.cs" />
+    <Compile Include="GPodder.cs" />
   </ItemGroup>
 </Project>

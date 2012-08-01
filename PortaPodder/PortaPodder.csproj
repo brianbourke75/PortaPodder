@@ -54,12 +54,12 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Activities\SelectDevice.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Activities\Authentication.cs" />
     <Compile Include="Activities\SubscriptionInteraction.cs" />
     <Compile Include="Activities\EpisodeList.cs" />
+    <Compile Include="Activities\SelectDevice.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -71,6 +71,8 @@
     <AndroidResource Include="Resources\values\Strings.xml" />
     <AndroidResource Include="Resources\drawable\Icon.png" />
     <AndroidResource Include="Resources\menu\episodes.xml" />
+    <AndroidResource Include="Resources\layout\EpisodesList.axml" />
+    <AndroidResource Include="Resources\layout\SelectDevice.axml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>

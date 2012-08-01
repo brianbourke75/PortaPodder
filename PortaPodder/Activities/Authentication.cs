@@ -12,6 +12,8 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 
+using GPodder;
+
 namespace PortaPodder.Activities {
 
   /// <summary>
@@ -128,13 +130,13 @@ namespace PortaPodder.Activities {
         // we are going to attempt to get the lists of devices and only if this returns correctly authenticated do we continue to finish this activity
         List<Device> devices = GPodder.Devices;
         Finish();
+        return;
       }
       catch(Exception exc){
         GPodder.ConnectedUser = null;
         Log.Debug(GetString(Resource.String.app_name), exc.Message);
         Toast.MakeText(this, "Unable to authenticate user with this password.", ToastLength.Short).Show();
       }
-      
     }
 
     #endregion

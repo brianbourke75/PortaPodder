@@ -34,13 +34,44 @@ namespace PortaPodder
 			}
 		}
 		
+		public partial class EpisodeList
+		{
+			
+			// aapt resource value: 0x7f060002
+			public const int episodeList = 2131099650;
+			
+			// aapt resource value: 0x7f060000
+			public const int layout = 2131099648;
+			
+			// aapt resource value: 0x7f060001
+			public const int loginText = 2131099649;
+			
+			private EpisodeList()
+			{
+			}
+		}
+		
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f050000
-			public const int subscription = 2131034112;
+			// aapt resource value: 0x7f080000
+			public const int subscription = 2131230720;
 			
 			private Id()
+			{
+			}
+		}
+		
+		public partial class Layout
+		{
+			
+			// aapt resource value: 0x7f030000
+			public const int EpisodesList = 2130903040;
+			
+			// aapt resource value: 0x7f030001
+			public const int SelectDevice = 2130903041;
+			
+			private Layout()
 			{
 			}
 		}
@@ -48,10 +79,27 @@ namespace PortaPodder
 		public partial class Menu
 		{
 			
-			// aapt resource value: 0x7f040000
-			public const int episodes = 2130968576;
+			// aapt resource value: 0x7f050000
+			public const int episodes = 2131034112;
 			
 			private Menu()
+			{
+			}
+		}
+		
+		public partial class SelectDevice
+		{
+			
+			// aapt resource value: 0x7f070002
+			public const int deviceListView = 2131165186;
+			
+			// aapt resource value: 0x7f070000
+			public const int layout = 2131165184;
+			
+			// aapt resource value: 0x7f070001
+			public const int selectDeviceText = 2131165185;
+			
+			private SelectDevice()
 			{
 			}
 		}
@@ -59,8 +107,14 @@ namespace PortaPodder
 		public partial class String
 		{
 			
-			// aapt resource value: 0x7f030000
-			public const int app_name = 2130903040;
+			// aapt resource value: 0x7f040000
+			public const int app_name = 2130968576;
+			
+			// aapt resource value: 0x7f040001
+			public const int no_devices = 2130968577;
+			
+			// aapt resource value: 0x7f040002
+			public const int select_devices = 2130968578;
 			
 			private String()
 			{

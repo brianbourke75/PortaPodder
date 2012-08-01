@@ -15,8 +15,8 @@ namespace PortaPodder.Activities {
   /// <summary>
   /// Activity for showing the directory of current podcasts
   /// </summary>
-  [Activity (Label = "Episode List", MainLauncher = true)]
-  public class Directory : Activity {
+  [Activity (Label = "PortaPodder", MainLauncher = true)]
+  public class EpisodeList : Activity {
 
     /// <summary>
     /// Raises the create event.
@@ -26,10 +26,7 @@ namespace PortaPodder.Activities {
       base.OnCreate(bundle);
 
       // create the layout
-      LinearLayout layout = new LinearLayout(this);
-      layout.Orientation = Orientation.Horizontal;
-            
-      SetContentView(layout);
+      SetContentView(Resource.Layout.EpisodesList);
     }
 
     /// <param name='menu'>
@@ -66,6 +63,9 @@ namespace PortaPodder.Activities {
         StartActivity(typeof(SelectDevice));
         return;
       }
+
+      // set the login text to reflect the device and user
+      FindViewById<TextView>(Resource.EpisodeList.loginText).Text = "Episodes for " + GPodder.ConnectedUser.Username + " on " + GPodder.SelectedDevice.Caption;
     }
   }
 }

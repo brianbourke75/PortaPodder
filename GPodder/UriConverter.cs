@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace PortaPodder {
+namespace GPodder {
 
   /// <summary>
   /// URI converter for JSON

@@ -35,7 +35,7 @@ namespace PortaPodder {
     /// Initializes a new instance of the <see cref="PortaPodder.PortaPodderSQLHelper"/> class.
     /// </summary>
     /// <param name='context'>Context.</param>
-    public PortaPodderSQLHelper(Context context): base(context, Directory.APP_NAME, null, DATABASE_VERSION){
+    public PortaPodderSQLHelper(Context context): base(context, EpisodeList.APP_NAME, null, DATABASE_VERSION){
     }
 
     /// <summary>

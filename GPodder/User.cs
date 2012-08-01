@@ -1,6 +1,6 @@
 using System;
 
-namespace PortaPodder {
+namespace GPodder {
 
   /// <summary>
   /// User in the GPodderNET system

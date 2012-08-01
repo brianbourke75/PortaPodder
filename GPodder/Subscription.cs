@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
-namespace PortaPodder {
+namespace GPodder {
 
   /// <summary>
   /// Subscription on GPodder.net

@@ -6,7 +6,7 @@ using System.Net;
 using Newtonsoft.Json;
 
 
-namespace PortaPodder {
+namespace GPodder {
 
   /// <summary>
   /// This class will fetch and push all of the data to and from the GPodder server
@@ -86,6 +86,11 @@ namespace PortaPodder {
     /// </summary>
     public static Device SelectedDevice {
       get {
+#if(FAKE)
+        if(selectedDevice == null && Devices.Count > 0){
+          selectedDevice = Devices[0];
+        }
+#endif
         return selectedDevice;
       }
       set {
@@ -98,6 +103,11 @@ namespace PortaPodder {
     /// </summary>
     public static User ConnectedUser {
       get {
+#if(FAKE)
+        if(connectedUser == null){
+          connectedUser = new User("test","password");
+        }
+#endif
         return connectedUser;
       }
       set {
@@ -121,7 +131,7 @@ namespace PortaPodder {
         // check our list of devices
         if (devices == null) {
           // if there is no connected user this is an error condition
-          if (connectedUser == null) {
+          if (ConnectedUser == null) {
             throw new Exception("Cannot get devices without a user");
           }
 #if(FAKE)
