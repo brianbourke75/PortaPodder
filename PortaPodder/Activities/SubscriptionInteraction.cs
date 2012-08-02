@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +10,8 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+
+using GPodder;
 
 namespace PortaPodder.Activities {
 
@@ -48,7 +49,7 @@ namespace PortaPodder.Activities {
 
       // create the title view
       titleText = new TextView(this);
-      titleText.Text = "Subscriptions for the device:" + GPodder.SelectedDevice.Caption;
+      titleText.Text = "Subscriptions for the device:" + Server.SelectedDevice.Caption;
       layout.AddView(titleText);
 
       // the list view of subscriptions
@@ -67,13 +68,13 @@ namespace PortaPodder.Activities {
       base.OnStart();
 
       // check to see if we have a valid device
-      if(GPodder.SelectedDevice == null) {
+      if(Server.SelectedDevice == null) {
         StartActivity(typeof(SelectDevice));
         return;
       }
 
       ArrayAdapter<Subscription> adapter = (ArrayAdapter<Subscription>)subscriptionListView.Adapter;
-      foreach(Subscription subscription in GPodder.Subcriptions) {
+      foreach(Subscription subscription in Server.Subcriptions) {
         adapter.Add(subscription);
       }
     } 

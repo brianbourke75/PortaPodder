@@ -11,7 +11,7 @@ namespace GPodder {
   /// <summary>
   /// This class will fetch and push all of the data to and from the GPodder server
   /// </summary>
-  public abstract class GPodder {
+  public abstract class Server {
 
     #region members
 
@@ -55,9 +55,38 @@ namespace GPodder {
     /// </summary>
     private static List<Subscription> subscriptions = null;
 
+    /// <summary>
+    /// The episodes.
+    /// </summary>
+    private static List<Episode> episodes = null;
+
     #endregion
 
     #region properties
+
+    /// <summary>
+    /// Gets the episodes.
+    /// </summary>
+    /// <value>The episodes.</value>
+    public static List<Episode> Episodes {
+      get {
+        if(episodes == null){
+          // if there is no connected user this is an error condition
+          if (ConnectedUser == null) {
+            throw new Exception("Cannot get episodes without a user");
+          }
+          // if there is no selected devcie this is an error condition
+          if (SelectedDevice == null) {
+            throw new Exception("Cannot get episodes without a device");
+          }
+#if(FAKE)
+          episodes = getFakeEpisodes();
+#else
+#endif
+        }
+        return episodes;
+      }
+    }
 
     /// <summary>
     /// Gets the subcriptions for device.
@@ -67,7 +96,7 @@ namespace GPodder {
       get {
         if(subscriptions == null) {
           // if there is no connected user this is an error condition
-          if (connectedUser == null) {
+          if (ConnectedUser == null) {
             throw new Exception("Cannot get devices without a user");
           }
 #if(FAKE)
@@ -156,6 +185,34 @@ namespace GPodder {
     #region methods for getting fake data
 
     /// <summary>
+    /// The name of the fake podcast
+    /// </summary>
+    private const string FAKE_PODCAST_TITLE = "Super duper fake postcast show!";
+
+    /// <summary>
+    /// Gets the fake episodes.
+    /// </summary>
+    /// <returns>The fake episodes.</returns>
+    private static List<Episode> getFakeEpisodes() {
+      List<Episode> episodes = new List<Episode>();
+
+      Episode fake = new Episode();
+
+      fake.Description = "Nice and fake episode";
+      fake.MygpoLink = new Uri(@"http://gpodder.net/fakey");
+      fake.PodcastTitle = FAKE_PODCAST_TITLE;
+      fake.PodcastUrl = new Uri(@"http://localhost");
+      fake.Released = DateTime.Now;
+      fake.Status = Episode.EpisodeStatus.New;
+      fake.Title = "A super cool fake episode";
+      fake.Url = new Uri(@"http://localhost");
+      fake.Website = new Uri(@"http://localhost");
+      episodes.Add(fake);
+
+      return episodes;
+    }
+
+    /// <summary>
     /// helper method for getting some fake devices
     /// </summary>
     /// <returns></returns>
@@ -190,8 +247,8 @@ namespace GPodder {
       fake.MygpoLink = new Uri(@"http://gpodder.net/fakey");
       fake.PositionLastWeek = 1;
       fake.ScaledLogoUrl = new Uri(@"http://localhost/scaled_logo.png");
-      fake.Title = "Super duper fake postcast show!";
-      fake.Uri = new Uri(@"http://localhost");
+      fake.Title = FAKE_PODCAST_TITLE;
+      fake.Url = new Uri(@"http://localhost");
       fake.Website = new Uri(@"http://localhost");
       subscriptions.Add(fake);
 

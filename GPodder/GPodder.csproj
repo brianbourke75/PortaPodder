@@ -62,6 +62,6 @@
     <Compile Include="User.cs" />
     <Compile Include="UriConverter.cs" />
     <Compile Include="Episode.cs" />
-    <Compile Include="GPodder.cs" />
+    <Compile Include="Server.cs" />
   </ItemGroup>
 </Project>

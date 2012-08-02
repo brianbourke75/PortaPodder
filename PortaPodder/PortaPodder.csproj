@@ -60,6 +60,7 @@
     <Compile Include="Activities\SubscriptionInteraction.cs" />
     <Compile Include="Activities\EpisodeList.cs" />
     <Compile Include="Activities\SelectDevice.cs" />
+    <Compile Include="Adapters\EpisodeArray.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -73,6 +74,7 @@
     <AndroidResource Include="Resources\menu\episodes.xml" />
     <AndroidResource Include="Resources\layout\EpisodesList.axml" />
     <AndroidResource Include="Resources\layout\SelectDevice.axml" />
+    <AndroidResource Include="Resources\layout\EpisodeArray.axml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
@@ -83,5 +85,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\menu\" />
+    <Folder Include="Adapters\" />
   </ItemGroup>
 </Project>

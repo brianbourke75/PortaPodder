@@ -9,7 +9,7 @@ namespace GPodder {
   /// Subscription on GPodder.net
   /// </summary>
   [DataContract]
-  public class Subscription : GPodder{
+  public class Subscription : Server{
 
     #region members
 
@@ -19,9 +19,19 @@ namespace GPodder {
     private Uri website = null;
 
     /// <summary>
+    /// The name of the column website
+    /// </summary>
+    public const string COL_WEBSITE = "website";
+
+    /// <summary>
     /// The description of the podcast
     /// </summary>
     private string description = string.Empty;
+
+    /// <summary>
+    /// The name of the description column
+    /// </summary>
+    public const string COL_DESCRIPTION = "description";
 
     /// <summary>
     /// The title of the podcast
@@ -29,9 +39,19 @@ namespace GPodder {
     private string title = string.Empty;
 
     /// <summary>
+    /// The name of the title column
+    /// </summary>
+    public const string COL_TITLE = "title";
+
+    /// <summary>
     /// The URI of the podcast
     /// </summary>
-    private Uri uri = null;
+    private Uri url = null;
+
+    /// <summary>
+    /// The name of the url column
+    /// </summary>
+    public const string COL_URL = "url";
 
     /// <summary>
     /// The position of the subscription last week
@@ -39,9 +59,19 @@ namespace GPodder {
     private int positionLastWeek = -1;
 
     /// <summary>
+    /// The name of the column for the position last week
+    /// </summary>
+    public const string COL_POSITION_LAST_WEEK = "position_last_week";
+
+    /// <summary>
     /// The number of subscribers last week 
     /// </summary>
     private int subscribersLastWeek = -1;
+
+    /// <summary>
+    /// The name of the subscribers last week column
+    /// </summary>
+    public const string COL_SUBSRIBERS_LAST_WEEK = "subscribers_last_week";
 
     /// <summary>
     /// The total number of subscribers.
@@ -49,9 +79,19 @@ namespace GPodder {
     private int subscribers = -1;
 
     /// <summary>
+    /// The name of the subscribers column
+    /// </summary>
+    public const string COL_SUBSCRIBERS = "subscribers";
+
+    /// <summary>
     /// The mygpo link location
     /// </summary>
     private Uri mygpoLink = null;
+
+    /// <summary>
+    /// The column name for the gpodder link
+    /// </summary>
+    public const string COL_MYGPO_LINK = "mygpo_link";
 
     /// <summary>
     /// The logo URL.
@@ -59,9 +99,19 @@ namespace GPodder {
     private Uri logoUrl = null;
 
     /// <summary>
+    /// The name of the column for the url to the logo
+    /// </summary>
+    public const string COL_LOGO_URL = "logo_url";
+
+    /// <summary>
     /// The scaled logo URL.
     /// </summary>
     private Uri scaledLogoUrl = null;
+
+    /// <summary>
+    /// The name of the scaled logo url
+    /// </summary>
+    public const string COL_SCALED_LOGO_URL = "scaled_logo_url";
 
     #endregion
  
@@ -82,7 +132,7 @@ namespace GPodder {
     /// </summary>
     /// <value>The website.</value>
     [JsonConverter(typeof(UriConverter))]
-    [DataMember(Name="website")]
+    [DataMember(Name=COL_WEBSITE)]
     public Uri Website {
       get {
         return website;
@@ -96,7 +146,7 @@ namespace GPodder {
     /// Gets the description.
     /// </summary>
     /// <value>The description.</value>
-    [DataMember(Name="description")]
+    [DataMember(Name=COL_DESCRIPTION)]
     public string Description {
       get {
         return description;
@@ -110,7 +160,7 @@ namespace GPodder {
     /// Gets the title.
     /// </summary>
     /// <value>The title.</value>
-    [DataMember(Name="title")]
+    [DataMember(Name=COL_TITLE)]
     public string Title {
       get {
         return title;
@@ -125,13 +175,13 @@ namespace GPodder {
     /// </summary>
     /// <value>The URI.</value>
     [JsonConverter(typeof(UriConverter))]
-    [DataMember(Name="uri")]
-    public Uri Uri {
+    [DataMember(Name="url")]
+    public Uri Url {
       get {
-        return uri;
+        return url;
       }
       set {
-        uri = value;
+        url = value;
       }
     }    
 

@@ -125,15 +125,15 @@ namespace PortaPodder.Activities {
         Toast.MakeText(this, "Please enter password", ToastLength.Short).Show();
         return;
       }
-      GPodder.ConnectedUser = new User(usernameEdit.Text, passwordEdit.Text);
+      Server.ConnectedUser = new User(usernameEdit.Text, passwordEdit.Text);
       try{
         // we are going to attempt to get the lists of devices and only if this returns correctly authenticated do we continue to finish this activity
-        List<Device> devices = GPodder.Devices;
+        List<Device> devices = Server.Devices;
         Finish();
         return;
       }
       catch(Exception exc){
-        GPodder.ConnectedUser = null;
+        Server.ConnectedUser = null;
         Log.Debug(GetString(Resource.String.app_name), exc.Message);
         Toast.MakeText(this, "Unable to authenticate user with this password.", ToastLength.Short).Show();
       }

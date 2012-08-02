@@ -11,6 +11,8 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
+using GPodder;
+
 namespace PortaPodder.Activities {
 
   /// <summary>
@@ -41,24 +43,24 @@ namespace PortaPodder.Activities {
       base.OnStart();
 
       // check to see if we have selected a user
-      if(GPodder.ConnectedUser == null) {
+      if(Server.ConnectedUser == null) {
         StartActivity(typeof(Authentication));
         return;
       }
 
       // if there is only one device, then we need to auto select it!
-      if(GPodder.Devices.Count == 1) {
-        GPodder.SelectedDevice = GPodder.Devices[0];
+      if(Server.Devices.Count == 1) {
+        Server.SelectedDevice = Server.Devices[0];
         Finish();
         return;
       }
 
       // if there are absolutely no devices then this is an error condition
-      FindViewById<TextView>(Resource.SelectDevice.selectDeviceText).Text = GPodder.Devices.Count == 0 ? GetText(Resource.String.select_devices) : GetText(Resource.String.no_devices);
+      FindViewById<TextView>(Resource.SelectDevice.selectDeviceText).Text = Server.Devices.Count == 0 ? GetText(Resource.String.select_devices) : GetText(Resource.String.no_devices);
 
       // add all items to the adapter list
       ArrayAdapter<Device> adapter = (ArrayAdapter<Device>)FindViewById<ListView>(Resource.SelectDevice.deviceListView).Adapter;
-      foreach(Device device in GPodder.Devices) {
+      foreach(Device device in Server.Devices) {
         adapter.Add(device);
       }
     }
@@ -71,7 +73,7 @@ namespace PortaPodder.Activities {
     private void deviceSelected(object sender, AdapterView.ItemClickEventArgs e) {
       object selectedObject = e.Parent.GetItemAtPosition(e.Position);
       PropertyInfo propertyInfo = selectedObject.GetType().GetProperty("Instance");
-      GPodder.SelectedDevice = propertyInfo.GetValue(selectedObject, null) as Device;
+      Server.SelectedDevice = propertyInfo.GetValue(selectedObject, null) as Device;
       Finish();
     }
   }
