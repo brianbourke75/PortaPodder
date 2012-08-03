@@ -30,23 +30,44 @@
     <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug Fake|AnyCPU' ">
-    <DebugType>none</DebugType>
+    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug Fake</OutputPath>
     <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>DEBUG;FAKE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="..\PortaPodder\GPodder\Device.cs">
+      <Link>GPodder\Device.cs</Link>
+    </Compile>
+    <Compile Include="..\PortaPodder\GPodder\Episode.cs">
+      <Link>GPodder\Episode.cs</Link>
+    </Compile>
+    <Compile Include="..\PortaPodder\GPodder\Server.cs">
+      <Link>GPodder\Server.cs</Link>
+    </Compile>
+    <Compile Include="..\PortaPodder\GPodder\Subscription.cs">
+      <Link>GPodder\Subscription.cs</Link>
+    </Compile>
+    <Compile Include="..\PortaPodder\GPodder\UriConverter.cs">
+      <Link>GPodder\UriConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\PortaPodder\GPodder\User.cs">
+      <Link>GPodder\User.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\GPodder\GPodder.csproj">
-      <Project>{453328E7-75B4-4CB2-ABED-5A7851C5BBC0}</Project>
-      <Name>GPodder</Name>
-    </ProjectReference>
+    <Folder Include="GPodder\" />
   </ItemGroup>
 </Project>

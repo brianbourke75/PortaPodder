@@ -6,8 +6,14 @@
     android:padding="4dp">
 <!-- GROUP HEADER ROW -->
     <TextView
-        android:id="@+episodeArray/Text1"
+        android:id="@+episodeArray/subscriptionText"
         android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+episodeArray/episodeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="4sp"
+        android:textColor="#FF0000" />
 </LinearLayout>

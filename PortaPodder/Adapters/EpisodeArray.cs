@@ -6,6 +6,7 @@ using System.Text;
 
 using Android.App;
 using Android.Content;
+using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
@@ -85,7 +86,7 @@ namespace PortaPodder.Adapters {
     /// <param name='context'>Context.</param>
     public EpisodeArray(Activity context){
       this.context = context;
-      headers = new ArrayAdapter<string>(context, Resource.Layout.EpisodeArray, Resource.EpisodeArray.Text1);
+      headers = new ArrayAdapter<string>(context, Resource.Layout.EpisodeArray, Resource.EpisodeArray.subscriptionText);
 
       // do I really need this?
       rows = new List<object>();
@@ -189,6 +190,7 @@ namespace PortaPodder.Adapters {
 
       View view = null;
 
+      // check to see if we are dealing with a subscription header
       if(item is Header) {
         Header header = item as Header;
         view = headers.GetView(header.SectionIndex, convertView, parent);
@@ -197,6 +199,7 @@ namespace PortaPodder.Adapters {
         return view;
       }
 
+      // if we got here, we can safely assume that the item is a episode
       int i = position - 1;
       while(i > 0 && rows[i] is Episode) {
         i--;
@@ -207,8 +210,9 @@ namespace PortaPodder.Adapters {
       TextView episodeText = view.FindViewById<TextView>(Android.Resource.Id.Text1);
       Episode episode = item as Episode;
       episodeText.Text = episode.Title;
-      episodeText.Tag = new EpisodeHolder{ target = episode};
-
+      episodeText.Tag = new EpisodeHolder{ target = episode };
+      episodeText.TextSize = 15.0f;
+      episodeText.SetTextColor(Color.Red);
       return view;
     }
 

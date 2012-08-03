@@ -37,8 +37,11 @@ namespace PortaPodder
 		public partial class EpisodeArray
 		{
 			
+			// aapt resource value: 0x7f060001
+			public const int episodeText = 2131099649;
+			
 			// aapt resource value: 0x7f060000
-			public const int Text1 = 2131099648;
+			public const int subscriptionText = 2131099648;
 			
 			private EpisodeArray()
 			{

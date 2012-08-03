@@ -49,9 +49,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Resources\Resource.designer.cs" />
@@ -61,6 +64,12 @@
     <Compile Include="Activities\EpisodeList.cs" />
     <Compile Include="Activities\SelectDevice.cs" />
     <Compile Include="Adapters\EpisodeArray.cs" />
+    <Compile Include="GPodder\Server.cs" />
+    <Compile Include="GPodder\Device.cs" />
+    <Compile Include="GPodder\Episode.cs" />
+    <Compile Include="GPodder\Subscription.cs" />
+    <Compile Include="GPodder\UriConverter.cs" />
+    <Compile Include="GPodder\User.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -78,13 +87,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\GPodder\GPodder.csproj">
-      <Project>{453328E7-75B4-4CB2-ABED-5A7851C5BBC0}</Project>
-      <Name>GPodder</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Resources\menu\" />
     <Folder Include="Adapters\" />
+    <Folder Include="GPodder\" />
   </ItemGroup>
 </Project>

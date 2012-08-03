@@ -9,18 +9,17 @@ namespace PortaPodderTester {
       try {
         // set the user
         Console.Out.WriteLine("Password for brianbourke75");
-        GPodder.ConnectedUser = new User("brianbourke75", ReadPassword());
+        Server.ConnectedUser = new User("brianbourke75", ReadPassword());
 
         DisplayDevices();
 
         Console.Out.WriteLine("---Getting Subscriptions for device---"); ;
         // arbitrarly choose the first device
-        List<Subscription> subscriptions = Subscription.GetSubcriptions();
-        foreach (Subscription subsciption in subscriptions) {
+        foreach (Subscription subsciption in Server.Subcriptions) {
           Console.Out.WriteLine("Title: " + subsciption.Title);
           Console.Out.WriteLine("Description: " + subsciption.Description);
           Console.Out.WriteLine("Website: " + subsciption.Website);
-          Console.Out.WriteLine("Uri: " + subsciption.Uri);
+          Console.Out.WriteLine("Uri: " + subsciption.Url);
           Console.Out.WriteLine("Subscribers: " + subsciption.Subscribers);
           Console.Out.WriteLine("Subscribers Last Week: " + subsciption.SubscribersLastWeek);
           Console.Out.WriteLine("Position Last Week: " + subsciption.PositionLastWeek);
@@ -44,14 +43,13 @@ namespace PortaPodderTester {
     /// </summary>
     public static void DisplayDevices() {
       Console.Out.WriteLine("---Getting Devices---"); ;
-      List<Device> devices = Device.GetDevices();
-      if (devices.Count == 0) {
+      if (Server.Devices.Count == 0) {
         Console.Out.WriteLine("No devices found!");
         return;
       }
 
       // write out all of the 
-      foreach (Device device in devices) {
+      foreach (Device device in Server.Devices) {
         Console.Out.WriteLine("ID: " + device.Id);
         Console.Out.WriteLine("Caption: " + device.Caption);
         Console.Out.WriteLine("Type: " + device.Type);

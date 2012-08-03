@@ -28,12 +28,12 @@ namespace PortaPodder.Activities {
     protected override void OnCreate(Bundle bundle) {
       base.OnCreate(bundle);
 
+      SetContentView(Resource.Layout.SelectDevice);
+
       // create a list view and populate it with the devices
       ListView deviceListView = FindViewById<ListView>(Resource.SelectDevice.deviceListView);
       deviceListView.Adapter = new ArrayAdapter<Device>(this, Android.Resource.Layout.SimpleListItem1);
       deviceListView.ItemClick += new EventHandler<AdapterView.ItemClickEventArgs>(deviceSelected);
-
-      SetContentView(Resource.Layout.SelectDevice);
     }
 
     /// <summary>

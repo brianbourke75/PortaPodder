@@ -167,7 +167,7 @@ namespace GPodder {
           devices = getFakeDevices();
 #else
           // get the response from the server
-          string t = getResponse(new Uri(GPodder.GPodderLocation + GPodder.GPodderAPI + @"devices/" + ConnectedUser.Username + JSONExtension));
+          string t = getResponse(new Uri(Server.GPodderLocation + Server.GPodderAPI + @"devices/" + ConnectedUser.Username + JSONExtension));
 
           // parse the json into a list of devices
           devices = JsonConvert.DeserializeObject<List<Device>>(t);

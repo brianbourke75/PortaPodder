@@ -1,13 +1,14 @@
 ﻿<Properties>
   <AuthorInfo Name="Brian Bourke-Martin" Email="brianbourke75@gmail.com" Copyright="Brian Bourke-Martin" Company="" Trademark="" />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug Fake" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="PortaPodder\Adapters\EpisodeArray.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="c:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\GPodder\Server.cs">
     <Files>
-      <File FileName="PortaPodder\Activities\EpisodeList.cs" Line="91" Column="52" />
-      <File FileName="GPodder\Server.cs" Line="112" Column="1" />
-      <File FileName="GPodder\Episode.cs" Line="280" Column="5" />
-      <File FileName="PortaPodder\Adapters\EpisodeArray.cs" Line="209" Column="21" />
+      <File FileName="PortaPodder\Activities\EpisodeList.cs" Line="55" Column="63" />
+      <File FileName="PortaPodder\Adapters\EpisodeArray.cs" Line="210" Column="61" />
       <File FileName="PortaPodder\Activities\SubscriptionInteraction.cs" Line="76" Column="41" />
+      <File FileName="c:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\GPodder\Device.cs" Line="111" Column="6" />
+      <File FileName="c:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodderTester\Main.cs" Line="52" Column="47" />
+      <File FileName="c:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\GPodder\Server.cs" Line="170" Column="50" />
     </Files>
     <Pads>
       <Pad Id="ClassPad">
