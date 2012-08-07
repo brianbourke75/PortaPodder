@@ -16,6 +16,7 @@
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AssemblyName>PortaPodder</AssemblyName>
     <ReleaseVersion>0.0.1</ReleaseVersion>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -70,12 +71,15 @@
     <Compile Include="GPodder\Subscription.cs" />
     <Compile Include="GPodder\UriConverter.cs" />
     <Compile Include="GPodder\User.cs" />
+    <Compile Include="Activities\EpisodeDetails.cs" />
+    <Compile Include="EpisodeDownloader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
     <None Include="PortaPodderDataSource.cs" />
     <None Include="PortaPodderSQLHelper.cs" />
     <None Include="TODO.txt" />
+    <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />
@@ -84,6 +88,7 @@
     <AndroidResource Include="Resources\layout\EpisodesList.axml" />
     <AndroidResource Include="Resources\layout\SelectDevice.axml" />
     <AndroidResource Include="Resources\layout\EpisodeArray.axml" />
+    <AndroidResource Include="Resources\layout\EpisodeDetails.axml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>

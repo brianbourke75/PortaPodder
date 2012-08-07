@@ -249,7 +249,7 @@ namespace GPodder {
     /// Gets or sets the released.
     /// </summary>
     /// <value>The released.</value>
-    [JsonConverter(typeof(DateTimeConverterBase))]
+    [JsonConverter(typeof(Newtonsoft.Json.Converters.IsoDateTimeConverter))]
     [DataMember(Name=COL_RELEASED)]
     public DateTime Released {
       get {
@@ -278,6 +278,26 @@ namespace GPodder {
     #endregion
 
     #region methods
+
+    /// <summary>
+    /// checks for the equality
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
+    public override bool Equals(object obj) {
+      if (obj is Episode) {
+        return this.url == ((Episode)obj).url;
+      }
+      return false;
+    }
+
+    /// <summary>
+    /// standard hasher
+    /// </summary>
+    /// <returns></returns>
+    public override int GetHashCode() {
+      return base.GetHashCode();
+    }
 
     /// <summary>
     /// Returns a <see cref="System.String"/> that represents the current <see cref="GPodder.Episode"/>.

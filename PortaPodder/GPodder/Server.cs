@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Runtime.Serialization;
 
 using Newtonsoft.Json;
-
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace GPodder {
 
@@ -82,6 +84,7 @@ namespace GPodder {
 #if(FAKE)
           episodes = getFakeEpisodes();
 #else
+          updateForDevice();
 #endif
         }
         return episodes;
@@ -102,8 +105,7 @@ namespace GPodder {
 #if(FAKE)
           subscriptions = getFakeSubscriptions();
 #else
-          string jsonString = getResponse(new Uri(GPodderLocation + "subscriptions/" + ConnectedUser.Username + JSONExtension));
-          subscriptions = JsonConvert.DeserializeObject<List<Subscription>>(jsonString);
+          updateForDevice();
 #endif
         }
         return subscriptions;
@@ -187,7 +189,12 @@ namespace GPodder {
     /// <summary>
     /// The name of the fake podcast
     /// </summary>
-    private const string FAKE_PODCAST_TITLE = "Super duper fake postcast show!";
+    private const string FAKE_PODCAST_TITLE_1 = "Super lame fake postcast show!";
+
+    /// <summary>
+    /// The name of the fake podcast
+    /// </summary>
+    private const string FAKE_PODCAST_TITLE_2 = "Super duper fake postcast show!";
 
     /// <summary>
     /// Gets the fake episodes.
@@ -197,14 +204,49 @@ namespace GPodder {
       List<Episode> episodes = new List<Episode>();
 
       Episode fake = new Episode();
-
-      fake.Description = "Nice and fake episode";
+      fake.Description = "Nice and fake episode 1";
       fake.MygpoLink = new Uri(@"http://gpodder.net/fakey");
-      fake.PodcastTitle = FAKE_PODCAST_TITLE;
+      fake.PodcastTitle = FAKE_PODCAST_TITLE_2;
+      fake.PodcastUrl = new Uri(@"http://themoth.prx.org.s3.amazonaws.com/wp-content/uploads/moth-podcast-235-tina-mcelroy-ansa.mp3");
+      fake.Released = DateTime.Now;
+      fake.Status = Episode.EpisodeStatus.New;
+      fake.Title = "A super cool fake episode 1";
+      fake.Url = new Uri(@"http://localhost");
+      fake.Website = new Uri(@"http://localhost");
+      episodes.Add(fake);
+
+      fake = new Episode();
+      fake.Description = "Nice and fake episode 2";
+      fake.MygpoLink = new Uri(@"http://gpodder.net/fakey");
+      fake.PodcastTitle = FAKE_PODCAST_TITLE_2;
       fake.PodcastUrl = new Uri(@"http://localhost");
       fake.Released = DateTime.Now;
       fake.Status = Episode.EpisodeStatus.New;
-      fake.Title = "A super cool fake episode";
+      fake.Title = "A super cool fake episode 2";
+      fake.Url = new Uri(@"http://localhost");
+      fake.Website = new Uri(@"http://localhost");
+      episodes.Add(fake);
+
+      fake = new Episode();
+      fake.Description = "lame and fake episode 1";
+      fake.MygpoLink = new Uri(@"http://gpodder.net/fakey");
+      fake.PodcastTitle = FAKE_PODCAST_TITLE_1;
+      fake.PodcastUrl = new Uri(@"http://localhost");
+      fake.Released = DateTime.Now;
+      fake.Status = Episode.EpisodeStatus.New;
+      fake.Title = "A super lame fake episode 1";
+      fake.Url = new Uri(@"http://localhost");
+      fake.Website = new Uri(@"http://localhost");
+      episodes.Add(fake);
+
+      fake = new Episode();
+      fake.Description = "lame and fake episode 2";
+      fake.MygpoLink = new Uri(@"http://gpodder.net/fakey");
+      fake.PodcastTitle = FAKE_PODCAST_TITLE_1;
+      fake.PodcastUrl = new Uri(@"http://localhost");
+      fake.Released = DateTime.Now;
+      fake.Status = Episode.EpisodeStatus.New;
+      fake.Title = "A super lame fake episode 2";
       fake.Url = new Uri(@"http://localhost");
       fake.Website = new Uri(@"http://localhost");
       episodes.Add(fake);
@@ -247,16 +289,68 @@ namespace GPodder {
       fake.MygpoLink = new Uri(@"http://gpodder.net/fakey");
       fake.PositionLastWeek = 1;
       fake.ScaledLogoUrl = new Uri(@"http://localhost/scaled_logo.png");
-      fake.Title = FAKE_PODCAST_TITLE;
+      fake.Title = FAKE_PODCAST_TITLE_2;
       fake.Url = new Uri(@"http://localhost");
       fake.Website = new Uri(@"http://localhost");
       subscriptions.Add(fake);
+
+      Subscription lame = new Subscription();
+      lame.Description = "Lame fake subscription";
+      lame.LogoUrl = new Uri(@"http://localhost/logo.png");
+      lame.MygpoLink = new Uri(@"http://gpodder.net/fakey");
+      lame.PositionLastWeek = 1;
+      lame.ScaledLogoUrl = new Uri(@"http://localhost/scaled_logo.png");
+      lame.Title = FAKE_PODCAST_TITLE_1;
+      lame.Url = new Uri(@"http://localhost");
+      lame.Website = new Uri(@"http://localhost");
+      subscriptions.Add(lame);
 
       return subscriptions;
     }
 
     #endregion
 
+    /// <summary>
+    /// update the device
+    /// </summary>
+    private static void updateForDevice() {
+      // if there is no connected user this is an error condition
+      if (ConnectedUser == null) {
+        throw new Exception("Cannot get episodes without a user");
+      }
+      // if there is no selected devcie this is an error condition
+      if (SelectedDevice == null) {
+        throw new Exception("Cannot get episodes without a device");
+      }
+
+      // get a list of updates and parse them
+      string jsonString = getResponse(new Uri(GPodderLocation + "/api/2/updates/" + connectedUser.Username + "/" + selectedDevice.Id + JSONExtension + "?since=0"));
+      DeviceUpdates deviceUpdates = JsonConvert.DeserializeObject<DeviceUpdates>(jsonString);
+
+      if (subscriptions == null) {
+        subscriptions = new List<Subscription>();
+      }
+      if (episodes == null) {
+        episodes = new List<Episode>();
+      }
+
+      // perform the updates specified
+      foreach (Subscription added in deviceUpdates.Add) {
+        if (!subscriptions.Contains(added)) {
+          subscriptions.Add(added);
+        }
+      }
+      foreach (Subscription removed in deviceUpdates.Remove) {
+        subscriptions.Remove(removed);
+      }
+      foreach (Episode updated in deviceUpdates.Updates) {
+        if (episodes.Contains(updated)) {
+          episodes.Remove(updated);
+        }
+        episodes.Add(updated);
+      }
+    }
+  
     /// <summary>
     /// Creates the web request.
     /// </summary>
@@ -278,6 +372,88 @@ namespace GPodder {
 
     #endregion
 
+    #region nested classes for getting data
+
+    /// <summary>
+    /// get the device udpates
+    /// </summary>
+    [DataContract]
+    private class DeviceUpdates {
+
+      /// <summary>
+      /// subscriptions to add
+      /// </summary>
+      private List<Subscription> add = new List<Subscription>();
+
+      /// <summary>
+      /// subscriptions to remove
+      /// </summary>
+      private List<Subscription> remove = new List<Subscription>();
+
+      /// <summary>
+      /// episodes to update
+      /// </summary>
+      private List<Episode> updates = new List<Episode>();
+
+      /// <summary>
+      /// the datetime returned
+      /// </summary>
+      private string timestamp = string.Empty;
+
+      /// <summary>
+      /// Gets or sets the added subcriptions
+      /// </summary>
+      [DataMember(Name = "add")]
+      public List<Subscription> Add {
+        get {
+          return add;
+        }
+        set {
+          add = value;
+        }
+      }
+
+      /// <summary>
+      /// the list of subscriptions to remove
+      /// </summary>
+      [DataMember(Name = "remove")]
+      public List<Subscription> Remove {
+        get {
+          return remove;
+        }
+        set {
+          remove = value;
+        }
+      }
+
+      /// <summary>
+      /// the list of episodes to update
+      /// </summary>
+      [DataMember(Name = "updates")]
+      public List<Episode> Updates {
+        get {
+          return updates;
+        }
+        set {
+          updates = value;
+        }
+      }
+
+      /// <summary>
+      /// Gets or sets the timestamp for the update
+      /// </summary>
+      [DataMember(Name = "timestamp")]
+      public string Timestamp {
+        get {
+          return timestamp;
+        }
+        set {
+          timestamp = value;
+        }
+      }
+    }
+
+    #endregion
   }
 }
 

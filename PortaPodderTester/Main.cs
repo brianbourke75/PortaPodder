@@ -1,37 +1,54 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using GPodder;
+using Newtonsoft.Json;
 
 namespace PortaPodderTester {
-  class MainClass {
+  public class MainClass {
+
+    /// <summary>
+    /// the tester file name
+    /// </summary>
+    public const string FILENAME = "testerlog.txt";
+
+    /// <summary>
+    /// main entry point for the tester
+    /// </summary>
+    /// <param name="args"></param>
     public static void Main (string[] args) {
       try {
+        // delete the log file
+        File.Delete(FILENAME);
+
         // set the user
-        Console.Out.WriteLine("Password for brianbourke75");
+        WriteLine("Password for brianbourke75");
         Server.ConnectedUser = new User("brianbourke75", ReadPassword());
 
         DisplayDevices();
 
-        Console.Out.WriteLine("---Getting Subscriptions for device---"); ;
-        // arbitrarly choose the first device
-        foreach (Subscription subsciption in Server.Subcriptions) {
-          Console.Out.WriteLine("Title: " + subsciption.Title);
-          Console.Out.WriteLine("Description: " + subsciption.Description);
-          Console.Out.WriteLine("Website: " + subsciption.Website);
-          Console.Out.WriteLine("Uri: " + subsciption.Url);
-          Console.Out.WriteLine("Subscribers: " + subsciption.Subscribers);
-          Console.Out.WriteLine("Subscribers Last Week: " + subsciption.SubscribersLastWeek);
-          Console.Out.WriteLine("Position Last Week: " + subsciption.PositionLastWeek);
-          Console.Out.WriteLine("Logo Url: " + subsciption.LogoUrl);
-          Console.Out.WriteLine("Scaled Logo Url: " + subsciption.ScaledLogoUrl);
-          Console.Out.WriteLine("My GPO Link: " + subsciption.MygpoLink);
+        // select an arbitrary device
+        Server.SelectedDevice = Server.Devices[Server.Devices.Count - 1];
+
+        DisplaySubscriptions();
+
+        DisplayEpisodes();
+
+      }
+      catch (JsonException exc) {
+        WriteLine("There are " + exc.Data.Count + " data objects");
+        foreach (Object key in exc.Data.Keys) {
+          WriteLine("Key: " + key + " Value: " + exc.Data[key]);
         }
+        WriteLine("Type: " + exc.GetType());
+        WriteLine("Message: " + exc.Message);
+        WriteLine("Stack Trace: " + Environment.NewLine + exc.StackTrace);
       }
       catch (Exception exc) {
-        Console.Out.WriteLine("Type: " + exc.GetType());
-        Console.Out.WriteLine("Message: " + exc.Message);
-        Console.Out.WriteLine("Stack Trace: " + Environment.NewLine + exc.StackTrace);
+        WriteLine("Type: " + exc.GetType());
+        WriteLine("Message: " + exc.Message);
+        WriteLine("Stack Trace: " + Environment.NewLine + exc.StackTrace);
       }
       finally {
         Console.In.ReadLine();
@@ -42,18 +59,56 @@ namespace PortaPodderTester {
     /// method to display the devices to console
     /// </summary>
     public static void DisplayDevices() {
-      Console.Out.WriteLine("---Getting Devices---"); ;
+      WriteLine("---Getting Devices---"); ;
       if (Server.Devices.Count == 0) {
-        Console.Out.WriteLine("No devices found!");
+        WriteLine("No devices found!");
         return;
       }
 
       // write out all of the 
       foreach (Device device in Server.Devices) {
-        Console.Out.WriteLine("ID: " + device.Id);
-        Console.Out.WriteLine("Caption: " + device.Caption);
-        Console.Out.WriteLine("Type: " + device.Type);
-        Console.Out.WriteLine("Subscriptions: " + device.Subscriptions + Environment.NewLine);
+        WriteLine("ID: " + device.Id);
+        WriteLine("Caption: " + device.Caption);
+        WriteLine("Type: " + device.Type);
+        WriteLine("Subscriptions: " + device.Subscriptions + Environment.NewLine);
+        WriteLine("********************");
+      }
+    }
+
+    /// <summary>
+    /// method used to display the subscriptions
+    /// </summary>
+    public static void DisplaySubscriptions() {
+      WriteLine("---Getting Subscriptions for device---"); ;
+      // arbitrarly choose the first device
+      foreach (Subscription subsciption in Server.Subcriptions) {
+        WriteLine("Title: " + subsciption.Title);
+        WriteLine("Description: " + subsciption.Description);
+        WriteLine("Website: " + subsciption.Website);
+        WriteLine("Uri: " + subsciption.Url);
+        WriteLine("Subscribers: " + subsciption.Subscribers);
+        WriteLine("Subscribers Last Week: " + subsciption.SubscribersLastWeek);
+        WriteLine("Position Last Week: " + subsciption.PositionLastWeek);
+        WriteLine("Logo Url: " + subsciption.LogoUrl);
+        WriteLine("Scaled Logo Url: " + subsciption.ScaledLogoUrl);
+        WriteLine("My GPO Link: " + subsciption.MygpoLink);
+        WriteLine("********************");
+      }
+    }
+
+    /// <summary>
+    /// method for displaying the episodes
+    /// </summary>
+    public static void DisplayEpisodes() {
+      WriteLine("---Getting Episodes---");
+      foreach(Episode episode in Server.Episodes){
+        WriteLine("Title: " + episode.Title);
+        //WriteLine("Description: " + episode.Description);
+        WriteLine("Podcast Title: " + episode.PodcastTitle);
+        WriteLine("Released: " + episode.Released);
+        WriteLine("Status: " + episode.Status);
+        WriteLine("Url: " + episode.Url);
+        WriteLine("********************");
       }
     }
 
@@ -84,6 +139,15 @@ namespace PortaPodderTester {
       string[] pass = passbits.ToArray();
       Array.Reverse(pass);
       return string.Join(string.Empty, pass);
+    }
+
+    /// <summary>
+    /// used to write a line to the console and output file
+    /// </summary>
+    /// <param name="line"></param>
+    public static void WriteLine(string line) {
+      File.AppendAllText(FILENAME, line + Environment.NewLine);
+      Console.WriteLine(line);
     }
   }
 }

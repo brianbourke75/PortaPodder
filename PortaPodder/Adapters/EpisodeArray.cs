@@ -185,35 +185,42 @@ namespace PortaPodder.Adapters {
     /// <param name='parent'>Parent.</param>
     /// <returns>The view.</returns>
     public override View GetView(int position, View convertView, ViewGroup parent) {
-      // Get our object for this position
-      object item = this.rows[position];
+      try {
+        // Get our object for this position
+        object item = this.rows[position];
 
-      View view = null;
+        View view = null;
 
-      // check to see if we are dealing with a subscription header
-      if(item is Header) {
-        Header header = item as Header;
-        view = headers.GetView(header.SectionIndex, convertView, parent);
-        view.Clickable = false;
-        view.LongClickable = false;
+        // check to see if we are dealing with a subscription header
+        if(item is Header) {
+          Header header = item as Header;
+          view = headers.GetView(header.SectionIndex, convertView, parent);
+          view.Clickable = false;
+          view.LongClickable = false;
+          return view;
+        }
+
+        // if we got here, we can safely assume that the item is a episode
+        int i = position - 1;
+        while(i > 0 && rows[i] is Episode) {
+          i--;
+        }
+
+        Header h = (Header)rows[i];
+        view = sections[h.Name].GetView(position - i - 1, convertView, parent);
+        TextView episodeText = view.FindViewById<TextView>(Android.Resource.Id.Text1);
+        Episode episode = item as Episode;
+        episodeText.Text = episode.Title + ":" + episode.Released.ToShortDateString();
+        episodeText.Tag = new EpisodeHolder{ target = episode };
+        episodeText.TextSize = 15.0f;
+        episodeText.SetTextColor(Color.Red);
         return view;
       }
-
-      // if we got here, we can safely assume that the item is a episode
-      int i = position - 1;
-      while(i > 0 && rows[i] is Episode) {
-        i--;
+      catch(Exception exc) {
+        Console.Out.WriteLine(exc.Message);
+        Console.Out.WriteLine(exc.StackTrace);
+        return null;
       }
-
-      Header h = (Header)rows[i];
-      view = sections[h.Name].GetView(position - i - 1, convertView, parent);
-      TextView episodeText = view.FindViewById<TextView>(Android.Resource.Id.Text1);
-      Episode episode = item as Episode;
-      episodeText.Text = episode.Title;
-      episodeText.Tag = new EpisodeHolder{ target = episode };
-      episodeText.TextSize = 15.0f;
-      episodeText.SetTextColor(Color.Red);
-      return view;
     }
 
     /// <summary>

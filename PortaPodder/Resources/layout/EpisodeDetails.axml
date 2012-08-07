@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="25px"
+    android:minHeight="25px"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/relativeLayout1">
+    <TextView
+        android:text="Episode Text here"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+EpisodeDetails/DetailsText" />
+    <Button
+        android:text="Backup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+EpisodeDetails/DetailsText"
+        android:id="@+EpisodeDetails/SkipBack" />
+    <Button
+        android:text="Play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+EpisodeDetails/SkipBack"
+        android:layout_below="@+EpisodeDetails/DetailsText"
+        android:id="@+EpisodeDetails/Play" />
+    <Button
+        android:text="Stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+EpisodeDetails/Play"
+        android:layout_below="@+EpisodeDetails/DetailsText"
+        android:id="@+EpisodeDetails/Stop" />
+    <Button
+        android:text="Skip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+EpisodeDetails/Stop"
+        android:layout_below="@+EpisodeDetails/DetailsText"
+        android:id="@+EpisodeDetails/SkipForwards" />
+    <Button
+        android:text="Download"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+EpisodeDetails/SkipBack"
+        android:id="@+EpisodeDetails/Download" />
+    <Button
+        android:text="Delete File"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+EpisodeDetails/Download"
+        android:layout_below="@+EpisodeDetails/SkipBack"
+        android:id="@+EpisodeDetails/Delete" />
+    <Button
+        android:text="Toggle Listened"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+EpisodeDetails/Delete"
+        android:layout_below="@+EpisodeDetails/SkipBack"
+        android:id="@+EpisodeDetails/Toggle" />
+</RelativeLayout>

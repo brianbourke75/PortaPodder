@@ -22,6 +22,10 @@ namespace PortaPodder.Activities {
   [Activity (Label = "PortaPodder", MainLauncher = true)]
   public class EpisodeList : ListActivity {
 
+    /// <summary>
+    /// The selected episode.
+    /// </summary>
+    public static Episode SelectedEpisode = null;
    
     /// <summary>
     /// The adapter for the episodes
@@ -51,8 +55,10 @@ namespace PortaPodder.Activities {
       base.OnListItemClick(l, v, position, id);
 
       if(v.Tag is EpisodeArray.EpisodeHolder) {
-        Episode selectedEpisode = ((EpisodeArray.EpisodeHolder)v.Tag).target;
-        Toast.MakeText(this, "You selected " + selectedEpisode.Title, ToastLength.Long).Show();
+        SelectedEpisode = ((EpisodeArray.EpisodeHolder)v.Tag).target;
+        if(SelectedEpisode != null){
+          StartActivity(new Intent(this, typeof(EpisodeDetails)));
+        }
       }
     }
 

@@ -1,26 +1,31 @@
 ﻿<Properties>
   <AuthorInfo Name="Brian Bourke-Martin" Email="brianbourke75@gmail.com" Copyright="Brian Bourke-Martin" Company="" Trademark="" />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug Fake" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="c:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\GPodder\Server.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="PortaPodder\EpisodeDownloader.cs">
     <Files>
-      <File FileName="PortaPodder\Activities\EpisodeList.cs" Line="55" Column="63" />
-      <File FileName="PortaPodder\Adapters\EpisodeArray.cs" Line="210" Column="61" />
-      <File FileName="PortaPodder\Activities\SubscriptionInteraction.cs" Line="76" Column="41" />
-      <File FileName="c:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\GPodder\Device.cs" Line="111" Column="6" />
-      <File FileName="c:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodderTester\Main.cs" Line="52" Column="47" />
-      <File FileName="c:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\GPodder\Server.cs" Line="170" Column="50" />
+      <File FileName="PortaPodder\Activities\EpisodeDetails.cs" Line="60" Column="22" />
+      <File FileName="PortaPodder\EpisodeDownloader.cs" Line="73" Column="41" />
     </Files>
     <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="PortaPodder" expanded="True" selected="True">
+            <Node name="Activities" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
       <Pad Id="ClassPad">
         <State expanded="True" selected="True" />
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="C:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\Adapters\EpisodeArray.cs" line="220" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches>
     <Watch file="PortaPodder\Adapters\EpisodeArray.cs" line="202" offsetX="658" offsetY="2159" expression="sections" liveUpdate="False" />
   </MonoDevelop.Ide.DebuggingService.PinnedWatches>
-  <MonoDevelop.Ide.ItemProperties.PortaPodder MonoForAntroid.PreferredDevice="3.7in WVGA (Nexus One)" AndroidDeviceId-Debug_220Fake="emulator-5554" />
+  <MonoDevelop.Ide.ItemProperties.PortaPodder MonoForAntroid.PreferredDevice="3.7in WVGA (Nexus One)" AndroidDeviceId-Debug_220Fake="emulator-5554" AndroidDeviceId-Debug="emulator-5554" />
 </Properties>

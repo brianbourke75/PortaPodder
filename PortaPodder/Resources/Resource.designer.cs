@@ -15,6 +15,38 @@ namespace PortaPodder
 	public partial class Resource
 	{
 		
+		public partial class EpisodeDetails
+		{
+			
+			// aapt resource value: 0x7f080006
+			public const int Delete = 2131230726;
+			
+			// aapt resource value: 0x7f080000
+			public const int DetailsText = 2131230720;
+			
+			// aapt resource value: 0x7f080005
+			public const int Download = 2131230725;
+			
+			// aapt resource value: 0x7f080002
+			public const int Play = 2131230722;
+			
+			// aapt resource value: 0x7f080001
+			public const int SkipBack = 2131230721;
+			
+			// aapt resource value: 0x7f080004
+			public const int SkipForwards = 2131230724;
+			
+			// aapt resource value: 0x7f080003
+			public const int Stop = 2131230723;
+			
+			// aapt resource value: 0x7f080007
+			public const int Toggle = 2131230727;
+			
+			private EpisodeDetails()
+			{
+			}
+		}
+		
 		public partial class Attribute
 		{
 			
@@ -51,14 +83,14 @@ namespace PortaPodder
 		public partial class EpisodeList
 		{
 			
-			// aapt resource value: 0x7f070002
-			public const int episodeList = 2131165186;
+			// aapt resource value: 0x7f090002
+			public const int episodeList = 2131296258;
 			
-			// aapt resource value: 0x7f070000
-			public const int layout = 2131165184;
+			// aapt resource value: 0x7f090000
+			public const int layout = 2131296256;
 			
-			// aapt resource value: 0x7f070001
-			public const int loginText = 2131165185;
+			// aapt resource value: 0x7f090001
+			public const int loginText = 2131296257;
 			
 			private EpisodeList()
 			{
@@ -68,8 +100,11 @@ namespace PortaPodder
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f090000
-			public const int subscription = 2131296256;
+			// aapt resource value: 0x7f070000
+			public const int relativeLayout1 = 2131165184;
+			
+			// aapt resource value: 0x7f070001
+			public const int subscription = 2131165185;
 			
 			private Id()
 			{
@@ -83,10 +118,13 @@ namespace PortaPodder
 			public const int EpisodeArray = 2130903040;
 			
 			// aapt resource value: 0x7f030001
-			public const int EpisodesList = 2130903041;
+			public const int EpisodeDetails = 2130903041;
 			
 			// aapt resource value: 0x7f030002
-			public const int SelectDevice = 2130903042;
+			public const int EpisodesList = 2130903042;
+			
+			// aapt resource value: 0x7f030003
+			public const int SelectDevice = 2130903043;
 			
 			private Layout()
 			{
@@ -107,14 +145,14 @@ namespace PortaPodder
 		public partial class SelectDevice
 		{
 			
-			// aapt resource value: 0x7f080002
-			public const int deviceListView = 2131230722;
+			// aapt resource value: 0x7f0a0002
+			public const int deviceListView = 2131361794;
 			
-			// aapt resource value: 0x7f080000
-			public const int layout = 2131230720;
+			// aapt resource value: 0x7f0a0000
+			public const int layout = 2131361792;
 			
-			// aapt resource value: 0x7f080001
-			public const int selectDeviceText = 2131230721;
+			// aapt resource value: 0x7f0a0001
+			public const int selectDeviceText = 2131361793;
 			
 			private SelectDevice()
 			{

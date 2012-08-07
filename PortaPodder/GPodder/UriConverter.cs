@@ -27,6 +27,9 @@ namespace GPodder {
     /// <param name='existingValue'>Existing value.</param>
     /// <param name='serializer'>Serializer.</param>
     public override object ReadJson (JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
+      if (reader.Value == null) {
+        return null;
+      }
       return new Uri(reader.Value.ToString());
     }
 
