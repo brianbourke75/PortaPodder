@@ -65,7 +65,7 @@ namespace PortaPodder {
       long fileLength = response.ContentLength;
 
       // used on each read operation
-      byte[] buf = new byte[1024 * 10];
+      byte[] buf = new byte[1024 * 20];
 
       using(Stream resStream = response.GetResponseStream(), output = new FileStream(outputPath, FileMode.CreateNew, FileAccess.Write, FileShare.None, buf.Length)) { 
         int count = 0;
@@ -78,7 +78,7 @@ namespace PortaPodder {
           // make sure we read some data
           if(count != 0) {
             total += count;
-            PublishProgress(count, total);
+            PublishProgress((int)(total/1024), (int)(fileLength/1024));
             output.Write(buf, 0, count);
           }
         } while (count > 0); // any more data to read?
@@ -101,8 +101,8 @@ namespace PortaPodder {
     /// <param name='progress'>Progress.</param>
     protected override void OnProgressUpdate(params int[] values) {
       base.OnProgressUpdate(values);
-      downloadProgress.Progress = values[0] / 1024;
-      downloadProgress.Max = values[1] / 1024;
+      downloadProgress.Progress = values[0];
+      downloadProgress.Max = values[1];
     }
 
 

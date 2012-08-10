@@ -64,7 +64,6 @@
     <Compile Include="Activities\SubscriptionInteraction.cs" />
     <Compile Include="Activities\EpisodeList.cs" />
     <Compile Include="Activities\SelectDevice.cs" />
-    <Compile Include="Adapters\EpisodeArray.cs" />
     <Compile Include="GPodder\Server.cs" />
     <Compile Include="GPodder\Device.cs" />
     <Compile Include="GPodder\Episode.cs" />
@@ -73,6 +72,8 @@
     <Compile Include="GPodder\User.cs" />
     <Compile Include="Activities\EpisodeDetails.cs" />
     <Compile Include="EpisodeDownloader.cs" />
+    <Compile Include="GPodder\DeviceUpdates.cs" />
+    <Compile Include="GPodder\PodcastItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -93,7 +94,6 @@
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Resources\menu\" />
-    <Folder Include="Adapters\" />
     <Folder Include="GPodder\" />
   </ItemGroup>
 </Project>

@@ -9,9 +9,14 @@ namespace GPodder {
   /// Subscription on GPodder.net
   /// </summary>
   [DataContract]
-  public class Subscription {
+  public class Subscription : PodcastItem{
 
     #region members
+
+    /// <summary>
+    /// The episodes which belong to this subscription
+    /// </summary>
+    private List<Episode> shows = null;
 
     /// <summary>
     /// The website of the podcast
@@ -32,26 +37,6 @@ namespace GPodder {
     /// The name of the description column
     /// </summary>
     public const string COL_DESCRIPTION = "description";
-
-    /// <summary>
-    /// The title of the podcast
-    /// </summary>
-    private string title = string.Empty;
-
-    /// <summary>
-    /// The name of the title column
-    /// </summary>
-    public const string COL_TITLE = "title";
-
-    /// <summary>
-    /// The URI of the podcast
-    /// </summary>
-    private Uri url = null;
-
-    /// <summary>
-    /// The name of the url column
-    /// </summary>
-    public const string COL_URL = "url";
 
     /// <summary>
     /// The position of the subscription last week
@@ -128,6 +113,24 @@ namespace GPodder {
     #region getters
 
     /// <summary>
+    /// Gets the shows.
+    /// </summary>
+    /// <value>The shows. </value>
+    public List<Episode> Shows {
+      get {
+        if(shows == null){
+          shows = new List<Episode>();
+          foreach(Episode episode in Server.Episodes){
+            if(episode.PodcastTitle == title){
+              shows.Add(episode);
+            }
+          }
+        }
+        return shows;
+      }
+    }
+
+    /// <summary>
     /// Gets the website.
     /// </summary>
     /// <value>The website.</value>
@@ -153,35 +156,6 @@ namespace GPodder {
       }
       set {
         description = value;
-      }
-    }    
-
-    /// <summary>
-    /// Gets the title.
-    /// </summary>
-    /// <value>The title.</value>
-    [DataMember(Name=COL_TITLE)]
-    public string Title {
-      get {
-        return title;
-      }
-      set {
-        title = value;
-      }
-    }
-
-    /// <summary>
-    /// Gets the URI.
-    /// </summary>
-    /// <value>The URI.</value>
-    [JsonConverter(typeof(UriConverter))]
-    [DataMember(Name="url")]
-    public Uri Url {
-      get {
-        return url;
-      }
-      set {
-        url = value;
       }
     }    
 

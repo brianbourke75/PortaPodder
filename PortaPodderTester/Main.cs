@@ -79,7 +79,12 @@ namespace PortaPodderTester {
     /// method used to display the subscriptions
     /// </summary>
     public static void DisplaySubscriptions() {
-      WriteLine("---Getting Subscriptions for device---"); ;
+      WriteLine("---Getting Subscriptions for device---");
+
+      if(Server.Subcriptions.Count == 0) {
+        WriteLine("No Subscriptions!");
+      }
+
       // arbitrarly choose the first device
       foreach (Subscription subsciption in Server.Subcriptions) {
         WriteLine("Title: " + subsciption.Title);
@@ -101,6 +106,11 @@ namespace PortaPodderTester {
     /// </summary>
     public static void DisplayEpisodes() {
       WriteLine("---Getting Episodes---");
+
+      if(Server.Episodes.Count == 0) {
+        WriteLine("No Episodes found");
+      }
+
       foreach(Episode episode in Server.Episodes){
         WriteLine("Title: " + episode.Title);
         //WriteLine("Description: " + episode.Description);

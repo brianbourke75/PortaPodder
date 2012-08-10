@@ -9,7 +9,7 @@ namespace GPodder {
   /// The Episode from GPodder.net
   /// </summary>
   [DataContract]
-  public class Episode {
+  public class Episode : PodcastItem{
 
     #region enumerations
 
@@ -40,24 +40,9 @@ namespace GPodder {
     #region members
 
     /// <summary>
-    /// The title.
+    /// The parent.
     /// </summary>
-    private string title = string.Empty;
-
-    /// <summary>
-    /// The name of the column title
-    /// </summary>
-    public const string COL_TITLE = "title";
-
-    /// <summary>
-    /// The URL for this episode
-    /// </summary>
-    private Uri url = null;
-
-    /// <summary>
-    /// The name of the url column
-    /// </summary>
-    public const string COL_URL = "url";
+    private Subscription parent = null;
 
     /// <summary>
     /// The podcast title.
@@ -144,31 +129,20 @@ namespace GPodder {
     #region properties
 
     /// <summary>
-    /// Gets or sets the title.
+    /// Gets the parent.
     /// </summary>
-    /// <value>The title.</value>
-    [DataMember(Name=COL_TITLE)]
-    public string Title {
+    /// <value>The parent subscription</value>
+    public Subscription Parent {
       get {
-        return title;
-      }
-      set {
-        title = value;
-      }
-    }
-
-    /// <summary>
-    /// Gets the website.
-    /// </summary>
-    /// <value>The website.</value>
-    [JsonConverter(typeof(UriConverter))]
-    [DataMember(Name=COL_URL)]
-    public Uri Url {
-      get {
-        return url;
-      }
-      set {
-        url = value;
+        if(parent == null){
+          foreach(Subscription subscription in Server.Subcriptions){
+            if(subscription.Title == podcastTitle){
+              parent = subscription;
+              break;
+            }
+          }
+        }
+        return parent;
       }
     }
 

@@ -1,10 +1,10 @@
 ﻿<Properties>
   <AuthorInfo Name="Brian Bourke-Martin" Email="brianbourke75@gmail.com" Copyright="Brian Bourke-Martin" Company="" Trademark="" />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug Fake" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="PortaPodder\EpisodeDownloader.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="PortaPodder\Activities\EpisodeDetails.cs">
     <Files>
-      <File FileName="PortaPodder\Activities\EpisodeDetails.cs" Line="60" Column="22" />
-      <File FileName="PortaPodder\EpisodeDownloader.cs" Line="73" Column="41" />
+      <File FileName="PortaPodder\EpisodeDownloader.cs" Line="74" Column="13" />
+      <File FileName="PortaPodder\Activities\EpisodeDetails.cs" Line="139" Column="59" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -21,11 +21,13 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="C:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\Adapters\EpisodeArray.cs" line="220" />
+      <Breakpoint file="C:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\Adapters\EpisodeArray.cs" line="186" />
+      <Breakpoint file="C:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\Activities\EpisodeDetails.cs" line="72" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches>
     <Watch file="PortaPodder\Adapters\EpisodeArray.cs" line="202" offsetX="658" offsetY="2159" expression="sections" liveUpdate="False" />
+    <Watch file="PortaPodder\Activities\EpisodeDetails.cs" line="72" offsetX="602" offsetY="1065" expression="loc" liveUpdate="False" />
   </MonoDevelop.Ide.DebuggingService.PinnedWatches>
   <MonoDevelop.Ide.ItemProperties.PortaPodder MonoForAntroid.PreferredDevice="3.7in WVGA (Nexus One)" AndroidDeviceId-Debug_220Fake="emulator-5554" AndroidDeviceId-Debug="emulator-5554" />
 </Properties>

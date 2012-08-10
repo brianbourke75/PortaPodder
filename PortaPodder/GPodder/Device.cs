@@ -11,7 +11,7 @@ namespace GPodder {
   /// A gpodder.net device
   /// </summary>
   [DataContract]
-  public class Device : Server {
+  public class Device {
 
     #region enums
 

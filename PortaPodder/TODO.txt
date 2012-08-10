@@ -1,12 +1,15 @@
 * Create Icon
 
 * GUI
-** Convert to xml layouts
+** Update episode color based on downloaded state
+** Async wait for login
 
 * gpodder.net integration
 ** Get Episodes
 ** Push Episode state
 
 * Local Database
+** Save username and password
+
 * Background Download
 * Media Player Integration

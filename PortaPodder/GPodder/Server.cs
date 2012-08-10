@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Runtime.Serialization;
+
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -13,7 +13,7 @@ namespace GPodder {
   /// <summary>
   /// This class will fetch and push all of the data to and from the GPodder server
   /// </summary>
-  public abstract class Server {
+  public static class Server {
 
     #region members
 
@@ -203,53 +203,19 @@ namespace GPodder {
     private static List<Episode> getFakeEpisodes() {
       List<Episode> episodes = new List<Episode>();
 
-      Episode fake = new Episode();
-      fake.Description = "Nice and fake episode 1";
-      fake.MygpoLink = new Uri(@"http://gpodder.net/fakey");
-      fake.PodcastTitle = FAKE_PODCAST_TITLE_2;
-      fake.PodcastUrl = new Uri(@"http://themoth.prx.org.s3.amazonaws.com/wp-content/uploads/moth-podcast-235-tina-mcelroy-ansa.mp3");
-      fake.Released = DateTime.Now;
-      fake.Status = Episode.EpisodeStatus.New;
-      fake.Title = "A super cool fake episode 1";
-      fake.Url = new Uri(@"http://localhost");
-      fake.Website = new Uri(@"http://localhost");
-      episodes.Add(fake);
-
-      fake = new Episode();
-      fake.Description = "Nice and fake episode 2";
-      fake.MygpoLink = new Uri(@"http://gpodder.net/fakey");
-      fake.PodcastTitle = FAKE_PODCAST_TITLE_2;
-      fake.PodcastUrl = new Uri(@"http://localhost");
-      fake.Released = DateTime.Now;
-      fake.Status = Episode.EpisodeStatus.New;
-      fake.Title = "A super cool fake episode 2";
-      fake.Url = new Uri(@"http://localhost");
-      fake.Website = new Uri(@"http://localhost");
-      episodes.Add(fake);
-
-      fake = new Episode();
-      fake.Description = "lame and fake episode 1";
-      fake.MygpoLink = new Uri(@"http://gpodder.net/fakey");
-      fake.PodcastTitle = FAKE_PODCAST_TITLE_1;
-      fake.PodcastUrl = new Uri(@"http://localhost");
-      fake.Released = DateTime.Now;
-      fake.Status = Episode.EpisodeStatus.New;
-      fake.Title = "A super lame fake episode 1";
-      fake.Url = new Uri(@"http://localhost");
-      fake.Website = new Uri(@"http://localhost");
-      episodes.Add(fake);
-
-      fake = new Episode();
-      fake.Description = "lame and fake episode 2";
-      fake.MygpoLink = new Uri(@"http://gpodder.net/fakey");
-      fake.PodcastTitle = FAKE_PODCAST_TITLE_1;
-      fake.PodcastUrl = new Uri(@"http://localhost");
-      fake.Released = DateTime.Now;
-      fake.Status = Episode.EpisodeStatus.New;
-      fake.Title = "A super lame fake episode 2";
-      fake.Url = new Uri(@"http://localhost");
-      fake.Website = new Uri(@"http://localhost");
-      episodes.Add(fake);
+      for(int ce = 0; ce < 10; ce++) {
+        Episode fake = new Episode();
+        fake.Description = "Nice and fake episode " + ce;
+        fake.MygpoLink = new Uri(@"http://gpodder.net/fakey");
+        fake.PodcastTitle = FAKE_PODCAST_TITLE_1;
+        fake.PodcastUrl = new Uri(@"http://localhost");
+        fake.Released = DateTime.Now;
+        fake.Status = Episode.EpisodeStatus.New;
+        fake.Title = "A super cool fake episode " + ce;
+        fake.Url = new Uri(@"http://themoth.prx.org.s3.amazonaws.com/wp-content/uploads/moth-podcast-235-tina-mcelroy-ansa.mp3");
+        fake.Website = new Uri(@"http://localhost");
+        episodes.Add(fake);
+      }
 
       return episodes;
     }
@@ -348,9 +314,31 @@ namespace GPodder {
           episodes.Remove(updated);
         }
         episodes.Add(updated);
+
+        // add the updated episode to it's parent for quick reference later
+        Subscription parent = findByTitle(updated.PodcastTitle);
+        if(parent != null){
+          if(!parent.Shows.Contains(updated)){
+            parent.Shows.Add(updated);
+          }
+        }
       }
     }
   
+    /// <summary>
+    /// Finds the by title.
+    /// </summary>
+    /// <returns>The subscription, null if it does not exist</returns>
+    /// <param name='title'>Title.</param>
+    private static Subscription findByTitle(string title) {
+      foreach(Subscription subscription in subscriptions) {
+        if(subscription.Title == title){
+          return subscription;
+        }
+      }
+      return null;
+    }
+
     /// <summary>
     /// Creates the web request.
     /// </summary>
@@ -372,88 +360,6 @@ namespace GPodder {
 
     #endregion
 
-    #region nested classes for getting data
-
-    /// <summary>
-    /// get the device udpates
-    /// </summary>
-    [DataContract]
-    private class DeviceUpdates {
-
-      /// <summary>
-      /// subscriptions to add
-      /// </summary>
-      private List<Subscription> add = new List<Subscription>();
-
-      /// <summary>
-      /// subscriptions to remove
-      /// </summary>
-      private List<Subscription> remove = new List<Subscription>();
-
-      /// <summary>
-      /// episodes to update
-      /// </summary>
-      private List<Episode> updates = new List<Episode>();
-
-      /// <summary>
-      /// the datetime returned
-      /// </summary>
-      private string timestamp = string.Empty;
-
-      /// <summary>
-      /// Gets or sets the added subcriptions
-      /// </summary>
-      [DataMember(Name = "add")]
-      public List<Subscription> Add {
-        get {
-          return add;
-        }
-        set {
-          add = value;
-        }
-      }
-
-      /// <summary>
-      /// the list of subscriptions to remove
-      /// </summary>
-      [DataMember(Name = "remove")]
-      public List<Subscription> Remove {
-        get {
-          return remove;
-        }
-        set {
-          remove = value;
-        }
-      }
-
-      /// <summary>
-      /// the list of episodes to update
-      /// </summary>
-      [DataMember(Name = "updates")]
-      public List<Episode> Updates {
-        get {
-          return updates;
-        }
-        set {
-          updates = value;
-        }
-      }
-
-      /// <summary>
-      /// Gets or sets the timestamp for the update
-      /// </summary>
-      [DataMember(Name = "timestamp")]
-      public string Timestamp {
-        get {
-          return timestamp;
-        }
-        set {
-          timestamp = value;
-        }
-      }
-    }
-
-    #endregion
   }
 }
 
