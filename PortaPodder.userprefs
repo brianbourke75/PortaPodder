@@ -1,16 +1,25 @@
 ﻿<Properties>
   <AuthorInfo Name="Brian Bourke-Martin" Email="brianbourke75@gmail.com" Copyright="Brian Bourke-Martin" Company="" Trademark="" />
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug Fake" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="PortaPodder\Activities\EpisodeDetails.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="PortaPodder\Properties\AndroidManifest.xml">
     <Files>
-      <File FileName="PortaPodder\EpisodeDownloader.cs" Line="74" Column="13" />
-      <File FileName="PortaPodder\Activities\EpisodeDetails.cs" Line="139" Column="59" />
+      <File FileName="PortaPodder\GPodder\Server.cs" Line="305" Column="46" />
+      <File FileName="PortaPodder\PortaPodderApp.cs" Line="20" Column="45" />
+      <File FileName="PortaPodder\Activities\EpisodeList.cs" Line="60" Column="40" />
+      <File FileName="PortaPodder\PortaPodderDataSource.cs" Line="38" Column="43" />
+      <File FileName="PortaPodder\Activities\Authentication.cs" Line="141" Column="9" />
+      <File FileName="PortaPodder\EncryptedPreferences.cs" Line="31" Column="11" />
+      <File FileName="PortaPodder\GPodder\Device.cs" Line="166" Column="1" />
+      <File FileName="PortaPodder\PortaPodderSQLHelper.cs" Line="58" Column="16" />
+      <File FileName="PortaPodder\Properties\AndroidManifest.xml" Line="2" Column="128" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
-          <Node name="PortaPodder" expanded="True" selected="True">
-            <Node name="Activities" expanded="True" />
+          <Node name="PortaPodder" expanded="True">
+            <Node name="Properties" expanded="True">
+              <Node name="AndroidManifest.xml" selected="True" />
+            </Node>
           </Node>
         </State>
       </Pad>
@@ -22,7 +31,8 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Breakpoint file="C:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\Adapters\EpisodeArray.cs" line="186" />
-      <Breakpoint file="C:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\Activities\EpisodeDetails.cs" line="72" />
+      <Breakpoint file="C:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\Activities\EpisodeDetails.cs" line="92" />
+      <Breakpoint file="C:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\PortaPodder.cs" line="29" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches>

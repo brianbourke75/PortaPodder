@@ -11,9 +11,9 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-using GPodder;
+using GPodder.DataStructures;
 
-namespace PortaPodder.Activities {
+namespace GPodder.PortaPodder.Activities {
 
   /// <summary>
   /// The class which will perform the activity of selecting a device
@@ -34,6 +34,7 @@ namespace PortaPodder.Activities {
       ListView deviceListView = FindViewById<ListView>(Resource.SelectDevice.deviceListView);
       deviceListView.Adapter = new ArrayAdapter<Device>(this, Android.Resource.Layout.SimpleListItem1);
       deviceListView.ItemClick += new EventHandler<AdapterView.ItemClickEventArgs>(deviceSelected);
+
     }
 
     /// <summary>
@@ -48,20 +49,24 @@ namespace PortaPodder.Activities {
         return;
       }
 
+      // check to see if there is already a device selected
+
       // if there is only one device, then we need to auto select it!
-      if(Server.Devices.Count == 1) {
-        Server.SelectedDevice = Server.Devices[0];
+      string[] ids = Server.GetDevicesIds();
+      if(ids.Length == 1) {
+        Server.SelectedDevice = Server.GetDevice(ids[0]);
         Finish();
         return;
       }
 
       // if there are absolutely no devices then this is an error condition
-      FindViewById<TextView>(Resource.SelectDevice.selectDeviceText).Text = Server.Devices.Count == 0 ? GetText(Resource.String.select_devices) : GetText(Resource.String.no_devices);
+      string[] deviceIds = Server.GetDevicesIds();
+      FindViewById<TextView>(Resource.SelectDevice.selectDeviceText).Text = deviceIds.Length == 0 ? GetText(Resource.String.select_devices) : GetText(Resource.String.no_devices);
 
       // add all items to the adapter list
       ArrayAdapter<Device> adapter = (ArrayAdapter<Device>)FindViewById<ListView>(Resource.SelectDevice.deviceListView).Adapter;
-      foreach(Device device in Server.Devices) {
-        adapter.Add(device);
+      foreach(string deviceId in deviceIds) {
+        adapter.Add(Server.GetDevice(deviceId));
       }
     }
 

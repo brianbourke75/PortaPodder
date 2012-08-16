@@ -11,9 +11,9 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-using GPodder;
+using GPodder.DataStructures;
 
-namespace PortaPodder.Activities {
+namespace GPodder.PortaPodder.Activities {
 
   /// <summary>
   /// Subscription interaction.

@@ -12,35 +12,36 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace PortaPodder {
+using GPodder.DataStructures;
+
+namespace GPodder.PortaPodder {
 
   /// <summary>
   /// Porta podder data source.
   /// </summary>
-  public class PortaPodderDataSource {
+  public static class PortaPodderDataSource {
 
     /// <summary>
     /// The db helper.
     /// </summary>
-    private PortaPodderSQLHelper dbHelper = null;
+    private static PortaPodderSQLHelper dbHelper = null;
 
     /// <summary>
     /// A list of all columns.
     /// </summary>
-    private string[] allColumns = { Device.COL_ID,  Device.COL_CAPTION, Device.COL_SUBSCRIPTIONS, Device.COL_TYPE };
+    private static string[] allColumns = { Device.COL_ID,  Device.COL_CAPTION, Device.COL_SUBSCRIPTIONS, Device.COL_TYPE };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PortaPodder.PortaPodderDataSource"/> class.
     /// </summary>
-    /// <param name='context'>Context.</param>
-    public PortaPodderDataSource(Context context) {
-      dbHelper = new PortaPodderSQLHelper(context);
+    static PortaPodderDataSource() {
+      dbHelper = new PortaPodderSQLHelper();
     }
 
     /// <summary>
     /// Close this instance.
     /// </summary>
-    public void Close() {
+    public static void Close() {
       if (dbHelper != null) {
         dbHelper.Close();
         dbHelper = null;
@@ -52,7 +53,7 @@ namespace PortaPodder {
     /// </summary>
     /// <returns>The device.</returns>
     /// <param name='comment'>Comment.</param>
-    public void InsertDevice(Device device) {
+    public static void InsertDevice(Device device) {
       ContentValues values = new ContentValues();
       values.Put(Device.COL_ID, device.Id);
       values.Put(Device.COL_CAPTION, device.Caption);
@@ -65,7 +66,7 @@ namespace PortaPodder {
     /// Deletes the device.
     /// </summary>
     /// <param name='device'>Device.</param>
-    public void DeleteDevice(Device device) {
+    public static void DeleteDevice(Device device) {
       Console.Out.WriteLine("Deleting from database device with id: " + device.Id);
       dbHelper.WritableDatabase.Delete(Device.TABLE_NAME, Device.COL_ID + " = " + device.Id, null);
     }
@@ -74,7 +75,7 @@ namespace PortaPodder {
     /// Gets all devices.
     /// </summary>
     /// <returns>The all devices.</returns>
-    public List<Device> GetAllDevices() {
+    public static List<Device> GetAllDevices() {
       List<Device> devices = new List<Device>();
       ICursor cursor = dbHelper.WritableDatabase.Query(Device.TABLE_NAME, allColumns, null, null, null, null, null);
 
@@ -93,7 +94,7 @@ namespace PortaPodder {
     /// </summary>
     /// <returns>The to device.</returns>
     /// <param name='cursor'>Cursor.</param>
-    private Device cursorToDevice(ICursor cursor) {
+    private static Device cursorToDevice(ICursor cursor) {
       Device device = new Device();
       device.Id            = cursor.GetString(cursor.GetColumnIndex(Device.COL_ID));
       device.Caption       = cursor.GetString(cursor.GetColumnIndex(Device.COL_CAPTION));

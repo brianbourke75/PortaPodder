@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace GPodder {
+namespace GPodder.DataStructures {
 
   /// <summary>
   /// A gpodder.net device
@@ -171,6 +171,26 @@ namespace GPodder {
     /// <returns></returns>
     public override string ToString() {
       return this.caption;
+    }
+
+    /// <summary>
+    /// Determines whether the specified <see cref="System.Object"/> is equal to the current <see cref="GPodder.Device"/>.
+    /// </summary>
+    /// <param name='obj'>The <see cref="System.Object"/> to compare with the current <see cref="GPodder.Device"/>.</param>
+    /// <returns><c>true</c> if the specified <see cref="System.Object"/> is equal to the current <see cref="GPodder.Device"/>;otherwise, <c>false</c>.</returns>
+    public override bool Equals(object obj) {
+      if(obj is Device) {
+        return ((Device)obj).id == id;
+      }
+      return false;
+    }
+
+    /// <summary>
+    /// Serves as a hash function for a <see cref="GPodder.Device"/> object.
+    /// </summary>
+    /// <returns>A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.</returns>
+    public override int GetHashCode() {
+      return base.GetHashCode();
     }
 
     #endregion

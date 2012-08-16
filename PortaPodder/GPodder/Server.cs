@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
-namespace GPodder {
+namespace GPodder.DataStructures {
 
   /// <summary>
   /// This class will fetch and push all of the data to and from the GPodder server
@@ -50,7 +49,7 @@ namespace GPodder {
     /// <summary>
     /// a list of devices for the selected device
     /// </summary>
-    private static List<Device> devices = null;
+    private static List<Device> devices = new List<Device>();
 
     /// <summary>
     /// The subscriptions.
@@ -61,6 +60,21 @@ namespace GPodder {
     /// The episodes.
     /// </summary>
     private static List<Episode> episodes = null;
+
+    /// <summary>
+    /// The device added callbacks.
+    /// </summary>
+    private static List<DeviceUpdatedMethod> deviceAddedCallbacks = new List<DeviceUpdatedMethod>();
+
+    /// <summary>
+    /// The device removed callbacks.
+    /// </summary>
+    private static List<DeviceUpdatedMethod> deviceRemovedCallbacks = new List<DeviceUpdatedMethod>();
+
+    ///<summary>
+    /// this defines a method callback to be used when devices are updated
+    /// </summary>
+    public delegate void DeviceUpdatedMethod(Device theDevice);
 
     #endregion
 
@@ -154,29 +168,35 @@ namespace GPodder {
       }
     }
 
+    #endregion
+    
+    #region events
+
     /// <summary>
-    /// Gets the list of devices
+    /// Occurs when devices are added.
     /// </summary>
-    public static List<Device> Devices {
-      get {
-        // check our list of devices
-        if (devices == null) {
-          // if there is no connected user this is an error condition
-          if (ConnectedUser == null) {
-            throw new Exception("Cannot get devices without a user");
-          }
-#if(FAKE)
-          devices = getFakeDevices();
-#else
-          // get the response from the server
-          string t = getResponse(new Uri(Server.GPodderLocation + Server.GPodderAPI + @"devices/" + ConnectedUser.Username + JSONExtension));
-
-          // parse the json into a list of devices
-          devices = JsonConvert.DeserializeObject<List<Device>>(t);
-#endif
+    public static event DeviceUpdatedMethod DeviceAdded {
+      add {
+        if(!deviceAddedCallbacks.Contains(value)){
+          deviceAddedCallbacks.Add(value);
         }
+      }
+      remove {
+        deviceAddedCallbacks.Remove(value);
+      }
+    }
 
-        return devices;
+    /// <summary>
+    /// Occurs when devices are removed.
+    /// </summary>
+    public static event DeviceUpdatedMethod DeviceRemoved {
+      add {
+        if(!deviceRemovedCallbacks.Contains(value)){
+          deviceRemovedCallbacks.Add(value);
+        }
+      }
+      remove {
+        deviceRemovedCallbacks.Remove(value);
       }
     }
 
@@ -275,6 +295,81 @@ namespace GPodder {
     }
 
     #endregion
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GPodder.Server"/> class.
+    /// </summary>
+    /// <param name='devices'>Devices.</param>
+    public static void Startup(List<Device> devices){
+      // do this without triggering any hooks
+      devices.AddRange(devices);
+    }
+
+    /// <summary>
+    /// Pulls the devices from server.
+    /// </summary>
+    public static void SyncDevicesFromServer() {
+      // if there is no connected user this is an error condition
+      if(ConnectedUser == null) {
+        throw new Exception("Cannot get devices without a user");
+      }
+#if(FAKE)
+      List<Device> serverList = getFakeDevices();
+#else
+      // get the response from the server
+      string t = getResponse(new Uri(Server.GPodderLocation + Server.GPodderAPI + @"devices/" + ConnectedUser.Username + JSONExtension));
+
+      // parse the json into a list of devices
+      List<Device> serverList = JsonConvert.DeserializeObject<List<Device>>(t);
+#endif
+
+      // make a record of the id of the selected device
+      string id = selectedDevice != null ? selectedDevice.Id : string.Empty;
+
+      // first go through all of the devices and remove them all!
+      foreach(Device existing in devices) {
+        foreach(DeviceUpdatedMethod removeCallback in deviceRemovedCallbacks){
+          removeCallback(existing);
+        }
+      }
+      devices.Clear();
+
+      // go through each device on the server and make sure they are not yet on the list
+      foreach(Device deviceOnServer in serverList) {
+        foreach(DeviceUpdatedMethod addedCallback in deviceAddedCallbacks){
+          addedCallback(deviceOnServer);
+        }
+        devices.Add(deviceOnServer);
+      }
+
+      // reselect the selected device
+      selectedDevice = GetDevice(id);
+    }
+
+    /// <summary>
+    /// Gets the devices count.
+    /// </summary>
+    /// <returns>The devices count.</returns>
+    public static string[] GetDevicesIds() {
+      List<string> ids = new List<string>();
+      foreach(Device device in devices) {
+        ids.Add(device.Id);
+      }
+      return ids.ToArray();
+    }
+
+    /// <summary>
+    /// Gets the device.
+    /// </summary>
+    /// <returns>The device.</returns>
+    /// <param name='id'>Identifier.</param>
+    public static Device GetDevice(string id) {
+      return devices.Find(
+        delegate(Device device) {
+          return device.Id == id;
+        }
+      );
+    }
 
     /// <summary>
     /// update the device

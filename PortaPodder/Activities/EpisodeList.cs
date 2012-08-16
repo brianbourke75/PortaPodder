@@ -11,15 +11,22 @@ using Android.Widget;
 using Android.OS;
 using Android.Util;
 
-using GPodder;
+using GPodder.DataStructures;
+using GPodder.PortaPodder;
 
-namespace PortaPodder.Activities {
+namespace GPodder.PortaPodder.Activities {
   
   /// <summary>
   /// Activity for showing the directory of current podcasts
   /// </summary>
   [Activity (Label = "PortaPodder", MainLauncher = true)]
   public class EpisodeList : ExpandableListActivity {
+
+
+    /// <summary>
+    /// The key for the selected device in the prefernces
+    /// </summary>
+    private const string KEY_SELECTED_DEVICE = "selectedDevice";
 
     /// <summary>
     /// The selected episode.
@@ -42,10 +49,16 @@ namespace PortaPodder.Activities {
     private const string RELEASED_TEXT_VIEW = "RELEASED";
 
     /// <summary>
+    /// The preferences
+    /// </summary>
+    public static EncryptedPreferences prefs = null;
+
+    /// <summary>
     /// Raises the create event.
     /// </summary>
     /// <param name='bundle'>Bundle.</param>
     protected override void OnCreate(Bundle bundle) {
+      prefs = new EncryptedPreferences();
       base.OnCreate(bundle);
       ExpandableListView.SetOnChildClickListener(this);
     }
@@ -103,6 +116,7 @@ namespace PortaPodder.Activities {
 
       // check to see if we have a valid device
       if(Server.SelectedDevice == null) {
+        // if the preferences does not contain
         StartActivity(typeof(SelectDevice));
         return;
       }

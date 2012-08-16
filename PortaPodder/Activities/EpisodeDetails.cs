@@ -14,10 +14,9 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-using GPodder;
-using PortaPodder;
+using GPodder.DataStructures;
 
-namespace PortaPodder.Activities {
+namespace GPodder.PortaPodder.Activities {
 
   /// <summary>
   /// Episode details.
@@ -28,12 +27,7 @@ namespace PortaPodder.Activities {
     /// <summary>
     /// The media controller
     /// </summary>
-    private static MediaPlayer player = null;
-
-    /// <summary>
-    /// The currently playing media
-    /// </summary>
-    private static Uri currentlyPlaying = null;
+    private static EpisodePlayer player = null;
 
     /// <summary>
     /// Raises the create event.
@@ -80,8 +74,8 @@ namespace PortaPodder.Activities {
     /// </summary>
     /// <param name='sender'>Sender.</param>
     /// <param name='e'>E.</param>
-    private void stopPlaying(object sender, EventArgs e) {
-      if(player != null && player.IsPlaying) {
+    private void stopPlaying(object sender = null, EventArgs e = null) {
+      if(player != null) {
         player.Stop();
         player = null;
       }
@@ -93,21 +87,22 @@ namespace PortaPodder.Activities {
     /// <param name='sender'>Sender.</param>
     /// <param name='e'>E.</param>
     private void playPodcast(object sender, EventArgs e) {
-      string fileLocation = getEpisodeLocation(EpisodeList.SelectedEpisode);
-      Uri setupToPlay = new Uri(fileLocation);
-      if(!File.Exists(fileLocation)) {
-        return;
-      }
-
       // check to see if a different uri is playing and reset the player
-      if(currentlyPlaying != setupToPlay) {
-        stopPlaying(null, null);
+      if(player != null && player.Episode != EpisodeList.SelectedEpisode) {
+        stopPlaying();
       }
 
       // if the player is not setup, then we need to set it up
       if(player == null) {
-        currentlyPlaying = setupToPlay;
-        player = MediaPlayer.Create(this, Android.Net.Uri.Parse(setupToPlay.ToString()));
+
+        // make sure the file exists on the file system
+        string fileLocation = getEpisodeLocation(EpisodeList.SelectedEpisode);
+        Uri setupToPlay = new Uri(fileLocation);
+        if(!File.Exists(fileLocation)) {
+          return;
+        }
+
+        player = new EpisodePlayer(EpisodeList.SelectedEpisode, this, Android.Net.Uri.Parse(setupToPlay.ToString()));
       }
 
       // if the player is already playing we just need to resume

@@ -74,11 +74,14 @@
     <Compile Include="EpisodeDownloader.cs" />
     <Compile Include="GPodder\DeviceUpdates.cs" />
     <Compile Include="GPodder\PodcastItem.cs" />
+    <Compile Include="EpisodePlayer.cs" />
+    <Compile Include="EncryptedPreferences.cs" />
+    <Compile Include="PortaPodderDataSource.cs" />
+    <Compile Include="PortaPodderSQLHelper.cs" />
+    <Compile Include="PortaPodderApp.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
-    <None Include="PortaPodderDataSource.cs" />
-    <None Include="PortaPodderSQLHelper.cs" />
     <None Include="TODO.txt" />
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>

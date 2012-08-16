@@ -10,11 +10,10 @@ using Android.Views;
 using Android.Widget;
 using Android.Util;
 
-using GPodder;
+using GPodder.DataStructures;
+using GPodder.PortaPodder.Activities;
 
-using PortaPodder.Activities;
-
-namespace PortaPodder {
+namespace GPodder.PortaPodder {
 
   // usually, subclasses of AsyncTask are declared inside the activity class.
   // that way, you can easily modify the UI thread from here

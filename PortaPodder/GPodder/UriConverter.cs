@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace GPodder {
+namespace GPodder.DataStructures {
 
   /// <summary>
   /// URI converter for JSON

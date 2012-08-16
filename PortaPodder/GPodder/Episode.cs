@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace GPodder {
+namespace GPodder.DataStructures {
 
   /// <summary>
   /// The Episode from GPodder.net
@@ -113,6 +113,16 @@ namespace GPodder {
     /// The name of the status columns
     /// </summary>
     public const string COL_STATUS = "status";
+
+    /// <summary>
+    /// The player location in milliseconds
+    /// </summary>
+    public int playerPosition = 0;
+
+    /// <summary>
+    /// The duration.
+    /// </summary>
+    public int duration = 0;
 
     #endregion
 

@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace GPodder {
+namespace GPodder.DataStructures {
 
   /// <summary>
   /// The class for holding the updates for a device
   /// </summary>
-
   [DataContract]
   public class DeviceUpdates {
 

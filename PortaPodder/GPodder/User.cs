@@ -1,6 +1,6 @@
 using System;
 
-namespace GPodder {
+namespace GPodder.DataStructures {
 
   /// <summary>
   /// User in the GPodderNET system

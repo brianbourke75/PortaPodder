@@ -12,9 +12,10 @@ using Android.Views;
 using Android.Widget;
 using Android.Util;
 
-using PortaPodder.Activities;
+using GPodder.DataStructures;
+using GPodder.PortaPodder.Activities;
 
-namespace PortaPodder {
+namespace GPodder.PortaPodder {
 
   /// <summary>
   /// Porta podder SQL helper.
@@ -34,8 +35,8 @@ namespace PortaPodder {
     /// <summary>
     /// Initializes a new instance of the <see cref="PortaPodder.PortaPodderSQLHelper"/> class.
     /// </summary>
-    /// <param name='context'>Context.</param>
-    public PortaPodderSQLHelper(Context context): base(context, EpisodeList.APP_NAME, null, DATABASE_VERSION){
+    public PortaPodderSQLHelper()
+    : base(Application.Context, Application.Context.GetString(Resource.String.app_name), null, DATABASE_VERSION){
     }
 
     /// <summary>
