@@ -1,25 +1,28 @@
 ﻿<Properties>
   <AuthorInfo Name="Brian Bourke-Martin" Email="brianbourke75@gmail.com" Copyright="Brian Bourke-Martin" Company="" Trademark="" />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="PortaPodder\Properties\AndroidManifest.xml">
+  <MonoDevelop.Ide.Workbench ActiveDocument="PortaPodder\Resources\menu\episodes.xml">
     <Files>
-      <File FileName="PortaPodder\GPodder\Server.cs" Line="305" Column="46" />
-      <File FileName="PortaPodder\PortaPodderApp.cs" Line="20" Column="45" />
-      <File FileName="PortaPodder\Activities\EpisodeList.cs" Line="60" Column="40" />
-      <File FileName="PortaPodder\PortaPodderDataSource.cs" Line="38" Column="43" />
-      <File FileName="PortaPodder\Activities\Authentication.cs" Line="141" Column="9" />
-      <File FileName="PortaPodder\EncryptedPreferences.cs" Line="31" Column="11" />
-      <File FileName="PortaPodder\GPodder\Device.cs" Line="166" Column="1" />
-      <File FileName="PortaPodder\PortaPodderSQLHelper.cs" Line="58" Column="16" />
-      <File FileName="PortaPodder\Properties\AndroidManifest.xml" Line="2" Column="128" />
+      <File FileName="PortaPodder\PortaPodderApp.cs" Line="70" Column="42" />
+      <File FileName="PortaPodder\GPodder\Server.cs" Line="151" Column="1" />
+      <File FileName="PortaPodder\Activities\EpisodeList.cs" Line="102" Column="8" />
+      <File FileName="PortaPodder\Activities\SelectDevice.cs" Line="65" Column="8" />
+      <File FileName="PortaPodder\Resources\menu\episodes.xml" Line="5" Column="8" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
           <Node name="PortaPodder" expanded="True">
-            <Node name="Properties" expanded="True">
-              <Node name="AndroidManifest.xml" selected="True" />
+            <Node name="Activities" expanded="True" />
+            <Node name="GPodder" expanded="True" />
+            <Node name="Resources" expanded="True">
+              <Node name="menu" expanded="True">
+                <Node name="episodes.xml" selected="True" />
+              </Node>
             </Node>
+          </Node>
+          <Node name="PortaPodderTester" expanded="True">
+            <Node name="GPodder" expanded="True" />
           </Node>
         </State>
       </Pad>

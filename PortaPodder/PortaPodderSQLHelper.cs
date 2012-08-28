@@ -30,7 +30,7 @@ namespace GPodder.PortaPodder {
     /// <summary>
     /// Database creation sql statement
     /// </summary>
-    private static readonly string DATABASE_CREATE = "create table " + Device.TABLE_NAME + "(" + Device.COL_ID + " text primary key, " + Device.COL_CAPTION + " text not null);";
+    private static readonly string DATABASE_CREATE = "create table " + Device.TABLE_NAME + "(" + Device.COL_ID + " text primary key, " + Device.COL_CAPTION + " text not null," + Device.COL_TYPE + " text not null," + Device.COL_SUBSCRIPTIONS + " int);";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PortaPodder.PortaPodderSQLHelper"/> class.

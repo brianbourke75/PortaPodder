@@ -8,7 +8,7 @@
     <ProjectGuid>{E7A91710-2D33-4792-BD3A-BC89E69F02A1}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <RootNamespace>PortaPodder</RootNamespace>
+    <RootNamespace>GPodder.PortaPodder</RootNamespace>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <AndroidResgenClass>Resource</AndroidResgenClass>
@@ -93,6 +93,7 @@
     <AndroidResource Include="Resources\layout\SelectDevice.axml" />
     <AndroidResource Include="Resources\layout\EpisodeArray.axml" />
     <AndroidResource Include="Resources\layout\EpisodeDetails.axml" />
+    <AndroidResource Include="Resources\menu\devices.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>

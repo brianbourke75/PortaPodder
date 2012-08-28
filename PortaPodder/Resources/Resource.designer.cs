@@ -100,11 +100,14 @@ namespace GPodder.PortaPodder
 		public partial class Id
 		{
 			
+			// aapt resource value: 0x7f070001
+			public const int devices = 2131165185;
+			
 			// aapt resource value: 0x7f070000
 			public const int relativeLayout1 = 2131165184;
 			
-			// aapt resource value: 0x7f070001
-			public const int subscription = 2131165185;
+			// aapt resource value: 0x7f070002
+			public const int subscription = 2131165186;
 			
 			private Id()
 			{
@@ -135,7 +138,10 @@ namespace GPodder.PortaPodder
 		{
 			
 			// aapt resource value: 0x7f050000
-			public const int episodes = 2131034112;
+			public const int devices = 2131034112;
+			
+			// aapt resource value: 0x7f050001
+			public const int episodes = 2131034113;
 			
 			private Menu()
 			{

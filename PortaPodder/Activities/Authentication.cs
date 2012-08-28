@@ -71,7 +71,7 @@ namespace GPodder.PortaPodder.Activities {
       base.OnCreate(bundle);
 
       // create an encrtyped preferences
-      EpisodeList.prefs = new EncryptedPreferences();
+      PortaPodderApp.prefs = new EncryptedPreferences();
 
       // create the layout
       layout = new LinearLayout(this);
@@ -87,7 +87,7 @@ namespace GPodder.PortaPodder.Activities {
       usernameEdit.Gravity = GravityFlags.Center;
       usernameEdit.InputType = Android.Text.InputTypes.ClassText | Android.Text.InputTypes.TextFlagNoSuggestions;
       usernameEdit.SetMaxLines(1);
-      usernameEdit.Text = EpisodeList.prefs.GetString(EncryptedPreferences.KEY_USERNAME, string.Empty);
+      usernameEdit.Text = PortaPodderApp.prefs.GetString(EncryptedPreferences.KEY_USERNAME, string.Empty);
       layout.AddView(usernameEdit);
 
       // create the label for the password
@@ -137,14 +137,14 @@ namespace GPodder.PortaPodder.Activities {
       // setup the server with the username and password
       Server.ConnectedUser = new User(username, password);
       try{
-        // we are going to attempt to get the lists of devices and only if this returns correctly authenticated do we continue to finish this activity
-        Server.SyncDevicesFromServer();
-
         // should the login be successful, we will put the username and password into the preferences
-        ISharedPreferencesEditor editor = EpisodeList.prefs.Edit();
+        ISharedPreferencesEditor editor = PortaPodderApp.prefs.Edit();
         editor.PutString(EncryptedPreferences.KEY_USERNAME, username);
         editor.PutString(EncryptedPreferences.KEY_PASSWORD, password);
         editor.Commit();
+
+        // we are going to attempt to get the lists of devices and only if this returns correctly authenticated do we continue to finish this activity
+        Server.GetDevicesFromServer();
 
         Finish();
         return;

@@ -49,16 +49,10 @@ namespace GPodder.PortaPodder.Activities {
     private const string RELEASED_TEXT_VIEW = "RELEASED";
 
     /// <summary>
-    /// The preferences
-    /// </summary>
-    public static EncryptedPreferences prefs = null;
-
-    /// <summary>
     /// Raises the create event.
     /// </summary>
     /// <param name='bundle'>Bundle.</param>
     protected override void OnCreate(Bundle bundle) {
-      prefs = new EncryptedPreferences();
       base.OnCreate(bundle);
       ExpandableListView.SetOnChildClickListener(this);
     }

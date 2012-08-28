@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 
@@ -32,9 +33,40 @@ namespace GPodder.PortaPodder.Activities {
 
       // create a list view and populate it with the devices
       ListView deviceListView = FindViewById<ListView>(Resource.SelectDevice.deviceListView);
-      deviceListView.Adapter = new ArrayAdapter<Device>(this, Android.Resource.Layout.SimpleListItem1);
+      ArrayAdapter<Device> adapter = new ArrayAdapter<Device>(this, Android.Resource.Layout.SimpleListItem1);
+      deviceListView.Adapter = adapter;
       deviceListView.ItemClick += new EventHandler<AdapterView.ItemClickEventArgs>(deviceSelected);
 
+      // add hooks for adding and removing devices
+      Server.DeviceRemoved += delegate(Device theDevice) { 
+        adapter.Remove(theDevice); 
+      };
+      Server.DeviceAdded += delegate(Device theDevice) { 
+        adapter.Add(theDevice); 
+      };
+    }
+
+    /// <summary>
+    /// Raises the create options menu event.
+    /// </summary>
+    /// <param name='menu'>The options menu in which you place your items.</param>
+    public override bool OnCreateOptionsMenu(IMenu menu) {
+      MenuInflater.Inflate(Resource.Menu.devices, menu);
+      return true;
+    }
+
+    /// <summary>
+    /// Derived classes should call through to the base class for it to perform the default menu handling.
+    /// </summary>
+    /// <param name='item'>The menu item that was selected.</param>
+    public override bool OnOptionsItemSelected(IMenuItem item) {
+      switch(item.ItemId) {
+      case Resource.Id.subscription:
+        Server.GetDevicesFromServer();
+        return true;
+      default:
+        return base.OnOptionsItemSelected(item);
+      }
     }
 
     /// <summary>
@@ -48,8 +80,6 @@ namespace GPodder.PortaPodder.Activities {
         StartActivity(typeof(Authentication));
         return;
       }
-
-      // check to see if there is already a device selected
 
       // if there is only one device, then we need to auto select it!
       string[] ids = Server.GetDevicesIds();

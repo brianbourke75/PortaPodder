@@ -71,6 +71,11 @@ namespace GPodder.DataStructures {
     /// </summary>
     private static List<DeviceUpdatedMethod> deviceRemovedCallbacks = new List<DeviceUpdatedMethod>();
 
+    /// <summary>
+    /// The device removed callbacks.
+    /// </summary>
+    private static List<DeviceUpdatedMethod> selectedDeviceChangedCallbacks = new List<DeviceUpdatedMethod>();
+
     ///<summary>
     /// this defines a method callback to be used when devices are updated
     /// </summary>
@@ -139,7 +144,13 @@ namespace GPodder.DataStructures {
         return selectedDevice;
       }
       set {
-        selectedDevice = value;
+        if(selectedDevice != value){
+          selectedDevice = value;
+
+          foreach(DeviceUpdatedMethod callback in selectedDeviceChangedCallbacks){
+            callback(selectedDevice);
+          }
+        }
       }
     }
 
@@ -158,12 +169,8 @@ namespace GPodder.DataStructures {
       set {
         // only do this if the user is different
         if (connectedUser != value) {
-
           // set the user and then reset all of it's dependencies
           connectedUser = value;
-          if (connectedUser != null) {
-            devices = null;
-          }
         }
       }
     }
@@ -171,6 +178,20 @@ namespace GPodder.DataStructures {
     #endregion
     
     #region events
+
+    /// <summary>
+    /// event for when the selected device is updated
+    /// </summary>
+    public static event DeviceUpdatedMethod SelectedDeviceChanged{
+      add {
+        if(!selectedDeviceChangedCallbacks.Contains(value)){
+          selectedDeviceChangedCallbacks.Add(value);
+        }
+      }
+      remove {
+        selectedDeviceChangedCallbacks.Remove(value);
+      }
+    }
 
     /// <summary>
     /// Occurs when devices are added.
@@ -300,15 +321,16 @@ namespace GPodder.DataStructures {
     /// Initializes a new instance of the <see cref="GPodder.Server"/> class.
     /// </summary>
     /// <param name='devices'>Devices.</param>
-    public static void Startup(List<Device> devices){
+    public static void Startup(List<Device> devices,string selectedDeviceId){
       // do this without triggering any hooks
-      devices.AddRange(devices);
+      Server.devices.AddRange(devices);
+      Server.selectedDevice = GetDevice(selectedDeviceId);
     }
 
     /// <summary>
     /// Pulls the devices from server.
     /// </summary>
-    public static void SyncDevicesFromServer() {
+    public static void GetDevicesFromServer() {
       // if there is no connected user this is an error condition
       if(ConnectedUser == null) {
         throw new Exception("Cannot get devices without a user");

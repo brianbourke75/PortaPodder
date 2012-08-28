@@ -31,6 +31,11 @@ namespace GPodder.PortaPodder {
     public const string KEY_PASSWORD = "password";
 
     /// <summary>
+    /// The selected device preference key
+    /// </summary>
+    public const string KEY_SELECTED_DEVICE = "device";
+
+    /// <summary>
     /// Say that 10 times real fast!
     /// </summary>
     private const string PREFERENCES_NAME = "EncryptedPortaPodderPreferences";
@@ -38,7 +43,7 @@ namespace GPodder.PortaPodder {
     /// <summary>
     /// The unpublicized stuff... shhhh!
     /// </summary>
-    private const string SEKRIT = "p00pd0ggy";
+    private const string CEKRIT = "p00pd0ggy";
 
     /// <summary>
     /// The opposite of the peppa for the encryption
@@ -124,7 +129,7 @@ namespace GPodder.PortaPodder {
     /// <param name='key'>The name of the preference to retrieve.</param>
     /// <param name='defValue'>Value to return if this preference does not exist.</param>
     /// <returns>The string.</returns>
-    public string GetString(string key, string defValue) {
+    public string GetString(string key, string defValue = "") {
       string v = child.GetString(key, null);
       return v != null ? Decrypt(v) : defValue;
     }
@@ -168,7 +173,7 @@ namespace GPodder.PortaPodder {
 
       try {
         // generate the key from the shared secret and the salt
-        Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(SEKRIT, yummy);
+        Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(CEKRIT, yummy);
 
         // Create a RijndaelManaged object
         aesAlg = new RijndaelManaged();
@@ -221,7 +226,7 @@ namespace GPodder.PortaPodder {
 
       try {
         // generate the key from the shared secret and the salt
-        Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(SEKRIT, yummy);
+        Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(CEKRIT, yummy);
 
         // Create the streams used for decryption.                
         byte[] bytes = Convert.FromBase64String(value);
