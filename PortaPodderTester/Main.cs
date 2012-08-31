@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using GPodder;
+using GPodder.DataStructures;
 using Newtonsoft.Json;
 
 namespace PortaPodderTester {
@@ -26,10 +26,14 @@ namespace PortaPodderTester {
         WriteLine("Password for brianbourke75");
         Server.ConnectedUser = new User("brianbourke75", ReadPassword());
 
+        Server.GetDevicesFromServer();
+
         DisplayDevices();
 
         // select an arbitrary device
-        Server.SelectedDevice = Server.Devices[Server.Devices.Count - 1];
+        Server.SelectedDevice = Server.GetDevice(Server.GetDevicesIds()[0]);
+
+        Server.UpdateForDevice();
 
         DisplaySubscriptions();
 
@@ -60,13 +64,14 @@ namespace PortaPodderTester {
     /// </summary>
     public static void DisplayDevices() {
       WriteLine("---Getting Devices---"); ;
-      if (Server.Devices.Count == 0) {
+      if (Server.GetDevicesIds().Length == 0) {
         WriteLine("No devices found!");
         return;
       }
 
       // write out all of the 
-      foreach (Device device in Server.Devices) {
+      foreach (string deviceId in Server.GetDevicesIds()) {
+        Device device = Server.GetDevice(deviceId);
         WriteLine("ID: " + device.Id);
         WriteLine("Caption: " + device.Caption);
         WriteLine("Type: " + device.Type);

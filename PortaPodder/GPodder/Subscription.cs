@@ -14,6 +14,11 @@ namespace GPodder.DataStructures {
     #region members
 
     /// <summary>
+    /// The name of the subscriptions table
+    /// </summary>
+    public const string TABLE_NAME = "subscriptions";
+
+    /// <summary>
     /// The episodes which belong to this subscription
     /// </summary>
     private List<Episode> shows = null;
@@ -98,7 +103,7 @@ namespace GPodder.DataStructures {
     /// </summary>
     public const string COL_SCALED_LOGO_URL = "scaled_logo_url";
 
-    #endregion
+#endregion
  
     #region construction
 

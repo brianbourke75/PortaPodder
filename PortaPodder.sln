@@ -9,17 +9,12 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-		Debug Fake|Any CPU = Debug Fake|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4EC15FDF-2AFE-41BF-957C-CAF30F9B5CB7}.Debug Fake|Any CPU.ActiveCfg = Debug Fake|Any CPU
-		{4EC15FDF-2AFE-41BF-957C-CAF30F9B5CB7}.Debug Fake|Any CPU.Build.0 = Debug Fake|Any CPU
 		{4EC15FDF-2AFE-41BF-957C-CAF30F9B5CB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4EC15FDF-2AFE-41BF-957C-CAF30F9B5CB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4EC15FDF-2AFE-41BF-957C-CAF30F9B5CB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4EC15FDF-2AFE-41BF-957C-CAF30F9B5CB7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E7A91710-2D33-4792-BD3A-BC89E69F02A1}.Debug Fake|Any CPU.ActiveCfg = Debug Fake|Any CPU
-		{E7A91710-2D33-4792-BD3A-BC89E69F02A1}.Debug Fake|Any CPU.Build.0 = Debug Fake|Any CPU
 		{E7A91710-2D33-4792-BD3A-BC89E69F02A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E7A91710-2D33-4792-BD3A-BC89E69F02A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7A91710-2D33-4792-BD3A-BC89E69F02A1}.Release|Any CPU.ActiveCfg = Release|Any CPU

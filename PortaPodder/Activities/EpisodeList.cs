@@ -36,7 +36,7 @@ namespace GPodder.PortaPodder.Activities {
     /// <summary>
     /// The expandable adapter.
     /// </summary>
-    IExpandableListAdapter expandableAdapter;
+    SimpleExpandableListAdapter expandableAdapter = null;
 
     /// <summary>
     /// The name of the name text view in the subscription and episode groups
@@ -49,12 +49,123 @@ namespace GPodder.PortaPodder.Activities {
     private const string RELEASED_TEXT_VIEW = "RELEASED";
 
     /// <summary>
+    /// The group data.
+    /// </summary>
+    JavaList<IDictionary<string, object>> subscriptionList = new JavaList<IDictionary<string, object>>();
+
+    /// <summary>
+    /// The child data.
+    /// </summary>
+    JavaList<IList<IDictionary<string, object>>> episodeList = new JavaList<IList<IDictionary<string, object>>>();
+
+    /// <summary>
     /// Raises the create event.
     /// </summary>
     /// <param name='bundle'>Bundle.</param>
     protected override void OnCreate(Bundle bundle) {
       base.OnCreate(bundle);
       ExpandableListView.SetOnChildClickListener(this);
+      expandableAdapter = new SimpleExpandableListAdapter(this, subscriptionList, Android.Resource.Layout.SimpleExpandableListItem1, new string[] { NAME_TEXT_VIEW }, new int[] { Android.Resource.Id.Text1 }, episodeList, Android.Resource.Layout.TwoLineListItem, new string[] { NAME_TEXT_VIEW, RELEASED_TEXT_VIEW }, new int[] {Android.Resource.Id.Text1, Android.Resource.Id.Text2 });
+      SetListAdapter(expandableAdapter);
+
+      // add all pre-existing episodes
+      foreach(Episode episode in Server.Episodes) {
+        addEpisodeUI(episode);
+      }
+      expandableAdapter.NotifyDataSetChanged();
+      // add the hook for adding episodes
+      Server.EpisodeAdded += delegate(Episode episode) {
+        addEpisodeUI(episode);
+        expandableAdapter.NotifyDataSetChanged();
+      };
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GPodder.PortaPodder.Activities.EpisodeList"/> class.
+    /// </summary>
+    /// <param name='episode'>Episode.</param>
+    private void addEpisodeUI(Episode episode) {
+      try {
+        // first make sure that the subscription UI is there
+        IDictionary<string, object> subscriptionGroup = GetSubscriptionList(episode.PodcastTitle);
+        if(subscriptionGroup == null) {
+          addSubscriptionUI(episode.PodcastTitle);
+          subscriptionGroup = GetSubscriptionList(episode.PodcastTitle);
+        }
+
+        // now add children
+        // look up where the subscription list is in the group data and reuse that index in the child group
+        int groupIndex = subscriptionList.IndexOf(subscriptionGroup);
+        IList<IDictionary<string, object>> selEpisodeList = episodeList[groupIndex];
+        IDictionary<string, object> episodeItems = GetEpisodeItems(selEpisodeList, episode);
+        if(episodeItems == null) {
+          episodeItems = new JavaDictionary<string, object>();
+          // assert that there is a new lookup location for the episode which we will then populate with some GUI data
+          if(selEpisodeList.Count == 0){
+            selEpisodeList.Add(episodeItems);
+          }
+          else{
+            for(int ci = 0 ; ci < selEpisodeList.Count ; ci++){
+              if(DateTime.Parse(selEpisodeList[ci][RELEASED_TEXT_VIEW].ToString()).CompareTo(episode.Released) < 0){
+                selEpisodeList.Insert(ci, episodeItems);
+                break;
+              }
+            }
+          }
+        }
+        if(episodeItems.Count > 0){
+          episodeItems.Clear();
+        }
+
+        episodeItems.Add(NAME_TEXT_VIEW, episode.Title);
+        episodeItems.Add(RELEASED_TEXT_VIEW, episode.Released.ToString());
+      }
+      catch(Exception exc) {
+        throw new Exception("Failed to add episode " + episode.Title + " to UI", exc);
+      }
+    }
+
+    /// <summary>
+    /// Adds the subscription user interface add.
+    /// </summary>
+    /// <param name='subscription'>Subscription.</param>
+    private void addSubscriptionUI(string podcastTitle) {
+      JavaDictionary<string, object> subLookup = new JavaDictionary<string, object>();
+      subLookup.Add(NAME_TEXT_VIEW, podcastTitle);
+      subscriptionList.Add(subLookup);
+
+      // get the index of the subscription and insert the subscription at the index
+      int subscriptionIndex = subscriptionList.IndexOf(subLookup);
+      episodeList.Insert(subscriptionIndex, new JavaList<IDictionary<string, object>>());
+    }
+
+    /// <summary>
+    /// Gets the episode list.
+    /// </summary>
+    /// <returns>The episode list.</returns>
+    /// <param name='groupIndex'>Group index.</param>
+    /// <param name='episode'>Episode.</param>
+    private IDictionary<string, object> GetEpisodeItems(IList<IDictionary<string, object>> selEpisodeList, Episode episode) {
+      foreach(IDictionary<string, object> list in selEpisodeList) {
+        if(list.Keys.Contains(NAME_TEXT_VIEW) && list[NAME_TEXT_VIEW].ToString() == episode.Title){
+          return list;
+        }
+      }
+      return null;
+    }
+
+    /// <summary>
+    /// Gets the subscription list.
+    /// </summary>
+    /// <returns>The subscription list.</returns>
+    /// <param name='subscription'> Subscription.</param>
+    private IDictionary<string, object> GetSubscriptionList(string podcastTitle) {
+      foreach(IDictionary<string, object> subLookup in subscriptionList) {
+        if(subLookup[NAME_TEXT_VIEW].ToString() == podcastTitle){
+          return subLookup;
+        }
+      }
+      return null;
     }
 
     /// <summary>
@@ -97,6 +208,9 @@ namespace GPodder.PortaPodder.Activities {
       case Resource.Id.subscription:
         StartActivity(new Intent(this, typeof(SubscriptionInteraction)));
         return true;
+      case Resource.Id.Refresh:
+        Server.UpdateForDevice();
+        return true;
       default:
         return base.OnOptionsItemSelected(item);
       }
@@ -113,33 +227,6 @@ namespace GPodder.PortaPodder.Activities {
         // if the preferences does not contain
         StartActivity(typeof(SelectDevice));
         return;
-      }
-
-      if(ExpandableListAdapter == null){
-        // populate the groups used to create the adapter
-        using(var groupData = new JavaList<IDictionary<string, object>> ())
-        using(var childData = new JavaList<IList<IDictionary<string, object>>> ()) {
-          foreach(Subscription subscription in Server.Subcriptions) {
-            using(var curGroupMap = new JavaDictionary<string, object>()) {
-              groupData.Add(curGroupMap);
-              curGroupMap.Add(NAME_TEXT_VIEW, subscription.Title);
-              //curGroupMap.Add(IsEven, (i % 2 == 0) ? "This group is even" : "This group is odd");
-              using(var children = new JavaList<IDictionary<string, object>> ()) {
-                foreach(Episode episode in subscription.Shows) {
-                  using(var curChildMap = new JavaDictionary<string, object> ()) {
-                    children.Add(curChildMap);
-                    curChildMap.Add(NAME_TEXT_VIEW, episode.Title);
-                    curChildMap.Add(RELEASED_TEXT_VIEW, episode.Released.ToShortDateString());
-                  }
-                }
-                childData.Add(children);
-              }
-            }
-          }
-          // Set up our adapter
-          expandableAdapter = new SimpleExpandableListAdapter(this, groupData, Android.Resource.Layout.SimpleExpandableListItem1, new string[] { NAME_TEXT_VIEW }, new int[] { Android.Resource.Id.Text1 }, childData, Android.Resource.Layout.SimpleExpandableListItem2, new string[] { NAME_TEXT_VIEW, RELEASED_TEXT_VIEW }, new int[] { Android.Resource.Id.Text1, Android.Resource.Id.Text2 } );
-          SetListAdapter(expandableAdapter);
-        }
       }
     }
   }

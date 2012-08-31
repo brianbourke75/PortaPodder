@@ -40,6 +40,11 @@ namespace GPodder.DataStructures {
     #region members
 
     /// <summary>
+    /// The name of the episodes table in databases
+    /// </summary>
+    public const string TABLE_NAME = "episodes";
+
+    /// <summary>
     /// The parent.
     /// </summary>
     private Subscription parent = null;

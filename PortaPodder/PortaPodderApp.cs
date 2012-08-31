@@ -58,17 +58,16 @@ namespace GPodder.PortaPodder {
 
       // get a list of devices from the database
       List<Device> storedDevices = datasource.GetAllDevices();
+      List<Subscription> subscriptions = datasource.GetSubscriptions();
+      List<Episode> episodes = datasource.GetEpisodes();
       string selectedDevice = prefs.GetString(EncryptedPreferences.KEY_SELECTED_DEVICE, string.Empty);
-      Server.Startup(storedDevices, selectedDevice);
+
+      // setup the server from the database
+      Server.Initialize(storedDevices, selectedDevice, subscriptions, episodes);
 
       // add hooks for removing and adding devices
       Server.DeviceAdded += delegate(Device theDevice) {
-        try{
-          datasource.InsertDevice(theDevice);
-        }
-        catch(Exception exc){
-          Console.WriteLine(exc.Message);
-        }
+        datasource.InsertDevice(theDevice);
       };
 
       Server.DeviceRemoved += delegate(Device theDevice) {
@@ -81,6 +80,32 @@ namespace GPodder.PortaPodder {
         editor.PutString(EncryptedPreferences.KEY_SELECTED_DEVICE, theDevice != null ? theDevice.Id : string.Empty);
         editor.Commit();
       };
+
+      // hooks for episodes
+      Server.EpisodeAdded += delegate(Episode episode) {
+        datasource.InsertEpisode(episode);
+      };
+      Server.EpisodeRemoved += delegate(Episode episode) {
+        datasource.DeleteEpisode(episode);
+      };
+
+      // hooks for subscriptions
+      Server.SubscriptionAdded += delegate(Subscription subscription) {
+        datasource.InsertSubscription(subscription);
+      };
+      Server.SubscriptionRemoved += delegate(Subscription subscription) {
+        datasource.DeleteSubscription(subscription);
+      };
+
+      Server.LogMessage += new Server.LogMethod(LogMessage);
+    }
+
+    /// <summary>
+    /// Logs the message.
+    /// </summary>
+    /// <param name='message'>Message.</param>
+    public static void LogMessage(string message){
+      Android.Util.Log.Debug("PortaPoddder", message);
     }
 
     /// <summary>
