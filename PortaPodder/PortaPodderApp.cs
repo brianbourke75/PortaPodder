@@ -67,7 +67,7 @@ namespace GPodder.PortaPodder {
 
       // add hooks for removing and adding devices
       Server.DeviceAdded += delegate(Device theDevice) {
-        datasource.InsertDevice(theDevice);
+        datasource.InsertOrUpdate(theDevice);
       };
 
       Server.DeviceRemoved += delegate(Device theDevice) {
@@ -83,7 +83,7 @@ namespace GPodder.PortaPodder {
 
       // hooks for episodes
       Server.EpisodeAdded += delegate(Episode episode) {
-        datasource.InsertEpisode(episode);
+        datasource.InsertOrUpdate(episode);
       };
       Server.EpisodeRemoved += delegate(Episode episode) {
         datasource.DeleteEpisode(episode);
@@ -91,7 +91,7 @@ namespace GPodder.PortaPodder {
 
       // hooks for subscriptions
       Server.SubscriptionAdded += delegate(Subscription subscription) {
-        datasource.InsertSubscription(subscription);
+        datasource.InsertOrUpdate(subscription);
       };
       Server.SubscriptionRemoved += delegate(Subscription subscription) {
         datasource.DeleteSubscription(subscription);
