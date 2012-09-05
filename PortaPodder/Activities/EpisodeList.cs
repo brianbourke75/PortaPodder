@@ -22,7 +22,6 @@ namespace GPodder.PortaPodder.Activities {
   [Activity (Label = "PortaPodder", MainLauncher = true)]
   public class EpisodeList : ExpandableListActivity {
 
-
     /// <summary>
     /// The key for the selected device in the prefernces
     /// </summary>
@@ -177,8 +176,9 @@ namespace GPodder.PortaPodder.Activities {
     /// <param name='childPosition'>The child position within the group</param>
     /// <param name='id'>The row id of the child that was clicked</param>
     public override bool OnChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-      if(v is TwoLineListItem){
+      if(v is ViewGroup){
         TextView tv = v.FindViewById<TextView>(Android.Resource.Id.Text1);
+
         foreach(Episode episode in Server.Episodes){
           if(episode.Title == tv.Text){
             SelectedEpisode = episode;
@@ -210,6 +210,7 @@ namespace GPodder.PortaPodder.Activities {
         return true;
       case Resource.Id.Refresh:
         Server.UpdateForDevice();
+        Toast.MakeText(this, "Done updating.", ToastLength.Short).Show();
         return true;
       default:
         return base.OnOptionsItemSelected(item);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Newtonsoft.Json.Converters;
 
 namespace GPodder.DataStructures {
 
@@ -28,7 +29,7 @@ namespace GPodder.DataStructures {
     /// <summary>
     /// the datetime returned
     /// </summary>
-    private string timestamp = string.Empty;
+    private long timestamp = 0;
 
     /// <summary>
     /// Gets or sets the added subcriptions
@@ -73,7 +74,7 @@ namespace GPodder.DataStructures {
     /// Gets or sets the timestamp for the update
     /// </summary>
     [DataMember(Name = "timestamp")]
-    public string Timestamp {
+    public long Timestamp {
       get {
         return timestamp;
       }

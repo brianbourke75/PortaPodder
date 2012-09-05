@@ -45,7 +45,18 @@ namespace GPodder.PortaPodder.Activities {
       FindViewById<Button>(Resource.EpisodeDetails.Stop).Click += stopPlaying;
       FindViewById<Button>(Resource.EpisodeDetails.SkipForwards).Click += skipForwards;
       FindViewById<Button>(Resource.EpisodeDetails.SkipBack).Click += skipBackwards;
+      FindViewById<Button>(Resource.EpisodeDetails.Toggle).Click += togglePlayed;
     }
+
+    /// <summary>
+    /// Toggles the played.
+    /// </summary>
+    /// <param name='sender'>Sender.</param>
+    /// <param name='e'>E.</param>
+    private void togglePlayed(object sender, EventArgs e) {
+      Server.PushUpdates(EpisodeList.SelectedEpisode);
+    }
+
 
     /// <summary>
     /// Skips the backwards.
@@ -96,7 +107,7 @@ namespace GPodder.PortaPodder.Activities {
       if(player == null) {
 
         // make sure the file exists on the file system
-        string fileLocation = getEpisodeLocation(EpisodeList.SelectedEpisode);
+        string fileLocation = PortaPodderDataSource.GetEpisodeLocation(EpisodeList.SelectedEpisode);
         Uri setupToPlay = new Uri(fileLocation);
         if(!File.Exists(fileLocation)) {
           return;
@@ -120,7 +131,7 @@ namespace GPodder.PortaPodder.Activities {
     /// <param name='sender'>Sender.</param>
     /// <param name='e'>E.</param>
     private void deletePodcastClicked(object sender, EventArgs e) {
-      string fileLocation = getEpisodeLocation(EpisodeList.SelectedEpisode);
+      string fileLocation = PortaPodderDataSource.GetEpisodeLocation(EpisodeList.SelectedEpisode);
       if(File.Exists(fileLocation)) {
         File.Delete(fileLocation);
       }
@@ -155,59 +166,10 @@ namespace GPodder.PortaPodder.Activities {
 
       // set the episode title
       FindViewById<TextView>(Resource.EpisodeDetails.DetailsText).Text = EpisodeList.SelectedEpisode.Title;
-      FindViewById<Button>(Resource.EpisodeDetails.Download).Enabled = !File.Exists(getEpisodeLocation(EpisodeList.SelectedEpisode));
+      FindViewById<Button>(Resource.EpisodeDetails.Download).Enabled = !File.Exists(PortaPodderDataSource.GetEpisodeLocation(EpisodeList.SelectedEpisode));
     }
 
-    /// <summary>
-    /// Gets the episode location.
-    /// </summary>
-    /// <param name="episode">The episode to get the path for</param>
-    /// <returns>The episode location.</returns>
-    public static string getEpisodeLocation(Episode episode){
-      char sep = Path.DirectorySeparatorChar;
-      string ext = Path.GetExtension(episode.Url.ToString());
-      string subscriptionFolder = FilenameFromTitle(episode.PodcastTitle);
-      string episdodeName = FilenameFromTitle(episode.Title);
-      string externalStorage = Android.OS.Environment.ExternalStorageDirectory.ToString();
-      string appName = "Podcasts";
-      return externalStorage + sep + appName + sep + subscriptionFolder + sep + episdodeName + ext;
-    }
 
-    /// <summary>
-    /// Makes the path name legal
-    /// </summary>
-    /// <returns>The legal path
-    /// </returns>
-    /// <param name='path'>Path.</param>
-    public static string FilenameFromTitle(string title) {
-      // first trim the raw string
-      string safe = title.Trim();
-
-      // replace spaces with hyphens
-      safe = safe.Replace(" ", "-").ToLower();
-
-      // replace any 'double spaces' with singles
-      if(safe.IndexOf("--") > -1) {
-        while(safe.IndexOf("--") > -1) {
-          safe = safe.Replace("--", "-");
-        }
-      }
-
-      // trim out illegal characters
-      safe = System.Text.RegularExpressions.Regex.Replace(safe, "[^a-z0-9\\-]", "");
-
-      // trim the length
-      if(safe.Length > 50) {
-        safe = safe.Substring(0, 49);
-      }
-
-      // clean the beginning and end of the filename
-      char[] replace = {'-','.'};
-      safe = safe.TrimStart(replace);
-      safe = safe.TrimEnd(replace);
-
-      return safe;
-    }
   }
 }
 

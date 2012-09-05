@@ -47,7 +47,7 @@ namespace GPodder.PortaPodder {
     /// <param name='native_parms'>Native_parms.</param>
     protected override string RunInBackground(params string[] values) {
       // we will read data via the response stream
-      string outputPath = EpisodeDetails.getEpisodeLocation(episode);
+      string outputPath = PortaPodderDataSource.GetEpisodeLocation(episode);
 
       // check to see if the output path
       if(File.Exists(outputPath)) {

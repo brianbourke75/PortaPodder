@@ -143,6 +143,7 @@ namespace GPodder.DataStructures {
 
     #region properties
 
+
     /// <summary>
     /// Gets the parent.
     /// </summary>

@@ -56,20 +56,20 @@ namespace GPodder.PortaPodder {
       // the datasource
       datasource = new PortaPodderDataSource();
 
-      // get a list of devices from the database
+      // get a list of initialization parameters from the prefernces and database
       List<Device> storedDevices = datasource.GetAllDevices();
       List<Subscription> subscriptions = datasource.GetSubscriptions();
       List<Episode> episodes = datasource.GetEpisodes();
       string selectedDevice = prefs.GetString(EncryptedPreferences.KEY_SELECTED_DEVICE, string.Empty);
+      long lastUpdated = prefs.GetLong(EncryptedPreferences.KEY_LAST_UPDATED, 0);
 
       // setup the server from the database
-      Server.Initialize(storedDevices, selectedDevice, subscriptions, episodes);
+      Server.Initialize(storedDevices, selectedDevice, subscriptions, episodes, lastUpdated);
 
       // add hooks for removing and adding devices
       Server.DeviceAdded += delegate(Device theDevice) {
         datasource.InsertOrUpdate(theDevice);
       };
-
       Server.DeviceRemoved += delegate(Device theDevice) {
         datasource.DeleteDevice(theDevice);
       };
@@ -97,7 +97,15 @@ namespace GPodder.PortaPodder {
         datasource.DeleteSubscription(subscription);
       };
 
+      // log the message
       Server.LogMessage += new Server.LogMethod(LogMessage);
+
+      // write the last updated time to the preferences
+      Server.UpdatedDateTime += delegate(long updated) {
+        ISharedPreferencesEditor editor = prefs.Edit();
+        editor.PutLong(EncryptedPreferences.KEY_LAST_UPDATED, updated);
+        editor.Commit();
+      };
     }
 
     /// <summary>

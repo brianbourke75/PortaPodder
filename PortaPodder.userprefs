@@ -1,15 +1,12 @@
 ﻿<Properties>
   <AuthorInfo Name="Brian Bourke-Martin" Email="brianbourke75@gmail.com" Copyright="Brian Bourke-Martin" Company="" Trademark="" />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="c:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\PortaPodderDataSource.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="PortaPodder\GPodder\Server.cs">
     <Files>
-      <File FileName="PortaPodder\Activities\EpisodeList.cs" Line="76" Column="42" />
-      <File FileName="c:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\PortaPodderDataSource.cs" Line="86" Column="108" />
-      <File FileName="c:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\PortaPodderApp.cs" Line="94" Column="1" />
-      <File FileName="c:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\GPodder\Server.cs" Line="415" Column="165" />
-      <File FileName="PortaPodder\GPodder\Subscription.cs" Line="232" Column="23" />
-      <File FileName="c:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodder\GPodder\Episode.cs" Line="12" Column="26" />
-      <File FileName="c:\Users\Brian.Bourke\Documents\Projects\PortaPodder\PortaPodderTester\Main.cs" Line="29" Column="39" />
+      <File FileName="PortaPodder\GPodder\Server.cs" Line="162" Column="1" />
+      <File FileName="PortaPodder\PortaPodderApp.cs" Line="116" Column="55" />
+      <File FileName="PortaPodder\EncryptedPreferences.cs" Line="39" Column="46" />
+      <File FileName="PortaPodder\PortaPodderDataSource.cs" Line="104" Column="22" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

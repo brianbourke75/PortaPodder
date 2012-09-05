@@ -36,12 +36,17 @@ namespace GPodder.PortaPodder {
     public const string KEY_SELECTED_DEVICE = "device";
 
     /// <summary>
+    /// The last time the items where updated
+    /// </summary>
+    public const string KEY_LAST_UPDATED = "lastUpdated";
+
+    /// <summary>
     /// Say that 10 times real fast!
     /// </summary>
     private const string PREFERENCES_NAME = "EncryptedPortaPodderPreferences";
 
     /// <summary>
-    /// The unpublicized stuff... shhhh!
+    /// just what you think it is
     /// </summary>
     private const string CEKRIT = "p00pd0ggy";
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -188,7 +189,13 @@ namespace GPodder.PortaPodder {
     /// <param name='episode'>Episode.</param>
     public void DeleteEpisode(Episode episode) {
       try {
-        dbHelper.WritableDatabase.Delete(Episode.TABLE_NAME, Episode.COL_URL + " =?", new string[]{episode.Url.ToString()});
+        dbHelper.WritableDatabase.Delete(Episode.TABLE_NAME, Episode.COL_URL + "=?", new string[]{episode.Url.ToString()});
+
+        // now try to delete the file from the file system
+        string path = GetEpisodeLocation(episode);
+        if(File.Exists(path)){
+          File.Delete(path);
+        }
       }
       catch(Exception exc) {
         throw new Exception("Could not delete episode " + episode.Url, exc);
@@ -397,6 +404,21 @@ namespace GPodder.PortaPodder {
       catch {
         return null;
       }
+    }
+
+    /// <summary>
+    /// Gets the episode location.
+    /// </summary>
+    /// <param name="episode">The episode to get the path for</param>
+    /// <returns>The episode location.</returns>
+    public static string GetEpisodeLocation(Episode episode){
+      char sep = Path.DirectorySeparatorChar;
+      string ext = Path.GetExtension(episode.Url.ToString());
+      string subscriptionFolder = episode.Parent.Filename;
+      string episodeName = episode.Filename;
+      string externalStorage = Android.OS.Environment.ExternalStorageDirectory.ToString();
+      string appName = "Podcasts";
+      return externalStorage + sep + appName + sep + subscriptionFolder + sep + episodeName + ext;
     }
   }
 }

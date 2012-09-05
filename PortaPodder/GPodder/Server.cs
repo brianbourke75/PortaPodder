@@ -17,19 +17,24 @@ namespace GPodder.DataStructures {
     #region members
 
     /// <summary>
+    /// The last update.
+    /// </summary>
+    private static long lastUpdate = 0;
+
+    /// <summary>
     /// The gpodder uri
     /// </summary>
-    public static readonly Uri GPodderLocation = new Uri(@"http://gpodder.net/");
+    public static readonly Uri GPodderLocation = new Uri(@"http://gpodder.net");
 
     /// <summary>
     /// The GPodder API directory
     /// </summary>
-    public const string GPodderAPI =  @"api/2/";
+    private const string GPodderAPI =  @"api/2/";
 
     /// <summary>
     /// The JSON extension.
     /// </summary>
-    public const string JSONExtension = ".json";
+    private const string JSONExtension = ".json";
 
     /// <summary>
     /// My cache for network credentials
@@ -101,6 +106,11 @@ namespace GPodder.DataStructures {
     /// </summary>
     private static List<LogMethod> loggingCallbacks = new List<LogMethod>();
 
+    /// <summary>
+    /// The logging callbacks.
+    /// </summary>
+    private static List<UpdatedDateTimeMethod> updatedCallbacks = new List<UpdatedDateTimeMethod>();
+
     ///<summary>
     /// this defines a method callback to be used when devices are updated
     /// </summary>
@@ -116,10 +126,15 @@ namespace GPodder.DataStructures {
     /// </summary>
     public delegate void EpisodeUpdatedMethod(Episode episode);
 
-    ///<summary>
+    /// <summary>
     /// definition for methods to be called back for logging
     /// </summary>
     public delegate void LogMethod(string message);
+
+    /// <summary>
+    /// definition for methods to be called back for last update changed
+    /// </summary>
+    public delegate void UpdatedDateTimeMethod(long updated);
 
     #endregion
 
@@ -159,6 +174,12 @@ namespace GPodder.DataStructures {
           foreach(DeviceUpdatedMethod callback in selectedDeviceChangedCallbacks){
             callback(selectedDevice);
           }
+
+          // reset the last updated time for the device
+          lastUpdate = 0;
+          foreach(UpdatedDateTimeMethod callback in updatedCallbacks){
+            callback(lastUpdate);
+          }
         }
       }
     }
@@ -182,6 +203,20 @@ namespace GPodder.DataStructures {
     #endregion
     
     #region events
+
+    /// <summary>
+    /// Occurs when updated date/time changed
+    /// </summary>
+    public static event UpdatedDateTimeMethod UpdatedDateTime {
+      add {
+        if(!updatedCallbacks.Contains(value)) {
+          updatedCallbacks.Add(value);
+        }
+      }
+      remove {
+        updatedCallbacks.Remove(value);
+      }
+    }
 
     /// <summary>
     /// Occurs when log message.
@@ -315,7 +350,7 @@ namespace GPodder.DataStructures {
     /// <param name='devices'>Devices.</param>
     /// <param name='subscriptions'></param>
     /// <param name='episodes'></param>
-    public static void Initialize(List<Device> devices, string selectedDeviceId, List<Subscription> subscriptions, List<Episode> episodes) {
+    public static void Initialize(List<Device> devices, string selectedDeviceId, List<Subscription> subscriptions, List<Episode> episodes, long lastUpdate) {
       logMessage("Intializing data");
 
       // do this without triggering any hooks
@@ -325,7 +360,7 @@ namespace GPodder.DataStructures {
       }
       Server.subscriptions.AddRange(subscriptions);
       Server.episodes.AddRange(episodes);
-
+      Server.lastUpdate = lastUpdate;
       logMessage("Done initializing data");
     }
 
@@ -341,7 +376,7 @@ namespace GPodder.DataStructures {
       }
 
       // get the response from the server
-      string t = getResponse(new Uri(Server.GPodderLocation + Server.GPodderAPI + @"devices/" + ConnectedUser.Username + JSONExtension));
+      string t = getResponseString(new Uri(Server.GPodderLocation + Server.GPodderAPI + @"devices/" + ConnectedUser.Username + JSONExtension));
 
       // parse the json into a list of devices
       List<Device> serverList = JsonConvert.DeserializeObject<List<Device>>(t);
@@ -403,17 +438,28 @@ namespace GPodder.DataStructures {
       logMessage("Getting data from Server for selected device");
 
       // if there is no connected user this is an error condition
-      if (ConnectedUser == null) {
+      if(ConnectedUser == null) {
         throw new Exception("Cannot get episodes without a user");
       }
       // if there is no selected devcie this is an error condition
-      if (SelectedDevice == null) {
+      if(SelectedDevice == null) {
         throw new Exception("Cannot get episodes without a device");
       }
 
       // get a list of updates and parse them
-      string jsonString = getResponse(new Uri(GPodderLocation + "/api/2/updates/" + connectedUser.Username + "/" + selectedDevice.Id + JSONExtension + "?since=0"));
+      string jsonString = getResponseString(new Uri(GPodderLocation + "/api/2/updates/" + connectedUser.Username + "/" + selectedDevice.Id + JSONExtension + "?since=" + lastUpdate));
       DeviceUpdates deviceUpdates = JsonConvert.DeserializeObject<DeviceUpdates>(jsonString);
+
+      // mark this as the time it was last updated
+      lastUpdate = deviceUpdates.Timestamp;
+      foreach(UpdatedDateTimeMethod callback in updatedCallbacks) {
+        try{
+          callback(lastUpdate);
+        }
+        catch(Exception exc){
+          logMessage(exc.Message);
+        }
+      }
 
       // perform the updates specified
       foreach (Subscription added in deviceUpdates.Add) {
@@ -432,7 +478,14 @@ namespace GPodder.DataStructures {
         }
       }
       foreach (Subscription removed in deviceUpdates.Remove) {
+        // prior to removing the subscription, we have to also remove all of the child episodes
+        foreach(Episode episode in episodes){
+          if(episode.Parent == removed){
+            removeEpisode(episode);
+          }
+        }
         subscriptions.Remove(removed);
+
         // trigger hooks
         foreach(SubscriptionUpdatedMethod callback in subsciptionRemovedCallbacks){
           try{
@@ -448,17 +501,7 @@ namespace GPodder.DataStructures {
         // when we do this we are just going to remove the episode and then readd it
         // in order to do the full update
         if (episodes.Contains(updated)) {
-          episodes.Remove(updated);
-
-          // trigger hooks
-          foreach(EpisodeUpdatedMethod callback in episodeRemovedCallbacks){
-            try{
-              callback(updated);
-            }
-            catch(Exception exc){
-              logMessage(exc.Message);
-            }
-          }
+          removeEpisode(updated);
         }
         episodes.Add(updated);
         // trigger hooks
@@ -482,6 +525,45 @@ namespace GPodder.DataStructures {
 
       logMessage("Done getting devices from Server");
     }
+
+    /// <summary>
+    /// Removes the episode.
+    /// </summary>
+    /// <param name='episode'>Episode.</param>
+    private static void removeEpisode(Episode episode) {
+      episodes.Remove(episode);
+      
+      // trigger hooks
+      foreach(EpisodeUpdatedMethod callback in episodeRemovedCallbacks){
+        try{
+          callback(episode);
+        }
+        catch(Exception exc){
+          logMessage(exc.Message);
+        }
+      }
+    }
+
+    /// <summary>
+    /// Pushs the updates.
+    /// </summary>
+    /// <param name='episode'>Episode.</param>
+    public static void PushUpdates(Episode episode) {
+      string json = JsonConvert.SerializeObject(episode);
+      Uri location = new Uri(GPodderLocation + "/api/2/episodes/" + connectedUser.Username + JSONExtension);
+      postData(location, GetBytes(json));
+    }
+
+    /// <summary>
+    /// Gets the bytes.
+    /// </summary>
+    /// <returns>The bytes.</returns>
+    /// <param name='str'>String.</param>
+    private static byte[] GetBytes(string str){
+      byte[] bytes = new byte[str.Length * sizeof(char)];
+      System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+      return bytes;
+    }
   
     /// <summary>
     /// Finds the by title.
@@ -501,18 +583,42 @@ namespace GPodder.DataStructures {
     /// </summary>
     /// <param name="location"></param>
     /// <returns>The web request.</returns>
-    private static string getResponse(Uri location) {
+    private static string getResponseString(Uri location) {
+      // create the web request
+      WebRequest wr = makeRequest(location);
+      WebResponse response = wr.GetResponse();
+      return new StreamReader (response.GetResponseStream ()).ReadToEnd ();
+    }
+
+    /// <summary>
+    /// Posts the data.
+    /// </summary>
+    /// <param name="location">Location.</param>
+    /// <param name="data">Data.</param>
+    private static void postData(Uri location, byte[] data) {
+      WebRequest request = makeRequest(location);
+      request.Method = "POST";
+      request.ContentLength = data.Length;
+      using(Stream stream = request.GetRequestStream()) {
+        stream.Write(data, 0, data.Length);
+      }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GPodder.DataStructures.Server"/> class.
+    /// </summary>
+    /// <param name='location'>Location.</param>
+    private static WebRequest makeRequest(Uri location){
       // create the credential cache if it has not been
       if (myCache == null) {
         myCache = new CredentialCache();
         myCache.Add (GPodderLocation, "Basic", new NetworkCredential (connectedUser.Username, connectedUser.Password));
       }
-
+      
       // create the web request
       WebRequest wr = WebRequest.Create(location);
       wr.Credentials = myCache;
-      WebResponse response = wr.GetResponse ();
-      return new StreamReader (response.GetResponseStream ()).ReadToEnd ();
+      return wr;
     }
 
     #endregion
