@@ -1,12 +1,9 @@
 ﻿<Properties>
   <AuthorInfo Name="Brian Bourke-Martin" Email="brianbourke75@gmail.com" Copyright="Brian Bourke-Martin" Company="" Trademark="" />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="PortaPodder\GPodder\Server.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="PortaPodder\Activities\Authentication.cs">
     <Files>
-      <File FileName="PortaPodder\GPodder\Server.cs" Line="162" Column="1" />
-      <File FileName="PortaPodder\PortaPodderApp.cs" Line="116" Column="55" />
-      <File FileName="PortaPodder\EncryptedPreferences.cs" Line="39" Column="46" />
-      <File FileName="PortaPodder\PortaPodderDataSource.cs" Line="104" Column="22" />
+      <File FileName="PortaPodder\Activities\Authentication.cs" Line="141" Column="59" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

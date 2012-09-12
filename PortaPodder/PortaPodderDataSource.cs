@@ -73,12 +73,7 @@ namespace GPodder.PortaPodder {
     /// <param name='device'>Device.</param>
     public void Update(Device device) {
       try {
-        ContentValues values = new ContentValues();
-        values.Put(Device.COL_ID, device.Id);
-        values.Put(Device.COL_CAPTION, device.Caption);
-        values.Put(Device.COL_TYPE, device.Type.ToString());
-        values.Put(Device.COL_SUBSCRIPTIONS, device.Subscriptions);
-        dbHelper.WritableDatabase.Update(Device.TABLE_NAME, values, Device.COL_ID + " =?", new string[]{device.Id});
+        dbHelper.WritableDatabase.Update(Device.TABLE_NAME, createContentValues(device), Device.COL_ID + " =?", new string[]{device.Id});
       }
       catch(Exception exc) {
         throw new Exception("Failed to update device table for device " + device.Id, exc);
@@ -91,17 +86,26 @@ namespace GPodder.PortaPodder {
     /// <param name='device'>Device.</param>
     public void Insert(Device device){
       try{
-        ContentValues values = new ContentValues();
-        values.Put(Device.COL_ID, device.Id);
-        values.Put(Device.COL_CAPTION, device.Caption);
-        values.Put(Device.COL_TYPE, device.Type.ToString());
-        values.Put(Device.COL_SUBSCRIPTIONS, device.Subscriptions);
-        dbHelper.WritableDatabase.InsertOrThrow(Device.TABLE_NAME, null, values);
+        dbHelper.WritableDatabase.InsertOrThrow(Device.TABLE_NAME, null, createContentValues(device));
       }
       catch(Exception exc) {
         throw new Exception("Could not insert device " + device.Id, exc);
       }
       PortaPodderApp.LogMessage("Inserted the device " + device.Id);
+    }
+
+    /// <summary>
+    /// Creates the content values.
+    /// </summary>
+    /// <returns>The content values.</returns>
+    /// <param name='device'>Device.</param>
+    private ContentValues createContentValues(Device device) {
+      ContentValues values = new ContentValues();
+      values.Put(Device.COL_ID, device.Id);
+      values.Put(Device.COL_CAPTION, device.Caption);
+      values.Put(Device.COL_TYPE, device.Type.ToString());
+      values.Put(Device.COL_SUBSCRIPTIONS, device.Subscriptions);
+      return values;
     }
 
     /// <summary>
@@ -141,17 +145,7 @@ namespace GPodder.PortaPodder {
     /// <param name='episode'>Episode.</param>
     public void Update(Episode episode) {
       try{
-        ContentValues values = new ContentValues();
-        values.Put(Episode.COL_DESCRIPTION, episode.Description);
-        values.Put(Episode.COL_MYGPO_LINK, episode.MygpoLink != null ? episode.MygpoLink.ToString() : string.Empty);
-        values.Put(Episode.COL_PODCAST_TITLE, episode.PodcastTitle);
-        values.Put(Episode.COL_PODCAST_URL, episode.PodcastTitle != null ? episode.PodcastUrl.ToString() : string.Empty);
-        values.Put(Episode.COL_RELEASED, episode.Released.ToString());
-        values.Put(Episode.COL_STATUS, episode.Status.ToString());
-        values.Put(Episode.COL_TITLE, episode.Title);
-        values.Put(Episode.COL_URL, episode.Url != null ? episode.Url.ToString() : string.Empty);
-        values.Put(Episode.COL_WEBSITE, episode.Website != null ? episode.Website.ToString() : string.Empty);
-        dbHelper.WritableDatabase.Update(Episode.TABLE_NAME, values, Episode.COL_URL + "=?", new string[]{episode.Url.ToString()});
+        dbHelper.WritableDatabase.Update(Episode.TABLE_NAME, createContentValues(episode), Episode.COL_URL + "=?", new string[]{episode.Url.ToString()});
       }
       catch(Exception exc) {
         throw new Exception("Could not update episode " + episode.Url, exc);
@@ -165,22 +159,33 @@ namespace GPodder.PortaPodder {
     /// <param name='episode'>Episode.</param>
     public void Insert(Episode episode){
       try{
-        ContentValues values = new ContentValues();
-        values.Put(Episode.COL_DESCRIPTION, episode.Description);
-        values.Put(Episode.COL_MYGPO_LINK, episode.MygpoLink != null ? episode.MygpoLink.ToString() : string.Empty);
-        values.Put(Episode.COL_PODCAST_TITLE, episode.PodcastTitle);
-        values.Put(Episode.COL_PODCAST_URL, episode.PodcastTitle != null ? episode.PodcastUrl.ToString() : string.Empty);
-        values.Put(Episode.COL_RELEASED, episode.Released.ToString());
-        values.Put(Episode.COL_STATUS, episode.Status.ToString());
-        values.Put(Episode.COL_TITLE, episode.Title);
-        values.Put(Episode.COL_URL, episode.Url != null ? episode.Url.ToString() : string.Empty);
-        values.Put(Episode.COL_WEBSITE, episode.Website != null ? episode.Website.ToString() : string.Empty);
-        dbHelper.WritableDatabase.InsertOrThrow(Episode.TABLE_NAME, null, values);
+        dbHelper.WritableDatabase.InsertOrThrow(Episode.TABLE_NAME, null, createContentValues(episode));
       }
       catch(Exception exc) {
         throw new Exception("Could not insert episode " + episode.Url, exc);
       }
       PortaPodderApp.LogMessage("Inserted the episode " + episode.Url);
+    }
+
+    /// <summary>
+    /// Creates the content values.
+    /// </summary>
+    /// <returns>The content values.</returns>
+    /// <param name='episode'>Episode.</param>
+    private ContentValues createContentValues(Episode episode) {
+      ContentValues values = new ContentValues();
+      values.Put(Episode.COL_DESCRIPTION, episode.Description);
+      values.Put(Episode.COL_MYGPO_LINK, episode.MygpoLink != null ? episode.MygpoLink.ToString() : string.Empty);
+      values.Put(Episode.COL_PODCAST_TITLE, episode.PodcastTitle);
+      values.Put(Episode.COL_PODCAST_URL, episode.PodcastTitle != null ? episode.PodcastUrl.ToString() : string.Empty);
+      values.Put(Episode.COL_RELEASED, episode.Released.ToString());
+      values.Put(Episode.COL_STATUS, episode.Status.ToString());
+      values.Put(Episode.COL_TITLE, episode.Title);
+      values.Put(Episode.COL_URL, episode.Url != null ? episode.Url.ToString() : string.Empty);
+      values.Put(Episode.COL_WEBSITE, episode.Website != null ? episode.Website.ToString() : string.Empty);
+      values.Put(Episode.COL_PLAYER_POSITION, episode.PlayerPosition);
+      values.Put(Episode.COL_DURATION, episode.Duration);
+      return values;
     }
 
     /// <summary>
@@ -226,18 +231,7 @@ namespace GPodder.PortaPodder {
     /// <param name='sub'>Sub.</param>
     public void Insert(Subscription sub){
       try {
-        ContentValues values = new ContentValues();
-        values.Put(Subscription.COL_DESCRIPTION, sub.Description);
-        values.Put(Subscription.COL_LOGO_URL, sub.LogoUrl != null ? sub.LogoUrl.ToString() : string.Empty);
-        values.Put(Subscription.COL_MYGPO_LINK, sub.MygpoLink != null ? sub.MygpoLink.ToString() : string.Empty);
-        values.Put(Subscription.COL_POSITION_LAST_WEEK, sub.PositionLastWeek);
-        values.Put(Subscription.COL_SCALED_LOGO_URL, sub.ScaledLogoUrl != null ? sub.ScaledLogoUrl.ToString() : string.Empty);
-        values.Put(Subscription.COL_SUBSCRIBERS, sub.Subscribers);
-        values.Put(Subscription.COL_SUBSRIBERS_LAST_WEEK, sub.SubscribersLastWeek);
-        values.Put(Subscription.COL_TITLE, sub.Title);
-        values.Put(Subscription.COL_URL, sub.Url != null ? sub.Url.ToString() : string.Empty);
-        values.Put(Subscription.COL_WEBSITE, sub.Website != null ? sub.Website.ToString() : string.Empty);
-        dbHelper.WritableDatabase.InsertOrThrow(Subscription.TABLE_NAME, null, values);
+        dbHelper.WritableDatabase.InsertOrThrow(Subscription.TABLE_NAME, null, createContentValues(sub));
       }
       catch(Exception exc) {
         throw new Exception("Could not insert subscription " + sub.Title, exc);
@@ -251,24 +245,32 @@ namespace GPodder.PortaPodder {
     /// <param name='subscription'>Subscription.</param>
     public void Update(Subscription sub) {
       try {
-        ContentValues values = new ContentValues();
-        values.Put(Subscription.COL_DESCRIPTION, sub.Description);
-        values.Put(Subscription.COL_LOGO_URL, sub.LogoUrl != null ? sub.LogoUrl.ToString() : string.Empty);
-        values.Put(Subscription.COL_MYGPO_LINK, sub.MygpoLink != null ? sub.MygpoLink.ToString() : string.Empty);
-        values.Put(Subscription.COL_POSITION_LAST_WEEK, sub.PositionLastWeek);
-        values.Put(Subscription.COL_SCALED_LOGO_URL, sub.ScaledLogoUrl != null ? sub.ScaledLogoUrl.ToString() : string.Empty);
-        values.Put(Subscription.COL_SUBSCRIBERS, sub.Subscribers);
-        values.Put(Subscription.COL_SUBSRIBERS_LAST_WEEK, sub.SubscribersLastWeek);
-        values.Put(Subscription.COL_TITLE, sub.Title);
-        values.Put(Subscription.COL_URL, sub.Url != null ? sub.Url.ToString() : string.Empty);
-        values.Put(Subscription.COL_WEBSITE, sub.Website != null ? sub.Website.ToString() : string.Empty);
-        dbHelper.WritableDatabase.Update(Subscription.TABLE_NAME, values, Subscription.COL_TITLE + "=?", new string[]{sub.Title});
+        dbHelper.WritableDatabase.Update(Subscription.TABLE_NAME, createContentValues(sub), Subscription.COL_TITLE + "=?", new string[]{sub.Title});
       }
       catch(Exception exc) {
         throw new Exception("Could not udpate subscription " + sub.Title, exc);
       }
       PortaPodderApp.LogMessage("Updated the subscription " + sub.Title);
+    }
 
+    /// <summary>
+    /// Creates the content values.
+    /// </summary>
+    /// <returns>The content values.</returns>
+    /// <param name='sub'>Sub.</param>
+    private ContentValues createContentValues(Subscription sub) {
+      ContentValues values = new ContentValues();
+      values.Put(Subscription.COL_DESCRIPTION, sub.Description);
+      values.Put(Subscription.COL_LOGO_URL, sub.LogoUrl != null ? sub.LogoUrl.ToString() : string.Empty);
+      values.Put(Subscription.COL_MYGPO_LINK, sub.MygpoLink != null ? sub.MygpoLink.ToString() : string.Empty);
+      values.Put(Subscription.COL_POSITION_LAST_WEEK, sub.PositionLastWeek);
+      values.Put(Subscription.COL_SCALED_LOGO_URL, sub.ScaledLogoUrl != null ? sub.ScaledLogoUrl.ToString() : string.Empty);
+      values.Put(Subscription.COL_SUBSCRIBERS, sub.Subscribers);
+      values.Put(Subscription.COL_SUBSRIBERS_LAST_WEEK, sub.SubscribersLastWeek);
+      values.Put(Subscription.COL_TITLE, sub.Title);
+      values.Put(Subscription.COL_URL, sub.Url != null ? sub.Url.ToString() : string.Empty);
+      values.Put(Subscription.COL_WEBSITE, sub.Website != null ? sub.Website.ToString() : string.Empty);
+      return values;
     }
 
     /// <summary>

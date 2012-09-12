@@ -40,8 +40,13 @@ namespace GPodder.PortaPodder {
     public EpisodePlayer(Episode episode, Context context, Android.Net.Uri uri){
       this.episode = episode;
       player = MediaPlayer.Create(context, uri);
-      player.SeekTo(episode.playerPosition);
-      player.Completion += setFinishedFlag;
+      player.SeekTo(episode.PlayerPosition);
+      player.Completion += delegate(object sender, EventArgs e) {
+        this.episode.PlayerPosition = this.player.CurrentPosition;
+      };
+      player.SeekComplete += delegate(object sender, EventArgs e) {
+        this.episode.PlayerPosition = this.player.CurrentPosition;
+      };
     }
 
     /// <summary>
@@ -75,15 +80,6 @@ namespace GPodder.PortaPodder {
     }
 
     /// <summary>
-    /// Sets the finished flag.
-    /// </summary>
-    /// <param name='sender'>Sender.</param>
-    /// <param name='e'>E.</param>
-    private void setFinishedFlag (object sender, EventArgs e){
-      episode.playerPosition = episode.duration;
-    }
-
-    /// <summary>
     /// Seeks to specified time position.
     /// </summary>
     /// <param name='msec'>
@@ -91,7 +87,6 @@ namespace GPodder.PortaPodder {
     /// </param>
     public void SeekTo(int msec) {
       player.SeekTo(msec);
-      episode.playerPosition = player.CurrentPosition;
     }
 
     /// <summary>
@@ -99,7 +94,6 @@ namespace GPodder.PortaPodder {
     /// </summary>
     public void Pause() {
       player.Pause();
-      episode.playerPosition = player.CurrentPosition;
     }
 
     /// <summary>
@@ -109,9 +103,11 @@ namespace GPodder.PortaPodder {
       player.Start();
     }
 
+    /// <summary>
+    /// Stop this instance.
+    /// </summary>
     public void Stop() {
       player.Stop();
-      episode.playerPosition = player.CurrentPosition;
     }
   }
 }

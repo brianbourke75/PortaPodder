@@ -13,6 +13,7 @@ using Android.Views;
 using Android.Widget;
 
 using GPodder.DataStructures;
+using GPodder.PortaPodder;
 
 namespace GPodder.PortaPodder.Activities {
 
@@ -66,7 +67,7 @@ namespace GPodder.PortaPodder.Activities {
     /// <summary>
     /// Raises the create event.
     /// </summary>
-    /// <param name='bundle'>Bundle.</param>
+    /// <param name="bundle">Bundle.</param>
     protected override void OnCreate(Bundle bundle) {
       base.OnCreate(bundle);
 
@@ -118,8 +119,8 @@ namespace GPodder.PortaPodder.Activities {
     /// <summary>
     /// Logins the button clicked.
     /// </summary>
-    /// <param name='sender'>Sender.</param>
-    /// <param name='e'>E.</param>
+    /// <param name="sender">Sender.</param>
+    /// <param name="e">E.</param>
     private void loginButtonClicked(object sender, EventArgs e) {
       if(string.IsNullOrEmpty(usernameEdit.Text)){
         Toast.MakeText(this, "Please enter username", ToastLength.Short).Show();
@@ -130,30 +131,40 @@ namespace GPodder.PortaPodder.Activities {
         return;
       }
 
-      // get the username and password values
-      string username = usernameEdit.Text;
-      string password = passwordEdit.Text;
-
-      // setup the server with the username and password
-      Server.ConnectedUser = new User(username, password);
-      try{
+      // create the worker object
+      BackgroundWorker worker = new BackgroundWorker(delegate(ref bool stop) {
+        RunOnUiThread(() => loginButton.Enabled = false);
+        // get the username and password values
+        string username = usernameEdit.Text;
+        string password = passwordEdit.Text;
+        
+        // setup the server with the username and password
+        Server.ConnectedUser = new User(username, password);
+        
         // should the login be successful, we will put the username and password into the preferences
         ISharedPreferencesEditor editor = PortaPodderApp.prefs.Edit();
         editor.PutString(EncryptedPreferences.KEY_USERNAME, username);
         editor.PutString(EncryptedPreferences.KEY_PASSWORD, password);
         editor.Commit();
-
+        
         // we are going to attempt to get the lists of devices and only if this returns correctly authenticated do we continue to finish this activity
         Server.GetDevicesFromServer();
+      });
+      worker.Completed += delegate(Exception exc) {
+        RunOnUiThread(() => loginButton.Enabled = true);
+        if(exc != null){
+          Server.ConnectedUser = null;
+          Log.Debug(GetString(Resource.String.app_name), exc.Message);
+          RunOnUiThread(() =>  Toast.MakeText(this, "Unable to authenticate user with this password.", ToastLength.Short).Show());
+        }
+        else{
+          // close the parent activity
+          RunOnUiThread(Finish);
+        }
+      };
 
-        Finish();
-        return;
-      }
-      catch(Exception exc){
-        Server.ConnectedUser = null;
-        Log.Debug(GetString(Resource.String.app_name), exc.Message);
-        Toast.MakeText(this, "Unable to authenticate user with this password.", ToastLength.Short).Show();
-      }
+      // do the work
+      worker.Execute();
     }
 
     #endregion

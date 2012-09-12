@@ -73,6 +73,8 @@ namespace GPodder.PortaPodder {
       sql += Episode.COL_RELEASED + " text,";
       sql += Episode.COL_STATUS + " text,";
       sql += Episode.COL_TITLE + " text,";
+      sql += Episode.COL_PLAYER_POSITION + " int,";
+      sql += Episode.COL_DURATION + " int,";
       sql += Episode.COL_WEBSITE + " text);";
       database.ExecSQL(sql);
     }

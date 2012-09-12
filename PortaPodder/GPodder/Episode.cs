@@ -122,12 +122,22 @@ namespace GPodder.DataStructures {
     /// <summary>
     /// The player location in milliseconds
     /// </summary>
-    public int playerPosition = 0;
+    private int playerPosition = 0;
 
     /// <summary>
     /// The duration.
     /// </summary>
-    public int duration = 0;
+    private int duration = 0;
+
+    /// <summary>
+    /// The column name for the player position
+    /// </summary>
+    public const string COL_PLAYER_POSITION = "playerPosition";
+
+    /// <summary>
+    /// The column name for the duration
+    /// </summary>
+    public const string COL_DURATION = "duration";
 
     #endregion
 
@@ -143,6 +153,28 @@ namespace GPodder.DataStructures {
 
     #region properties
 
+    /// <summary>
+    /// Gets the duration.
+    /// </summary>
+    /// <value>The duration.</value>
+    public int Duration {
+      get {
+        return duration;
+      }
+    }
+
+    /// <summary>
+    /// Gets the player position.
+    /// </summary>
+    /// <value>The player position.</value>
+    public int PlayerPosition {
+      get {
+        return playerPosition;
+      }
+      set {
+        playerPosition = value;
+      }
+    }
 
     /// <summary>
     /// Gets the parent.

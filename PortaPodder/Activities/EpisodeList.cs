@@ -70,12 +70,14 @@ namespace GPodder.PortaPodder.Activities {
       // add all pre-existing episodes
       foreach(Episode episode in Server.Episodes) {
         addEpisodeUI(episode);
+        PortaPodderApp.LogMessage("Added episode " + episode.Title);
+        expandableAdapter.NotifyDataSetChanged();
       }
-      expandableAdapter.NotifyDataSetChanged();
+
       // add the hook for adding episodes
       Server.EpisodeAdded += delegate(Episode episode) {
-        addEpisodeUI(episode);
-        expandableAdapter.NotifyDataSetChanged();
+        RunOnUiThread(() => addEpisodeUI(episode));
+        RunOnUiThread(() => expandableAdapter.NotifyDataSetChanged());
       };
     }
 
@@ -209,8 +211,11 @@ namespace GPodder.PortaPodder.Activities {
         StartActivity(new Intent(this, typeof(SubscriptionInteraction)));
         return true;
       case Resource.Id.Refresh:
-        Server.UpdateForDevice();
-        Toast.MakeText(this, "Done updating.", ToastLength.Short).Show();
+        BackgroundWorker worker = new BackgroundWorker(delegate(ref bool stop) {
+          Server.UpdateForDevice();
+        });
+        worker.Execute();
+
         return true;
       default:
         return base.OnOptionsItemSelected(item);

@@ -72,6 +72,7 @@
     <Compile Include="PortaPodderDataSource.cs" />
     <Compile Include="PortaPodderSQLHelper.cs" />
     <Compile Include="PortaPodderApp.cs" />
+    <Compile Include="BackgroundWorker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

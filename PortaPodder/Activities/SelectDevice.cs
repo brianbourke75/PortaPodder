@@ -39,10 +39,10 @@ namespace GPodder.PortaPodder.Activities {
 
       // add hooks for adding and removing devices
       Server.DeviceRemoved += delegate(Device theDevice) { 
-        adapter.Remove(theDevice); 
+        RunOnUiThread(() => adapter.Remove(theDevice)); 
       };
       Server.DeviceAdded += delegate(Device theDevice) { 
-        adapter.Add(theDevice); 
+        RunOnUiThread(() => adapter.Add(theDevice)); 
       };
     }
 
