@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortaPodderTester", "PortaPodderTester\PortaPodderTester.csproj", "{4EC15FDF-2AFE-41BF-957C-CAF30F9B5CB7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortaPodder", "PortaPodder\PortaPodder.csproj", "{E7A91710-2D33-4792-BD3A-BC89E69F02A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortaPodderTester", "PortaPodderTester\PortaPodderTester.csproj", "{4EC15FDF-2AFE-41BF-957C-CAF30F9B5CB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
