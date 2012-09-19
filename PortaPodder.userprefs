@@ -3,12 +3,14 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="PortaPodder\Activities\Authentication.cs">
     <Files>
-      <File FileName="PortaPodder\Activities\Authentication.cs" Line="128" Column="8" />
+      <File FileName="PortaPodder\Activities\Authentication.cs" Line="132" Column="8" />
+      <File FileName="PortaPodder\GPodder\UriConverter.cs" Line="45" Column="2" />
+      <File FileName="z:\home\src\PortaPodder\PortaPodder\BackgroundWorker.cs" Line="139" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.ItemProperties.PortaPodder MonoForAntroid.PreferredDevice="3.7in WVGA (Nexus One)" AndroidDeviceId-Debug_220Fake="emulator-5554" />
+  <MonoDevelop.Ide.ItemProperties.PortaPodder MonoForAntroid.PreferredDevice="3.7in WVGA (Nexus One)" AndroidDeviceId-Debug_220Fake="emulator-5554" AndroidDeviceId-Debug="37348853D81900EC" />
 </Properties>
