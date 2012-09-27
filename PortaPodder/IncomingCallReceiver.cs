@@ -18,12 +18,32 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+using Android.Content;
+using Android.Telephony;
 using System;
+using GPodder.PortaPodder.Activities;
 
 namespace GPodder.PortaPodder {
-  public class IncomingCallReceiver {
-    public IncomingCallReceiver() {
+
+  /// <summary>
+  /// Incoming call receiver class which will pause the media player when a call is recieved
+  /// </summary>
+  public class IncomingCallReceiver : PhoneStateListener{
+    public override void OnCallStateChanged(CallState state, string incomingNumber) {
+      base.OnCallStateChanged(state, incomingNumber);
+      switch(state) {
+      case CallState.Ringing:
+      case CallState.Offhook:
+        // stop media player
+        if(EpisodeDetails.Player != null){
+          EpisodeDetails.Player.Stop();
+        }
+        break;
+      case CallState.Idle:
+      default:
+        // intentionally do nothing
+        break;
+      }
     }
   }
 }
-

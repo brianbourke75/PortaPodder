@@ -52,6 +52,16 @@ namespace GPodder.PortaPodder.Activities {
     private static EpisodePlayer player = null;
 
     /// <summary>
+    /// Gets the player.
+    /// </summary>
+    /// <value>The player.</value>
+    public static EpisodePlayer Player {
+      get {
+        return player;
+      }
+    }
+
+    /// <summary>
     /// Raises the create event.
     /// </summary>
     /// <param name='bundle'>Bundle.</param>
@@ -75,11 +85,6 @@ namespace GPodder.PortaPodder.Activities {
           player.SeekTo(e.Progress);
         }
       };
-
-      IntentFilter intentFilter = new IntentFilter(Intent.ActionAnswer);
-      intentFilter.AddAction(Intent.ActionAnswer);
-      
-      RegisterReceiver(new IncomingCallReceiver(), intentFilter);
     }
 
     /// <summary>

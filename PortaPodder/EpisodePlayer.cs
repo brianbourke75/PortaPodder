@@ -40,7 +40,7 @@ namespace GPodder.PortaPodder {
   /// <summary>
   /// Episode player extention of media player
   /// </summary>
-  class EpisodePlayer {
+  public class EpisodePlayer {
 
     /// <summary>
     /// The episode.

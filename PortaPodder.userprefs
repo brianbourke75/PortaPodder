@@ -1,16 +1,12 @@
 ﻿<Properties>
   <AuthorInfo Name="Brian Bourke-Martin" Email="brianbourke75@gmail.com" Copyright="Brian Bourke-Martin" Company="" Trademark="" />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="PortaPodder\PortaPodderApp.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="PortaPodder\IncomingCallReceiver.cs">
     <Files>
-      <File FileName="PortaPodder\EpisodeDownloader.cs" Line="71" Column="62" />
-      <File FileName="PortaPodder\PortaPodderDataSource.cs" Line="445" Column="6" />
-      <File FileName="PortaPodder\Activities\EpisodeDetails.cs" Line="82" Column="66" />
-      <File FileName="PortaPodder\EpisodePlayer.cs" Line="69" Column="7" />
-      <File FileName="PortaPodder\Activities\Authentication.cs" Line="135" Column="39" />
-      <File FileName="PortaPodder\GPodder\Subscription.cs" Line="1" Column="1" />
-      <File FileName="PortaPodder\IncomingCallReceiver.cs" Line="32" Column="47" />
-      <File FileName="PortaPodder\PortaPodderApp.cs" Line="118" Column="30" />
+      <File FileName="PortaPodder\IncomingCallReceiver.cs" Line="48" Column="4" />
+      <File FileName="PortaPodder\PortaPodderApp.cs" Line="133" Column="1" />
+      <File FileName="PortaPodder\EpisodePlayer.cs" Line="38" Column="28" />
+      <File FileName="PortaPodder\Activities\EpisodeDetails.cs" Line="58" Column="22" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
@@ -19,5 +15,5 @@
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.ItemProperties.PortaPodder MonoForAntroid.PreferredDevice="3.7in WVGA (Nexus One)" AndroidDeviceId-Debug_220Fake="emulator-5554" AndroidDeviceId-Debug="37348853D81900EC" />
+  <MonoDevelop.Ide.ItemProperties.PortaPodder MonoForAntroid.PreferredDevice="3.7in WVGA (Nexus One)" AndroidDeviceId-Debug_220Fake="emulator-5554" AndroidDeviceId-Debug="emulator-5554" />
 </Properties>

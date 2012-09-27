@@ -28,6 +28,7 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
+using Android.Telephony;
 using Android.Views;
 using Android.Widget;
 
@@ -127,11 +128,8 @@ namespace GPodder.PortaPodder {
         editor.PutLong(EncryptedPreferences.KEY_LAST_UPDATED, updated);
         editor.Commit();
       };
-
-      IntentFilter intentFilter = new IntentFilter(Intent.ActionAllApps);
-      intentFilter.AddAction(Intent.ActionAllApps);
-      
-      RegisterReceiver(new IncomingCallReceiver(), intentFilter);
+      TelephonyManager tel = (TelephonyManager)GetSystemService(Android.Content.Context.TelephonyService);
+      tel.Listen(new IncomingCallReceiver(), PhoneStateListenerFlags.CallState);
     }
 
     /// <summary>
