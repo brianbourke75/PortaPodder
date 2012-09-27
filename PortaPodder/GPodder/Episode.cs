@@ -175,12 +175,15 @@ namespace GPodder.DataStructures {
     #region properties
 
     /// <summary>
-    /// Gets the duration.
+    /// Gets or sets the duration.
     /// </summary>
     /// <value>The duration.</value>
     public int Duration {
       get {
         return duration;
+      }
+      set {
+        duration = value;
       }
     }
 

@@ -127,6 +127,11 @@ namespace GPodder.PortaPodder {
         editor.PutLong(EncryptedPreferences.KEY_LAST_UPDATED, updated);
         editor.Commit();
       };
+
+      IntentFilter intentFilter = new IntentFilter(Intent.ActionAllApps);
+      intentFilter.AddAction(Intent.ActionAllApps);
+      
+      RegisterReceiver(new IncomingCallReceiver(), intentFilter);
     }
 
     /// <summary>

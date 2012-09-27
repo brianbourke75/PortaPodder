@@ -73,10 +73,10 @@
     <Compile Include="PortaPodderSQLHelper.cs" />
     <Compile Include="PortaPodderApp.cs" />
     <Compile Include="BackgroundWorker.cs" />
+    <Compile Include="IncomingCallReceiver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
-    <None Include="TODO.txt" />
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>

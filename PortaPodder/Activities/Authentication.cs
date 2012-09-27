@@ -138,6 +138,16 @@ namespace GPodder.PortaPodder.Activities {
     }
 
     /// <summary>
+    /// Sets the state of the children enable
+    /// </summary>
+    /// <param name='state'>If set to <c>true</c> state.</param>
+    private void setChildrenEnableState(bool state) {
+      loginButton.Enabled = state;
+      usernameEdit.Enabled = state;
+      passwordEdit.Enabled = state;
+    }
+
+    /// <summary>
     /// Logins the button clicked.
     /// </summary>
     /// <param name="sender">Sender.</param>
@@ -154,7 +164,7 @@ namespace GPodder.PortaPodder.Activities {
 
       // create the worker object
       BackgroundWorker worker = new BackgroundWorker(delegate(ref bool stop) {
-        RunOnUiThread(() => loginButton.Enabled = false);
+        RunOnUiThread(() =>  setChildrenEnableState(false));
         // get the username and password values
         string username = usernameEdit.Text;
         string password = passwordEdit.Text;
@@ -172,7 +182,7 @@ namespace GPodder.PortaPodder.Activities {
         Server.GetDevicesFromServer();
       });
       worker.Completed += delegate(Exception exc) {
-        RunOnUiThread(() => loginButton.Enabled = true);
+        RunOnUiThread(() => setChildrenEnableState(true));
         if(exc != null){
           Server.ConnectedUser = null;
           Log.Debug(GetString(Resource.String.app_name), exc.Message);

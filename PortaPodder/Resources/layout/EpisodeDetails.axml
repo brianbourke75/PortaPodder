@@ -10,32 +10,37 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+EpisodeDetails/DetailsText" />
+    <SeekBar
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+EpisodeDetails/DetailsText"
+        android:id="@+EpisodeDetails/seek" />
     <Button
         android:text="Backup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+EpisodeDetails/DetailsText"
+        android:layout_below="@+EpisodeDetails/seek"
         android:id="@+EpisodeDetails/SkipBack" />
     <Button
         android:text="Play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+EpisodeDetails/SkipBack"
-        android:layout_below="@+EpisodeDetails/DetailsText"
+        android:layout_below="@+EpisodeDetails/seek"
         android:id="@+EpisodeDetails/Play" />
     <Button
         android:text="Stop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+EpisodeDetails/Play"
-        android:layout_below="@+EpisodeDetails/DetailsText"
+        android:layout_below="@+EpisodeDetails/seek"
         android:id="@+EpisodeDetails/Stop" />
     <Button
         android:text="Skip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+EpisodeDetails/Stop"
-        android:layout_below="@+EpisodeDetails/DetailsText"
+        android:layout_below="@+EpisodeDetails/seek"
         android:id="@+EpisodeDetails/SkipForwards" />
     <Button
         android:text="Download"

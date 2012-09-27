@@ -53,20 +53,35 @@ namespace GPodder.PortaPodder {
     private MediaPlayer player = null;
 
     /// <summary>
+    /// The seek bar reference
+    /// </summary>
+    private SeekBar seekBar = null;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="PortaPodder.EpisodePlayer"/> class.
     /// </summary>
     /// <param name='episode'>Episode.</param>
     /// <param name='context'>Context.</param>
-    /// <param name='uri'>URI.</param>
-    public EpisodePlayer(Episode episode, Context context, Android.Net.Uri uri){
+    /// <param name='uri'>local uri to the file</param>
+    public EpisodePlayer(Episode episode, Context context, Android.Net.Uri uri, SeekBar seekBar) {
       this.episode = episode;
+      this.seekBar = seekBar;
       player = MediaPlayer.Create(context, uri);
+
+      // since this is probably the first time the player has had access to the duration of the show
+      // we are going to set the duration property of the episode here
+      if(episode.Duration == 0) {
+        episode.Duration = player.Duration;
+      }
+      seekBar.Max = episode.Duration;
       player.SeekTo(episode.PlayerPosition);
       player.Completion += delegate(object sender, EventArgs e) {
         this.episode.PlayerPosition = this.player.CurrentPosition;
+        this.seekBar.Progress = this.player.CurrentPosition;
       };
       player.SeekComplete += delegate(object sender, EventArgs e) {
         this.episode.PlayerPosition = this.player.CurrentPosition;
+        this.seekBar.Progress = this.player.CurrentPosition;
       };
     }
 

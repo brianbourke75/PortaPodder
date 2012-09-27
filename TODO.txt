@@ -1,0 +1,16 @@
+* GUI
+** Update episode color based on downloaded state
+** Smooth seeking from seekbar
+** Podcast icon image
+** Disable/enable username and password while authenticating
+
+* gpodder.net integration
+** Push Episode state
+
+* Background Download
+
+* save subscription images to database
+
+* Clear podcasts on uninstall
+
+* Incoming call handling

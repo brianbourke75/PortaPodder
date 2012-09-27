@@ -36,6 +36,7 @@ using Android.Views;
 using Android.Widget;
 
 using GPodder.DataStructures;
+using GPodder.PortaPodder;
 
 namespace GPodder.PortaPodder.Activities {
 
@@ -67,6 +68,18 @@ namespace GPodder.PortaPodder.Activities {
       FindViewById<Button>(Resource.EpisodeDetails.SkipForwards).Click += skipForwards;
       FindViewById<Button>(Resource.EpisodeDetails.SkipBack).Click += skipBackwards;
       FindViewById<Button>(Resource.EpisodeDetails.Toggle).Click += togglePlayed;
+
+      // set an event for the player to seek to the requested position
+      FindViewById<SeekBar>(Resource.EpisodeDetails.seek).ProgressChanged += delegate(object sender, SeekBar.ProgressChangedEventArgs e){
+        if(player != null){
+          player.SeekTo(e.Progress);
+        }
+      };
+
+      IntentFilter intentFilter = new IntentFilter(Intent.ActionAnswer);
+      intentFilter.AddAction(Intent.ActionAnswer);
+      
+      RegisterReceiver(new IncomingCallReceiver(), intentFilter);
     }
 
     /// <summary>
@@ -77,7 +90,6 @@ namespace GPodder.PortaPodder.Activities {
     private void togglePlayed(object sender, EventArgs e) {
       Server.PushUpdates(EpisodeList.SelectedEpisode);
     }
-
 
     /// <summary>
     /// Skips the backwards.
@@ -134,7 +146,10 @@ namespace GPodder.PortaPodder.Activities {
           return;
         }
 
-        player = new EpisodePlayer(EpisodeList.SelectedEpisode, this, Android.Net.Uri.Parse(setupToPlay.ToString()));
+        // setup the player along with the seek bar max
+        SeekBar seekBar = FindViewById<SeekBar>(Resource.EpisodeDetails.seek);
+        Android.Net.Uri uri = Android.Net.Uri.Parse(setupToPlay.ToString());
+        player = new EpisodePlayer(EpisodeList.SelectedEpisode, this, uri, seekBar);
       }
 
       // if the player is already playing we just need to resume
@@ -173,7 +188,6 @@ namespace GPodder.PortaPodder.Activities {
       downloadProgress.Max = 100;
       downloadProgress.SetProgressStyle(ProgressDialogStyle.Horizontal);
 
-
       // execute this when the downloader must be fired
       EpisodeDownloader downloadFile = new EpisodeDownloader(EpisodeList.SelectedEpisode, downloadProgress);
       downloadFile.Execute(EpisodeList.SelectedEpisode.Url.ToString());
@@ -189,8 +203,6 @@ namespace GPodder.PortaPodder.Activities {
       FindViewById<TextView>(Resource.EpisodeDetails.DetailsText).Text = EpisodeList.SelectedEpisode.Title;
       FindViewById<Button>(Resource.EpisodeDetails.Download).Enabled = !File.Exists(PortaPodderDataSource.GetEpisodeLocation(EpisodeList.SelectedEpisode));
     }
-
-
   }
 }
 
