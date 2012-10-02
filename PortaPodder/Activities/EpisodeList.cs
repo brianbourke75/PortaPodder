@@ -91,7 +91,7 @@ namespace GPodder.PortaPodder.Activities {
       // add all pre-existing episodes
       foreach(Episode episode in Server.Episodes) {
         addEpisodeUI(episode);
-        PortaPodderApp.LogMessage("Added episode " + episode.Title);
+        PortaPodderApp.LogMessage("Added episode to GUI: " + episode.Title);
         expandableAdapter.NotifyDataSetChanged();
       }
 
@@ -127,12 +127,14 @@ namespace GPodder.PortaPodder.Activities {
             selEpisodeList.Add(episodeItems);
           }
           else{
-            for(int ci = 0 ; ci < selEpisodeList.Count ; ci++){
-              if(DateTime.Parse(selEpisodeList[ci][RELEASED_TEXT_VIEW].ToString()).CompareTo(episode.Released) < 0){
-                selEpisodeList.Insert(ci, episodeItems);
+            int ci = 0;
+            for(; ci < selEpisodeList.Count ; ci++){
+              DateTime curEpiDate = DateTime.Parse(selEpisodeList[ci][RELEASED_TEXT_VIEW].ToString());
+              if(curEpiDate.CompareTo(episode.Released) < 0){
                 break;
               }
             }
+            selEpisodeList.Insert(ci, episodeItems);
           }
         }
         if(episodeItems.Count > 0){
