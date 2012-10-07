@@ -141,6 +141,17 @@ namespace GPodder.PortaPodder {
     }
 
     /// <summary>
+    /// Logs the message.
+    /// </summary>
+    /// <param name='exc'>Exc.</param>
+    public static void LogMessage(Exception exc){
+      string msg = exc.GetType() + System.Environment.NewLine;
+      msg += exc.Message + System.Environment.NewLine;
+      msg += exc.StackTrace;
+      LogMessage(msg);
+    }
+
+    /// <summary>
     /// This method is for use in emulated process environments.
     /// </summary>
     public override void OnTerminate() {

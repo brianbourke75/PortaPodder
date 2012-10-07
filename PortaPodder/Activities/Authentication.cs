@@ -185,8 +185,8 @@ namespace GPodder.PortaPodder.Activities {
         RunOnUiThread(() => setChildrenEnableState(true));
         if(exc != null){
           Server.ConnectedUser = null;
-          Log.Debug(GetString(Resource.String.app_name), exc.Message);
-          RunOnUiThread(() =>  Toast.MakeText(this, "Unable to authenticate user with this password.", ToastLength.Short).Show());
+          PortaPodderApp.LogMessage(exc);
+          RunOnUiThread(() => Toast.MakeText(this, "Unable to authenticate user with this password.", ToastLength.Short).Show());
         }
         else{
           // close the parent activity

@@ -22,6 +22,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 
 using Android;
 using Android.App;
@@ -88,18 +89,18 @@ namespace GPodder.PortaPodder.Activities {
       expandableAdapter = new SimpleExpandableListAdapter(this, subscriptionList, Android.Resource.Layout.SimpleExpandableListItem1, new string[] { NAME_TEXT_VIEW }, new int[] { Android.Resource.Id.Text1 }, episodeList, Android.Resource.Layout.TwoLineListItem, new string[] { NAME_TEXT_VIEW, RELEASED_TEXT_VIEW }, new int[] {Android.Resource.Id.Text1, Android.Resource.Id.Text2 });
       SetListAdapter(expandableAdapter);
 
-      // add all pre-existing episodes
-      foreach(Episode episode in Server.Episodes) {
-        addEpisodeUI(episode);
-        PortaPodderApp.LogMessage("Added episode to GUI: " + episode.Title);
-        expandableAdapter.NotifyDataSetChanged();
-      }
+      BackgroundWorker addEpisodesWorker = new BackgroundWorker( delegate(ref bool stopWorking){
+        // add all pre-existing episodes
+        foreach(Episode episode in Server.Episodes) {
+          addEpisodeUI(episode);
+        }
+        PortaPodderApp.LogMessage("Done creating episodes");
+      });
+
+      addEpisodesWorker.Execute();
 
       // add the hook for adding episodes
-      Server.EpisodeAdded += delegate(Episode episode) {
-        RunOnUiThread(() => addEpisodeUI(episode));
-        RunOnUiThread(() => expandableAdapter.NotifyDataSetChanged());
-      };
+      Server.EpisodeAdded += addEpisodeUI;
     }
 
     /// <summary>
@@ -107,46 +108,45 @@ namespace GPodder.PortaPodder.Activities {
     /// </summary>
     /// <param name='episode'>Episode.</param>
     private void addEpisodeUI(Episode episode) {
-      try {
-        // first make sure that the subscription UI is there
-        IDictionary<string, object> subscriptionGroup = GetSubscriptionList(episode.PodcastTitle);
-        if(subscriptionGroup == null) {
-          addSubscriptionUI(episode.PodcastTitle);
-          subscriptionGroup = GetSubscriptionList(episode.PodcastTitle);
-        }
+      // first make sure that the subscription UI is there
+      IDictionary<string, object> subscriptionGroup = GetSubscriptionList(episode.PodcastTitle);
+      if(subscriptionGroup == null) {
+        addSubscriptionUI(episode.PodcastTitle);
+        subscriptionGroup = GetSubscriptionList(episode.PodcastTitle);
+      }
 
-        // now add children
-        // look up where the subscription list is in the group data and reuse that index in the child group
-        int groupIndex = subscriptionList.IndexOf(subscriptionGroup);
-        IList<IDictionary<string, object>> selEpisodeList = episodeList[groupIndex];
-        IDictionary<string, object> episodeItems = GetEpisodeItems(selEpisodeList, episode);
-        if(episodeItems == null) {
-          episodeItems = new JavaDictionary<string, object>();
-          // assert that there is a new lookup location for the episode which we will then populate with some GUI data
-          if(selEpisodeList.Count == 0){
-            selEpisodeList.Add(episodeItems);
-          }
-          else{
-            int ci = 0;
-            for(; ci < selEpisodeList.Count ; ci++){
-              DateTime curEpiDate = DateTime.Parse(selEpisodeList[ci][RELEASED_TEXT_VIEW].ToString());
-              if(curEpiDate.CompareTo(episode.Released) < 0){
-                break;
-              }
+      // now add children
+      // look up where the subscription list is in the group data and reuse that index in the child group
+      int groupIndex = subscriptionList.IndexOf(subscriptionGroup);
+      IList<IDictionary<string, object>> selEpisodeList = episodeList[groupIndex];
+      IDictionary<string, object> episodeItems = GetEpisodeItems(selEpisodeList, episode);
+      if(episodeItems == null) {
+        episodeItems = new JavaDictionary<string, object>();
+        // assert that there is a new lookup location for the episode which we will then populate with some GUI data
+        if(selEpisodeList.Count == 0){
+          RunOnUIThreadBlocking(() => selEpisodeList.Add(episodeItems));
+        }
+        else{
+          int ci = 0;
+          for(; ci < selEpisodeList.Count ; ci++){
+            DateTime curEpiDate = DateTime.Parse(selEpisodeList[ci][RELEASED_TEXT_VIEW].ToString());
+            if(curEpiDate.CompareTo(episode.Released) < 0){
+              break;
             }
-            selEpisodeList.Insert(ci, episodeItems);
           }
+          selEpisodeList.Insert(ci, episodeItems);
         }
-        if(episodeItems.Count > 0){
-          episodeItems.Clear();
-        }
+      }
+      if(episodeItems.Count > 0){
+        episodeItems.Clear();
+      }
 
+      // add the date and episode name
+      RunOnUIThreadBlocking(() => {
         episodeItems.Add(NAME_TEXT_VIEW, episode.Title);
         episodeItems.Add(RELEASED_TEXT_VIEW, episode.Released.ToString());
-      }
-      catch(Exception exc) {
-        throw new Exception("Failed to add episode " + episode.Title + " to UI", exc);
-      }
+        expandableAdapter.NotifyDataSetChanged();
+      });
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ namespace GPodder.PortaPodder.Activities {
     /// <param name='episode'>Episode.</param>
     private IDictionary<string, object> GetEpisodeItems(IList<IDictionary<string, object>> selEpisodeList, Episode episode) {
       foreach(IDictionary<string, object> list in selEpisodeList) {
-        if(list.Keys.Contains(NAME_TEXT_VIEW) && list[NAME_TEXT_VIEW].ToString() == episode.Title){
+        if(list[NAME_TEXT_VIEW] != null && list[NAME_TEXT_VIEW].ToString() == episode.Title){
           return list;
         }
       }
@@ -257,6 +257,19 @@ namespace GPodder.PortaPodder.Activities {
         StartActivity(typeof(SelectDevice));
         return;
       }
+    }
+
+    /// <summary>
+    /// Runs the on user interface thread blocking.
+    /// </summary>
+    /// <param name='runnable'>Runnable.</param>
+    private void RunOnUIThreadBlocking(Action action){
+      AutoResetEvent remoteCommandDoneEvent = new AutoResetEvent(false);
+      RunOnUiThread(() => {
+        action.Invoke();
+        remoteCommandDoneEvent.Set();
+      });
+      remoteCommandDoneEvent.WaitOne();
     }
   }
 }
