@@ -91,7 +91,7 @@ namespace GPodder.PortaPodder {
     /// <value>The episode.</value>
     public Episode Episode {
       get {
-        return Episode;
+        return episode;
       }
     }
 
