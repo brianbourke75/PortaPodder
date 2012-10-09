@@ -64,7 +64,6 @@
     <Compile Include="GPodder\UriConverter.cs" />
     <Compile Include="GPodder\User.cs" />
     <Compile Include="Activities\EpisodeDetails.cs" />
-    <Compile Include="EpisodeDownloader.cs" />
     <Compile Include="GPodder\DeviceUpdates.cs" />
     <Compile Include="GPodder\PodcastItem.cs" />
     <Compile Include="EpisodePlayer.cs" />

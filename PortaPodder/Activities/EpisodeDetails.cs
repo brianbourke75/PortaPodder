@@ -189,17 +189,69 @@ namespace GPodder.PortaPodder.Activities {
     /// <param name='sender'>Sender.</param>
     /// <param name='e'>E.</param>
     private void downloadPodcastClicked (object sender, EventArgs e){
+      Episode myEpisode = EpisodeList.SelectedEpisode;
       // instantiate it within the onCreate method
       ProgressDialog downloadProgress = new ProgressDialog(this);
-      downloadProgress.SetMessage(EpisodeList.SelectedEpisode.PodcastTitle);
+      downloadProgress.SetMessage(myEpisode.PodcastTitle);
       downloadProgress.Indeterminate = false;
       downloadProgress.SetTitle("Downloading Episode");
       downloadProgress.Max = 100;
       downloadProgress.SetProgressStyle(ProgressDialogStyle.Horizontal);
 
-      // execute this when the downloader must be fired
-      EpisodeDownloader downloadFile = new EpisodeDownloader(EpisodeList.SelectedEpisode, downloadProgress);
-      downloadFile.Execute(EpisodeList.SelectedEpisode.Url.ToString());
+      // create a background worker to download everything
+      BackgroundWorker downloadInBackground = new BackgroundWorker(delegate(ref bool stop){
+        RunOnUiThread(() => downloadProgress.Show());
+        // we will read data via the response stream
+        string outputPath = PortaPodderDataSource.GetEpisodeLocation(myEpisode);
+        
+        // check to see if the output path
+        if(File.Exists(outputPath)) {
+          return;
+        }
+        
+        Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+        
+        // prepare the web page we will be asking for
+        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(myEpisode.Url.ToString());
+        
+        // execute the request
+        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+        long fileLength = response.ContentLength;
+        downloadProgress.Max = (int)(fileLength / 1024);
+        // used on each read operation
+        byte[] buf = new byte[1024 * 20];
+        
+        using(System.IO.Stream resStream = response.GetResponseStream(), output = new FileStream(outputPath, FileMode.CreateNew, FileAccess.Write, FileShare.None, buf.Length)) { 
+          int count = 0;
+          long total = 0;
+          
+          do {
+            // fill the buffer with data
+            count = resStream.Read(buf, 0, buf.Length);
+            
+            // make sure we read some data
+            if(count != 0) {
+              total += count;
+              downloadProgress.Progress = (int)(total / 1024);
+              output.Write(buf, 0, count);
+            }
+          } while (count > 0 && !stop); // any more data to read?
+        }
+      });
+      downloadInBackground.Completed += delegate(Exception exc){
+        RunOnUiThread(() => downloadProgress.Dismiss());
+        string outputPath = PortaPodderDataSource.GetEpisodeLocation(myEpisode);
+        // if there was an issue delete the file to allow for us to begin anew!
+        if(exc != null){
+          PortaPodderApp.LogMessage(exc);
+          // we will read data via the response stream
+          if(File.Exists(outputPath)){
+            File.Delete(outputPath);
+          }
+        }
+        FindViewById<Button>(Resource.EpisodeDetails.Download).Enabled = !File.Exists(outputPath);
+      };
+      downloadInBackground.Execute();
     }
 
     /// <summary>
