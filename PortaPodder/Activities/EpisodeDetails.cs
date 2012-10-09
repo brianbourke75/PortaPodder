@@ -136,33 +136,37 @@ namespace GPodder.PortaPodder.Activities {
     /// <param name='sender'>Sender.</param>
     /// <param name='e'>E.</param>
     private void playPodcast(object sender, EventArgs e) {
-      // check to see if a different uri is playing and reset the player
-      if(player != null && player.Episode != EpisodeList.SelectedEpisode) {
-        stopPlaying();
-      }
-
-      // if the player is not setup, then we need to set it up
-      if(player == null) {
-
-        // make sure the file exists on the file system
-        string fileLocation = PortaPodderDataSource.GetEpisodeLocation(EpisodeList.SelectedEpisode);
-        Uri setupToPlay = new Uri(fileLocation);
-        if(!File.Exists(fileLocation)) {
-          return;
+      try {
+        // check to see if a different uri is playing and reset the player
+        if(player != null && player.Episode != EpisodeList.SelectedEpisode) {
+          stopPlaying();
         }
 
-        // setup the player along with the seek bar max
-        SeekBar seekBar = FindViewById<SeekBar>(Resource.EpisodeDetails.seek);
-        Android.Net.Uri uri = Android.Net.Uri.Parse(setupToPlay.ToString());
-        player = new EpisodePlayer(EpisodeList.SelectedEpisode, this, uri, seekBar);
-      }
+        // if the player is not setup, then we need to set it up
+        if(player == null) {
+          // make sure the file exists on the file system
+          string fileLocation = PortaPodderDataSource.GetEpisodeLocation(EpisodeList.SelectedEpisode);
+          Uri setupToPlay = new Uri(fileLocation);
+          if(!File.Exists(fileLocation)) {
+            return;
+          }
 
-      // if the player is already playing we just need to resume
-      if(!player.IsPlaying) {
-        player.Start();
+          // setup the player along with the seek bar max
+          SeekBar seekBar = FindViewById<SeekBar>(Resource.EpisodeDetails.seek);
+          Android.Net.Uri uri = Android.Net.Uri.Parse(setupToPlay.ToString());
+          player = new EpisodePlayer(EpisodeList.SelectedEpisode, this, uri, seekBar);
+        }
+
+        // if the player is already playing we just need to resume
+        if(!player.IsPlaying) {
+          player.Start();
+        }
+        else {
+          player.Pause();
+        }
       }
-      else {
-        player.Pause();
+      catch(Exception exc) {
+        PortaPodderApp.LogMessage(exc);
       }
     }
 
@@ -203,6 +207,11 @@ namespace GPodder.PortaPodder.Activities {
     /// </summary>
     protected override void OnStart() {
       base.OnStart();
+
+      // if there was no selected episode in the episode list then we have hit an unanticipated condition and we should bow out
+      if(EpisodeList.SelectedEpisode == null) {
+        Finish();
+      }
 
       // set the episode title
       FindViewById<TextView>(Resource.EpisodeDetails.DetailsText).Text = EpisodeList.SelectedEpisode.Title;

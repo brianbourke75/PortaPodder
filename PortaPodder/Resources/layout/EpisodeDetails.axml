@@ -22,7 +22,7 @@
         android:layout_below="@+EpisodeDetails/seek"
         android:id="@+EpisodeDetails/SkipBack" />
     <Button
-        android:text="Play"
+        android:text="Play/Pause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+EpisodeDetails/SkipBack"
