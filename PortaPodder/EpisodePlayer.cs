@@ -76,8 +76,7 @@ namespace GPodder.PortaPodder {
       seekBar.Max = episode.Duration;
       player.SeekTo(episode.PlayerPosition);
       player.Completion += delegate(object sender, EventArgs e) {
-        this.episode.PlayerPosition = this.player.CurrentPosition;
-        this.seekBar.Progress = this.player.CurrentPosition;
+        this.episode.PlayerPosition = this.episode.Duration;
       };
       player.SeekComplete += delegate(object sender, EventArgs e) {
         this.episode.PlayerPosition = this.player.CurrentPosition;
@@ -130,6 +129,7 @@ namespace GPodder.PortaPodder {
     /// </summary>
     public void Pause() {
       player.Pause();
+      episode.PlayerPosition = player.CurrentPosition;
     }
 
     /// <summary>
@@ -144,6 +144,7 @@ namespace GPodder.PortaPodder {
     /// </summary>
     public void Stop() {
       player.Stop();
+      episode.PlayerPosition = player.CurrentPosition;
     }
   }
 }
