@@ -77,7 +77,6 @@ namespace GPodder.PortaPodder.Activities {
       FindViewById<Button>(Resource.EpisodeDetails.Stop).Click += stopPlaying;
       FindViewById<Button>(Resource.EpisodeDetails.SkipForwards).Click += skipForwards;
       FindViewById<Button>(Resource.EpisodeDetails.SkipBack).Click += skipBackwards;
-      FindViewById<Button>(Resource.EpisodeDetails.Toggle).Click += togglePlayed;
 
       // set an event for the player to seek to the requested position
       FindViewById<SeekBar>(Resource.EpisodeDetails.seek).ProgressChanged += delegate(object sender, SeekBar.ProgressChangedEventArgs e){
@@ -85,15 +84,6 @@ namespace GPodder.PortaPodder.Activities {
           player.SeekTo(e.Progress);
         }
       };
-    }
-
-    /// <summary>
-    /// Toggles the played.
-    /// </summary>
-    /// <param name='sender'>Sender.</param>
-    /// <param name='e'>E.</param>
-    private void togglePlayed(object sender, EventArgs e) {
-      Server.PushUpdates(EpisodeList.SelectedEpisode);
     }
 
     /// <summary>
