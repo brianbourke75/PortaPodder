@@ -41,32 +41,29 @@
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="..\PortaPodder\GPodder\Device.cs">
-      <Link>GPodder\Device.cs</Link>
+      <Link>Device.cs</Link>
     </Compile>
     <Compile Include="..\PortaPodder\GPodder\Episode.cs">
-      <Link>GPodder\Episode.cs</Link>
+      <Link>Episode.cs</Link>
     </Compile>
     <Compile Include="..\PortaPodder\GPodder\Server.cs">
-      <Link>GPodder\Server.cs</Link>
+      <Link>Server.cs</Link>
     </Compile>
     <Compile Include="..\PortaPodder\GPodder\Subscription.cs">
-      <Link>GPodder\Subscription.cs</Link>
+      <Link>Subscription.cs</Link>
     </Compile>
     <Compile Include="..\PortaPodder\GPodder\UriConverter.cs">
-      <Link>GPodder\UriConverter.cs</Link>
+      <Link>UriConverter.cs</Link>
     </Compile>
     <Compile Include="..\PortaPodder\GPodder\User.cs">
-      <Link>GPodder\User.cs</Link>
+      <Link>User.cs</Link>
     </Compile>
     <Compile Include="..\PortaPodder\GPodder\DeviceUpdates.cs">
-      <Link>GPodder\DeviceUpdates.cs</Link>
+      <Link>DeviceUpdates.cs</Link>
     </Compile>
     <Compile Include="..\PortaPodder\GPodder\PodcastItem.cs">
-      <Link>GPodder\PodcastItem.cs</Link>
+      <Link>PodcastItem.cs</Link>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="GPodder\" />
-  </ItemGroup>
 </Project>
