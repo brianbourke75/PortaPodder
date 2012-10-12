@@ -87,6 +87,22 @@ namespace GPodder.PortaPodder.Activities {
     }
 
     /// <summary>
+    /// Sets the state of the GUI for download.
+    /// </summary>
+    /// <param name='downloaded'>If set to <c>true</c> downloaded.</param>
+    private void setGUIForDownloadState(bool downloaded) {
+      FindViewById<Button>(Resource.EpisodeDetails.Download).Enabled = !downloaded;
+      FindViewById<Button>(Resource.EpisodeDetails.Delete).Enabled = downloaded;
+      FindViewById<Button>(Resource.EpisodeDetails.Play).Enabled = downloaded;
+      FindViewById<Button>(Resource.EpisodeDetails.Stop).Enabled = downloaded;
+      FindViewById<Button>(Resource.EpisodeDetails.SkipForwards).Enabled = downloaded;
+      FindViewById<Button>(Resource.EpisodeDetails.SkipBack).Enabled = downloaded;
+      SeekBar seek = FindViewById<SeekBar>(Resource.EpisodeDetails.seek);
+      seek.Enabled = downloaded;
+      seek.Progress = downloaded ? EpisodeList.SelectedEpisode.PlayerPosition : 0;
+    }
+
+    /// <summary>
     /// Skips the backwards.
     /// </summary>
     /// <param name='sender'>Sender.</param>
@@ -170,7 +186,7 @@ namespace GPodder.PortaPodder.Activities {
       if(File.Exists(fileLocation)) {
         File.Delete(fileLocation);
       }
-      FindViewById<Button>(Resource.EpisodeDetails.Download).Enabled = !File.Exists(fileLocation);
+      setGUIForDownloadState(File.Exists(fileLocation));
     }
 
     /// <summary>
@@ -187,6 +203,8 @@ namespace GPodder.PortaPodder.Activities {
       downloadProgress.SetTitle("Downloading Episode");
       downloadProgress.Max = 100;
       downloadProgress.SetProgressStyle(ProgressDialogStyle.Horizontal);
+
+      long fileLength = 0;
 
       // create a background worker to download everything
       BackgroundWorker downloadInBackground = new BackgroundWorker(delegate(ref bool stop){
@@ -206,7 +224,7 @@ namespace GPodder.PortaPodder.Activities {
         
         // execute the request
         HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-        long fileLength = response.ContentLength;
+        fileLength = response.ContentLength;
         downloadProgress.Max = (int)(fileLength / 1024);
         // used on each read operation
         byte[] buf = new byte[1024 * 20];
@@ -216,6 +234,11 @@ namespace GPodder.PortaPodder.Activities {
           long total = 0;
           
           do {
+            // check for the stop condition
+            if(stop){
+              return;
+            }
+
             // fill the buffer with data
             count = resStream.Read(buf, 0, buf.Length);
             
@@ -225,21 +248,29 @@ namespace GPodder.PortaPodder.Activities {
               downloadProgress.Progress = (int)(total / 1024);
               output.Write(buf, 0, count);
             }
-          } while (count > 0 && !stop); // any more data to read?
+          } while (count > 0); // any more data to read?
         }
       });
       downloadInBackground.Completed += delegate(Exception exc){
         RunOnUiThread(() => downloadProgress.Dismiss());
         string outputPath = PortaPodderDataSource.GetEpisodeLocation(myEpisode);
-        // if there was an issue delete the file to allow for us to begin anew!
+
+        // log the exception if there was one
         if(exc != null){
           PortaPodderApp.LogMessage(exc);
-          // we will read data via the response stream
-          if(File.Exists(outputPath)){
-            File.Delete(outputPath);
-          }
         }
-        FindViewById<Button>(Resource.EpisodeDetails.Download).Enabled = !File.Exists(outputPath);
+
+        // delete the file if the download is incomplete or if there was an error
+        if(File.Exists(outputPath) && (new FileInfo(outputPath).Length < fileLength || exc != null)){
+          File.Delete(outputPath);
+        }
+
+        setGUIForDownloadState(File.Exists(outputPath));
+      };
+
+      // if the progress bar is canceled, then the stop signal needs to be given
+      downloadProgress.CancelEvent += delegate(object cancelSender, EventArgs cancelEvent) {
+        downloadInBackground.Stop = true;
       };
       downloadInBackground.Execute();
     }
@@ -257,7 +288,7 @@ namespace GPodder.PortaPodder.Activities {
 
       // set the episode title
       FindViewById<TextView>(Resource.EpisodeDetails.DetailsText).Text = EpisodeList.SelectedEpisode.Title;
-      FindViewById<Button>(Resource.EpisodeDetails.Download).Enabled = !File.Exists(PortaPodderDataSource.GetEpisodeLocation(EpisodeList.SelectedEpisode));
+      setGUIForDownloadState(File.Exists(PortaPodderDataSource.GetEpisodeLocation(EpisodeList.SelectedEpisode)));
     }
   }
 }
