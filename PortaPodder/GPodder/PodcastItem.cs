@@ -31,7 +31,7 @@ namespace GPodder.DataStructures {
   /// Podcast item.
   /// </summary>
   [DataContract]
-  public abstract class PodcastItem {
+  public abstract class PodcastItem : IComparable{
 
     /// <summary>
     /// The title of the podcast
@@ -120,6 +120,49 @@ namespace GPodder.DataStructures {
       }
     }
 
+    #region interface implementation
+    
+    /// <summary>
+    /// Compares to.
+    /// </summary>
+    /// <returns>The to.</returns>
+    /// <param name='obj'>Object.</param>
+    public int CompareTo(object obj) {
+      if(obj is PodcastItem){
+        return url.ToString().CompareTo(((PodcastItem)obj).url.ToString());
+      }
+      return 0;
+    }
+
+    /// <summary>
+    /// gets to see if the two objects are equal
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
+    public override bool Equals(object obj) {
+      if (obj is PodcastItem) {
+        return this.url == ((PodcastItem)obj).url;
+      }
+      return false;
+    }
+    
+    /// <summary>
+    /// standard hasher
+    /// </summary>
+    /// <returns></returns>
+    public override int GetHashCode() {
+      return url.GetHashCode();
+    }
+    
+    /// <summary>
+    /// Returns a <see cref="System.String"/> that represents the current <see cref="PortaPodder.Subscription"/>.
+    /// </summary>
+    /// <returns>A <see cref="System.String"/> that represents the current <see cref="PortaPodder.Subscription"/>.</returns>
+    public override string ToString() {
+      return title;
+    }
+    
+    #endregion
   }
 }
 

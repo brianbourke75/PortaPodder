@@ -49,6 +49,7 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Json" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Resources\Resource.designer.cs" />

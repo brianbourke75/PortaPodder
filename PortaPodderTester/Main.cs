@@ -56,16 +56,15 @@ namespace PortaPodderTester {
 
         Server.UpdateForDevice();
 
+        Console.WriteLine("Make some changes");
+
+        Console.ReadLine();
+
         Server.UpdateForDevice();
 
         DisplaySubscriptions();
 
         DisplayEpisodes();
-
-        Episode test = Server.Episodes[0];
-        test.Status = Episode.EpisodeStatus.Play;
-        Server.PushUpdates(test);
-        
       }
       catch (JsonException exc) {
         WriteLine("There are " + exc.Data.Count + " data objects");

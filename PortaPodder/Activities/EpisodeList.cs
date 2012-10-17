@@ -57,7 +57,7 @@ namespace GPodder.PortaPodder.Activities {
     /// <summary>
     /// The expandable adapter.
     /// </summary>
-    SimpleExpandableListAdapter expandableAdapter = null;
+    PodcastListAdapter expandableAdapter = new PodcastListAdapter();
 
     /// <summary>
     /// The name of the name text view in the subscription and episode groups
@@ -72,12 +72,12 @@ namespace GPodder.PortaPodder.Activities {
     /// <summary>
     /// The group data.
     /// </summary>
-    JavaList<IDictionary<string, object>> subscriptionList = new JavaList<IDictionary<string, object>>();
+    JavaList<IDictionary<string, string>> subscriptionList = new JavaList<IDictionary<string, string>>();
 
     /// <summary>
     /// The child data.
     /// </summary>
-    JavaList<IList<IDictionary<string, object>>> episodeList = new JavaList<IList<IDictionary<string, object>>>();
+    JavaList<IList<IDictionary<string, string>>> episodeList = new JavaList<IList<IDictionary<string, string>>>();
 
     /// <summary>
     /// Raises the create event.
@@ -86,110 +86,25 @@ namespace GPodder.PortaPodder.Activities {
     protected override void OnCreate(Bundle bundle) {
       base.OnCreate(bundle);
       ExpandableListView.SetOnChildClickListener(this);
-      expandableAdapter = new SimpleExpandableListAdapter(this, subscriptionList, Android.Resource.Layout.SimpleExpandableListItem1, new string[] { NAME_TEXT_VIEW }, new int[] { Android.Resource.Id.Text1 }, episodeList, Android.Resource.Layout.TwoLineListItem, new string[] { NAME_TEXT_VIEW, RELEASED_TEXT_VIEW }, new int[] {Android.Resource.Id.Text1, Android.Resource.Id.Text2 });
       SetListAdapter(expandableAdapter);
 
-      BackgroundWorker addEpisodesWorker = new BackgroundWorker( delegate(ref bool stopWorking){
-        // add all pre-existing episodes
-        foreach(Episode episode in Server.Episodes) {
-          addEpisodeUI(episode);
-        }
-        PortaPodderApp.LogMessage("Done creating episodes");
-      });
-
-      addEpisodesWorker.Execute();
+      // add all pre-existing episodes
+      foreach(Episode episode in Server.Episodes) {
+        expandableAdapter.Add(episode);
+      }
+      expandableAdapter.NotifyDataSetChanged();
 
       // add the hook for adding episodes
-      Server.EpisodeAdded += addEpisodeUI;
-    }
+      Server.EpisodeAdded += delegate(Episode episode){
+        expandableAdapter.Add(episode);
+        RunOnUiThread(() => expandableAdapter.NotifyDataSetChanged());
+      };
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GPodder.PortaPodder.Activities.EpisodeList"/> class.
-    /// </summary>
-    /// <param name='episode'>Episode.</param>
-    private void addEpisodeUI(Episode episode) {
-      // first make sure that the subscription UI is there
-      IDictionary<string, object> subscriptionGroup = GetSubscriptionList(episode.PodcastTitle);
-      if(subscriptionGroup == null) {
-        addSubscriptionUI(episode.PodcastTitle);
-        subscriptionGroup = GetSubscriptionList(episode.PodcastTitle);
-      }
-
-      // now add children
-      // look up where the subscription list is in the group data and reuse that index in the child group
-      int groupIndex = subscriptionList.IndexOf(subscriptionGroup);
-      IList<IDictionary<string, object>> selEpisodeList = episodeList[groupIndex];
-      IDictionary<string, object> episodeItems = GetEpisodeItems(selEpisodeList, episode);
-      if(episodeItems == null) {
-        episodeItems = new JavaDictionary<string, object>();
-        // assert that there is a new lookup location for the episode which we will then populate with some GUI data
-        if(selEpisodeList.Count == 0){
-          RunOnUIThreadBlocking(() => selEpisodeList.Add(episodeItems));
-        }
-        else{
-          int ci = 0;
-          for(; ci < selEpisodeList.Count ; ci++){
-            DateTime curEpiDate = DateTime.Parse(selEpisodeList[ci][RELEASED_TEXT_VIEW].ToString());
-            if(curEpiDate.CompareTo(episode.Released) < 0){
-              break;
-            }
-          }
-          selEpisodeList.Insert(ci, episodeItems);
-        }
-      }
-      if(episodeItems.Count > 0){
-        episodeItems.Clear();
-      }
-
-      // add the date and episode name
-      RunOnUIThreadBlocking(() => {
-        episodeItems.Add(NAME_TEXT_VIEW, episode.Title);
-        episodeItems.Add(RELEASED_TEXT_VIEW, episode.Released.ToString());
-        expandableAdapter.NotifyDataSetChanged();
-      });
-    }
-
-    /// <summary>
-    /// Adds the subscription user interface add.
-    /// </summary>
-    /// <param name='subscription'>Subscription.</param>
-    private void addSubscriptionUI(string podcastTitle) {
-      JavaDictionary<string, object> subLookup = new JavaDictionary<string, object>();
-      subLookup.Add(NAME_TEXT_VIEW, podcastTitle);
-      subscriptionList.Add(subLookup);
-
-      // get the index of the subscription and insert the subscription at the index
-      int subscriptionIndex = subscriptionList.IndexOf(subLookup);
-      episodeList.Insert(subscriptionIndex, new JavaList<IDictionary<string, object>>());
-    }
-
-    /// <summary>
-    /// Gets the episode list.
-    /// </summary>
-    /// <returns>The episode list.</returns>
-    /// <param name='groupIndex'>Group index.</param>
-    /// <param name='episode'>Episode.</param>
-    private IDictionary<string, object> GetEpisodeItems(IList<IDictionary<string, object>> selEpisodeList, Episode episode) {
-      foreach(IDictionary<string, object> list in selEpisodeList) {
-        if(list[NAME_TEXT_VIEW] != null && list[NAME_TEXT_VIEW].ToString() == episode.Title){
-          return list;
-        }
-      }
-      return null;
-    }
-
-    /// <summary>
-    /// Gets the subscription list.
-    /// </summary>
-    /// <returns>The subscription list.</returns>
-    /// <param name='subscription'> Subscription.</param>
-    private IDictionary<string, object> GetSubscriptionList(string podcastTitle) {
-      foreach(IDictionary<string, object> subLookup in subscriptionList) {
-        if(subLookup[NAME_TEXT_VIEW].ToString() == podcastTitle){
-          return subLookup;
-        }
-      }
-      return null;
+      // add the hook for adding episodes
+      Server.EpisodeRemoved += delegate(Episode episode){
+        expandableAdapter.Remove(episode);
+        RunOnUiThread(() => expandableAdapter.NotifyDataSetChanged());
+      };
     }
 
     /// <summary>
@@ -234,8 +149,17 @@ namespace GPodder.PortaPodder.Activities {
         StartActivity(new Intent(this, typeof(SubscriptionInteraction)));
         return true;
       case Resource.Id.Refresh:
+        ExpandableListView.Enabled = false;
         BackgroundWorker worker = new BackgroundWorker(delegate(ref bool stop) {
-          Server.UpdateForDevice();
+          try{
+            Server.UpdateForDevice();
+          }
+          catch(Exception exc){
+            PortaPodderApp.LogMessage(exc);
+          }
+          finally{
+            RunOnUiThread(()=> {ExpandableListView.Enabled = true;});
+          }
         });
         worker.Execute();
 
@@ -260,16 +184,108 @@ namespace GPodder.PortaPodder.Activities {
     }
 
     /// <summary>
-    /// Runs the on user interface thread blocking.
+    /// The expandable list adapte
     /// </summary>
-    /// <param name='runnable'>Runnable.</param>
-    private void RunOnUIThreadBlocking(Action action){
-      AutoResetEvent remoteCommandDoneEvent = new AutoResetEvent(false);
-      RunOnUiThread(() => {
-        action.Invoke();
-        remoteCommandDoneEvent.Set();
-      });
-      remoteCommandDoneEvent.WaitOne();
+    private class PodcastListAdapter : BaseExpandableListAdapter{
+
+      /// <summary>
+      /// Simple class to reverse the date time order
+      /// </summary>        
+      private class ReverseDateTime : IComparer<DateTime>{
+        public int Compare(DateTime x, DateTime y) {
+          return y.CompareTo(x);
+        }
+      }
+
+      /// <summary>
+      /// The inflater
+      /// </summary>
+      private LayoutInflater inflater = LayoutInflater.From(PortaPodderApp.Context);
+
+      /// <summary>
+      /// The podcasts in dictionary form
+      /// </summary>
+      private SortedList<Subscription, SortedList<DateTime, Episode>> podcasts = new SortedList<Subscription, SortedList<DateTime, Episode>>();
+
+      /// <summary>
+      /// Add the specified episode.
+      /// </summary>
+      /// <param name='episode'>Episode.</param>
+      public void Add(Episode episode) {
+        // make sure the subscription is there before we add the episode
+        if(!podcasts.ContainsKey(episode.Parent)) {
+          podcasts.Add(episode.Parent, new SortedList<DateTime, Episode>(new ReverseDateTime()));
+        }
+
+        // now add the episode
+        SortedList<DateTime, Episode> subcriptionList = podcasts[episode.Parent];
+        if(!subcriptionList.ContainsValue(episode) && !subcriptionList.ContainsKey(episode.Released)) {
+          subcriptionList.Add(episode.Released, episode);
+        }
+      }
+
+      /// <summary>
+      /// Remove the specified episode.
+      /// </summary>
+      /// <param name='episode'>Episode.</param>
+      public void Remove(Episode episode) {
+        // first remove the episode
+        podcasts[episode.Parent].Remove(episode.Released);
+
+        // now check for empty subscriptions
+        if(podcasts[episode.Parent].Count == 0) {
+          podcasts.Remove(episode.Parent);
+        }
+      }
+
+      public override Java.Lang.Object GetChild(int groupPosition, int childPosition) {
+        return podcasts.Values[groupPosition].Values[childPosition].Title;
+      }
+
+      public override long GetChildId(int groupPosition, int childPosition) {
+        return childPosition;
+      }
+
+      public override int GetChildrenCount(int groupPosition) {
+        return podcasts.Values[groupPosition].Count;
+      }
+
+      public override View GetChildView(int groupPosition, int childPosition, bool isLastChild, View convertView, ViewGroup parent) {
+        convertView = inflater.Inflate(Android.Resource.Layout.TwoLineListItem, parent, false);
+        convertView.FindViewById<TextView>(Android.Resource.Id.Text1).Text = podcasts.Values[groupPosition].Values[childPosition].Title;
+        convertView.FindViewById<TextView>(Android.Resource.Id.Text2).Text = podcasts.Values[groupPosition].Values[childPosition].Released.ToShortDateString();
+        return convertView;
+      }
+
+      public override Java.Lang.Object GetGroup(int groupPosition) {
+        return podcasts.Keys[groupPosition].Title;
+      }
+
+      public override long GetGroupId(int groupPosition) {
+        return groupPosition;
+      }
+
+      public override View GetGroupView(int groupPosition, bool isExpanded, View convertView, ViewGroup parent) {
+        convertView = inflater.Inflate(Android.Resource.Layout.SimpleExpandableListItem1, parent, false);
+        convertView.FindViewById<TextView>(Android.Resource.Id.Text1).Text = podcasts.Keys[groupPosition].Title;
+        return convertView;
+      }
+
+      public override bool IsChildSelectable(int groupPosition, int childPosition) {
+        return true;
+      }
+
+      public override int GroupCount {
+        get {
+          return podcasts.Count;
+        }
+      }
+
+      public override bool HasStableIds {
+        get {
+          return true;
+        }
+      }
     }
   }
 }

@@ -30,7 +30,7 @@ namespace GPodder.DataStructures {
   /// The Episode from GPodder.net
   /// </summary>
   [DataContract]
-  public class Episode : PodcastItem{
+  public class Episode : PodcastItem, IComparable{
 
     #region enumerations
 
@@ -319,38 +319,6 @@ namespace GPodder.DataStructures {
       set {
         status = value;
       }
-    }
-
-    #endregion
-
-    #region methods
-
-    /// <summary>
-    /// checks for the equality
-    /// </summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
-    public override bool Equals(object obj) {
-      if (obj is Episode) {
-        return this.url == ((Episode)obj).url;
-      }
-      return false;
-    }
-
-    /// <summary>
-    /// standard hasher
-    /// </summary>
-    /// <returns></returns>
-    public override int GetHashCode() {
-      return base.GetHashCode();
-    }
-
-    /// <summary>
-    /// Returns a <see cref="System.String"/> that represents the current <see cref="GPodder.Episode"/>.
-    /// </summary>
-    /// <returns>A <see cref="System.String"/> that represents the current <see cref="GPodder.Episode"/>.</returns>
-    public override string ToString() {
-      return podcastTitle + ":" + title;
     }
 
     #endregion

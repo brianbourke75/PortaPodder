@@ -498,19 +498,35 @@ namespace GPodder.DataStructures {
           }
         }
       }
-      foreach (Subscription removed in deviceUpdates.Remove) {
+      foreach (string removed in deviceUpdates.Remove) {
+        // get the subscription via the url
+        Subscription toBeRemoved = null;
+        foreach(Subscription subscription in subscriptions){
+          if(subscription.Url.ToString() == removed){
+            toBeRemoved = subscription;
+            break;
+          }
+        }
+
+        // check to make sure we found the right subscription
+        if(toBeRemoved == null){
+          continue;
+        }
+
         // prior to removing the subscription, we have to also remove all of the child episodes
-        foreach(Episode episode in episodes){
-          if(episode.Parent == removed){
+        Episode[] episodeList = episodes.ToArray();
+        foreach(Episode episode in episodeList){
+          if(episode.Parent == toBeRemoved){
             removeEpisode(episode);
           }
         }
-        subscriptions.Remove(removed);
+
+        subscriptions.Remove(toBeRemoved);
 
         // trigger hooks
         foreach(SubscriptionUpdatedMethod callback in subsciptionRemovedCallbacks){
           try{
-            callback(removed);
+            callback(toBeRemoved);
           }
           catch(Exception exc){
             logMessage(exc.Message);
@@ -524,6 +540,12 @@ namespace GPodder.DataStructures {
         if (episodes.Contains(updated)) {
           removeEpisode(updated);
         }
+
+        // we have been getting some episodes with no title so let's look for some critical data first
+        if(string.IsNullOrEmpty(updated.Title) || updated.Url == null){
+          continue;
+        }
+
         episodes.Add(updated);
         // trigger hooks
         foreach(EpisodeUpdatedMethod callback in episodeAddedCallbacks){

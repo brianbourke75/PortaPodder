@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json;
 
 namespace GPodder.DataStructures {
 
@@ -40,7 +41,7 @@ namespace GPodder.DataStructures {
     /// <summary>
     /// subscriptions to remove
     /// </summary>
-    private List<Subscription> remove = new List<Subscription>();
+    private List<string> remove = new List<string>();
 
     /// <summary>
     /// episodes to update
@@ -69,7 +70,7 @@ namespace GPodder.DataStructures {
     /// the list of subscriptions to remove
     /// </summary>
     [DataMember(Name = "remove")]
-    public List<Subscription> Remove {
+    public List<string> Remove {
       get {
         return remove;
       }

@@ -124,7 +124,7 @@ namespace GPodder.DataStructures {
     /// </summary>
     public const string COL_SCALED_LOGO_URL = "scaled_logo_url";
 
-#endregion
+    #endregion
  
     #region construction
 
@@ -274,37 +274,6 @@ namespace GPodder.DataStructures {
 
     #endregion
 
-    #region methods
-
-    /// <summary>
-    /// gets to see if the two objects are equal
-    /// </summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
-    public override bool Equals(object obj) {
-      if (obj is Subscription) {
-        return this.url == ((Subscription)obj).url;
-      }
-      return false;
-    }
-
-    /// <summary>
-    /// standard hasher
-    /// </summary>
-    /// <returns></returns>
-    public override int GetHashCode() {
-      return base.GetHashCode();
-    }
-
-    /// <summary>
-    /// Returns a <see cref="System.String"/> that represents the current <see cref="PortaPodder.Subscription"/>.
-    /// </summary>
-    /// <returns>A <see cref="System.String"/> that represents the current <see cref="PortaPodder.Subscription"/>.</returns>
-    public override string ToString() {
-      return title;
-    }
-
-    #endregion
   }
 }
 
