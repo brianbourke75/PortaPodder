@@ -111,12 +111,11 @@ namespace GPodder.PortaPodder.Activities {
       }
 
       // if there are absolutely no devices then this is an error condition
-      string[] deviceIds = Server.GetDevicesIds();
-      FindViewById<TextView>(Resource.SelectDevice.selectDeviceText).Text = deviceIds.Length == 0 ? GetText(Resource.String.select_devices) : GetText(Resource.String.no_devices);
+      FindViewById<TextView>(Resource.SelectDevice.selectDeviceText).Text = ids.Length != 0 ? GetText(Resource.String.select_devices) : GetText(Resource.String.no_devices);
 
       // add all items to the adapter list
       ArrayAdapter<Device> adapter = (ArrayAdapter<Device>)FindViewById<ListView>(Resource.SelectDevice.deviceListView).Adapter;
-      foreach(string deviceId in deviceIds) {
+      foreach(string deviceId in ids) {
         adapter.Add(Server.GetDevice(deviceId));
       }
     }
