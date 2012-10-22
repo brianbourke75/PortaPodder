@@ -47,12 +47,64 @@ namespace GPodder.PortaPodder.Activities {
   public class EpisodeDetails : Activity {
 
     /// <summary>
+    /// episode broadcast reciever
+    /// </summary>      
+    private class EpisodeBroadcastReciever : BroadcastReceiver{
+
+      /// <summary>
+      /// The parent.
+      /// </summary>
+      private EpisodeDetails parent = null;
+
+      /// <summary>
+      /// Initializes a new instance of the
+      /// <see cref="GPodder.PortaPodder.Activities.EpisodeDetails+EpisodeBroadcastReciever"/> class.
+      /// </summary>
+      /// <param name='parent'> Parent.</param>
+      public EpisodeBroadcastReciever(EpisodeDetails parent){
+        this.parent = parent;
+      }
+
+      /// <summary>
+      /// Raises the receive event.
+      /// </summary>
+      /// <param name='context'>Context.</param>
+      /// <param name='intent'>Intent.</param>
+      public override void OnReceive(Context context, Android.Content.Intent intent) {
+        switch(intent.Action){
+          case EpisodePlayer.SEEK_BAR_UPDATE_INTENT:
+            parent.FindViewById<SeekBar>(Resource.EpisodeDetails.seek).Progress = (int)intent.Flags;
+            break;
+          case EpisodePlayer.SEEK_BAR_DURATION_INTENT:
+            parent.FindViewById<SeekBar>(Resource.EpisodeDetails.seek).Max = (int)intent.Flags;
+            break;
+        }
+      }
+    }
+
+    /// <summary>
+    /// Flag if receiver is registered 
+    /// </summary>
+    private bool mReceiversRegistered = false;
+    
+    /// <summary>
+    /// Define a handler and a broadcast receiver
+    /// <see cref="GPodder.PortaPodder.Activities.EpisodeDetails+EpisodeBroadcastReciever"/> class.
+    /// </summary>
+    private Handler handler = new Handler();
+
+    /// <summary>
+    /// The reciever.
+    /// </summary>
+    private EpisodeBroadcastReciever reciever = null;
+
+    /// <summary>
     /// Raises the create event.
     /// </summary>
     /// <param name='bundle'>Bundle.</param>
     protected override void OnCreate(Bundle bundle) {
       base.OnCreate(bundle);
-
+      reciever = new EpisodeBroadcastReciever(this);
       SetContentView(Resource.Layout.EpisodeDetails);
 
       // setup the events
@@ -69,6 +121,33 @@ namespace GPodder.PortaPodder.Activities {
           player.SeekTo(e.Progress);
         }*/
       };
+    }
+
+    /// <summary>
+    /// Raises the resume event.
+    /// </summary>
+    protected override void OnResume() {
+      base.OnResume();
+      
+      // Register Sync Recievers
+      IntentFilter intentToReceiveFilter = new IntentFilter();
+      intentToReceiveFilter.AddAction(EpisodePlayer.SEEK_BAR_UPDATE_INTENT);
+      intentToReceiveFilter.AddAction(EpisodePlayer.SEEK_BAR_DURATION_INTENT);
+      this.RegisterReceiver(reciever, intentToReceiveFilter, null, handler);
+      mReceiversRegistered = true;
+    }
+
+    /// <summary>
+    /// Raises the pause event.
+    /// </summary>
+    protected override void OnPause() {
+      base.OnPause();
+      
+      // Make sure you unregister your receivers when you pause your activity
+      if(mReceiversRegistered) {
+        UnregisterReceiver(reciever);
+        mReceiversRegistered = false;
+      }
     }
 
     /// <summary>

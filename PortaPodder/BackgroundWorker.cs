@@ -72,6 +72,11 @@ namespace GPodder.PortaPodder{
     /// </summary>
     private WorkerCompleted completed = null;
 
+    /// <summary>
+    /// The is running.
+    /// </summary>
+    private bool isRunning = false;
+
     #endregion
 
     #region construction
@@ -90,6 +95,16 @@ namespace GPodder.PortaPodder{
     #endregion
 
     #region properties
+
+    /// <summary>
+    /// Gets a value indicating whether this instance is running.
+    /// </summary>
+    /// <value><c>true</c> if this instance is running; otherwise, <c>false</c>.</value>
+    public bool IsRunning {
+      get {
+        return isRunning;
+      }
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether this <see cref="GPodder.PortaPodder.BackgroundWorker"/> should stop
@@ -135,6 +150,7 @@ namespace GPodder.PortaPodder{
     /// <returns>The in background.</returns>
     /// <param name='params'>Parameters.</param>
     protected override Java.Lang.Object DoInBackground(params Java.Lang.Object[] @params) {
+      isRunning = true;
       try {
         worker(ref stop);
       }
@@ -149,6 +165,7 @@ namespace GPodder.PortaPodder{
     /// </summary>
     /// <param name='result'>Result.</param>
     protected override void OnPostExecute(Java.Lang.Object result) {
+      isRunning = false;
       if(completed != null) {
         completed(problem);
       }

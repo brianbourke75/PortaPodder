@@ -45,6 +45,16 @@ namespace GPodder.PortaPodder {
   public class EpisodePlayer : Service {
 
     /// <summary>
+    /// The update intent for the seek bar
+    /// </summary>
+    public const string SEEK_BAR_UPDATE_INTENT = "gpodder.portapodder.episodeplayer.seekbarupdate";
+
+    /// <summary>
+    /// The update intent for the seek bar
+    /// </summary>
+    public const string SEEK_BAR_DURATION_INTENT = "gpodder.portapodder.episodeplayer.seekbarduration";
+
+    /// <summary>
     /// The episode.
     /// </summary>
     private Episode episode = null;
@@ -55,19 +65,20 @@ namespace GPodder.PortaPodder {
     private static MediaPlayer player = null;
 
     /// <summary>
+    /// The monitor for player progress
+    /// </summary>
+    private BackgroundWorker progressMonitor = null;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="GPodder.PortaPodder.EpisodePlayer"/> class.
     /// </summary>
     public EpisodePlayer() {
-    }
-
-    /// <summary>
-    /// Gets a value indicating whether this instance is playing.
-    /// </summary>
-    /// <value><c>true</c> if this instance is playing; otherwise, <c>false</c>.</value>
-    public static bool IsPlaying {
-      get {
-        return player != null && player.IsPlaying;
-      }
+      progressMonitor = new BackgroundWorker(delegate(ref bool stop){
+        while(!stop){
+          broadcastProgress();
+          Thread.Sleep(500);
+        }
+      });
     }
 
     /// <summary>
@@ -104,8 +115,52 @@ namespace GPodder.PortaPodder {
 
       episode = EpisodeList.SelectedEpisode;
       player = MediaPlayer.Create(PortaPodderApp.Context, Android.Net.Uri.Parse(PortaPodderDataSource.GetEpisodeLocation(episode)));
+
+      // set the player to update the episode current position whenever a seek operation is sent
+      player.SeekComplete += delegate(object sender, EventArgs e) {
+        episode.PlayerPosition = player.CurrentPosition;
+      };
+
+      // there is not duration meta-data to be had in the gpodder data structures, so we need to determine it once the media player has
+      // been created and set it at this time and then broadcast it
+      episode.Duration = player.Duration;
+      broadcastDuration();
+
+      // go to the last recorded position and start playing from there
       player.SeekTo(episode.PlayerPosition);
       player.Start();
+
+      // the progress monitor is the background thread which is going to send broadcasts about how far along the player is
+      progressMonitor.Stop = false;
+      if(!progressMonitor.IsRunning) {
+        progressMonitor.Execute();
+      }
+    }
+
+    /// <summary>
+    /// Ons the progress update.
+    /// </summary>
+    private void broadcastProgress() {
+      if(player == null) {
+        return;
+      }
+      Intent i = new Intent();
+      i.SetAction(SEEK_BAR_UPDATE_INTENT);
+      i.SetFlags((ActivityFlags)player.CurrentPosition);
+      PortaPodderApp.Context.SendBroadcast(i);
+    }
+
+    /// <summary>
+    /// Sends the duration of the episode
+    /// </summary>
+    private void broadcastDuration() {
+      if(player == null) {
+        return;
+      }
+      Intent i = new Intent();
+      i.SetAction(SEEK_BAR_DURATION_INTENT);
+      i.SetFlags((ActivityFlags)player.Duration);
+      PortaPodderApp.Context.SendBroadcast(i);
     }
 
     /// <summary>
@@ -120,6 +175,8 @@ namespace GPodder.PortaPodder {
       if(episode != null) {
         episode.PlayerPosition = player.CurrentPosition;
       }
+
+      progressMonitor.Stop = true;
 
       // now stop the media player
       player.Stop();
