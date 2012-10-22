@@ -71,12 +71,17 @@ namespace GPodder.PortaPodder.Activities {
       /// <param name='context'>Context.</param>
       /// <param name='intent'>Intent.</param>
       public override void OnReceive(Context context, Android.Content.Intent intent) {
+        // if the current episode does not match what is currently selected, this is the case where the activity should
+        // not be updated because they are attempting to start a new episode
+        if(EpisodePlayer.PlayingEpisode != EpisodeList.SelectedEpisode) {
+          parent.FindViewById<SeekBar>(Resource.EpisodeDetails.seek).Progress = 0;
+          return;
+        }
+
         switch(intent.Action){
           case EpisodePlayer.SEEK_BAR_UPDATE_INTENT:
             parent.FindViewById<SeekBar>(Resource.EpisodeDetails.seek).Progress = (int)intent.Flags;
-            break;
-          case EpisodePlayer.SEEK_BAR_DURATION_INTENT:
-            parent.FindViewById<SeekBar>(Resource.EpisodeDetails.seek).Max = (int)intent.Flags;
+            parent.FindViewById<SeekBar>(Resource.EpisodeDetails.seek).Max = EpisodePlayer.PlayingEpisode.Duration;
             break;
         }
       }
@@ -85,7 +90,7 @@ namespace GPodder.PortaPodder.Activities {
     /// <summary>
     /// Flag if receiver is registered 
     /// </summary>
-    private bool mReceiversRegistered = false;
+    private bool receiversRegistered = false;
     
     /// <summary>
     /// Define a handler and a broadcast receiver
@@ -117,9 +122,12 @@ namespace GPodder.PortaPodder.Activities {
 
       // set an event for the player to seek to the requested position
       FindViewById<SeekBar>(Resource.EpisodeDetails.seek).ProgressChanged += delegate(object sender, SeekBar.ProgressChangedEventArgs e){
-        /*if(player != null){
-          player.SeekTo(e.Progress);
-        }*/
+        if(e.FromUser){
+          Intent i = new Intent();
+          i.SetAction(EpisodePlayer.PLAYER_INSTRUCTION_SEEK_ABSOLUTE);
+          i.SetFlags((ActivityFlags)(e.Progress));
+          PortaPodderApp.Context.SendBroadcast(i);
+        }
       };
     }
 
@@ -132,9 +140,8 @@ namespace GPodder.PortaPodder.Activities {
       // Register Sync Recievers
       IntentFilter intentToReceiveFilter = new IntentFilter();
       intentToReceiveFilter.AddAction(EpisodePlayer.SEEK_BAR_UPDATE_INTENT);
-      intentToReceiveFilter.AddAction(EpisodePlayer.SEEK_BAR_DURATION_INTENT);
       this.RegisterReceiver(reciever, intentToReceiveFilter, null, handler);
-      mReceiversRegistered = true;
+      receiversRegistered = true;
     }
 
     /// <summary>
@@ -144,9 +151,9 @@ namespace GPodder.PortaPodder.Activities {
       base.OnPause();
       
       // Make sure you unregister your receivers when you pause your activity
-      if(mReceiversRegistered) {
+      if(receiversRegistered) {
         UnregisterReceiver(reciever);
-        mReceiversRegistered = false;
+        receiversRegistered = false;
       }
     }
 
@@ -173,11 +180,10 @@ namespace GPodder.PortaPodder.Activities {
     /// <param name='sender'>Sender.</param>
     /// <param name='e'>E.</param>
     private void skipBackwards(object sender, EventArgs e) {
-      /*
-      if(player != null) {
-        player.SeekTo(player.CurrentPosition - 10 * 1000);
-      }
-      */
+      Intent i = new Intent();
+      i.SetAction(EpisodePlayer.PLAYER_INSTRUCTION_SEEK_RELATIVE_BACKWARD);
+      i.SetFlags((ActivityFlags)(10));
+      PortaPodderApp.Context.SendBroadcast(i);
     }
 
     /// <summary>
@@ -186,11 +192,10 @@ namespace GPodder.PortaPodder.Activities {
     /// <param name='sender'>Sender.</param>
     /// <param name='e'>E.</param>
     private void skipForwards(object sender, EventArgs e) {
-      /*
-      if(player != null) {
-        player.SeekTo(player.CurrentPosition + 10 * 1000);
-      }
-      */
+      Intent i = new Intent();
+      i.SetAction(EpisodePlayer.PLAYER_INSTRUCTION_SEEK_RELATIVE_FORWARD);
+      i.SetFlags((ActivityFlags)(10));
+      PortaPodderApp.Context.SendBroadcast(i);
     }
 
     /// <summary>
