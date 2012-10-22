@@ -19,11 +19,11 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 using Android.App;
 using Android.Content;
@@ -34,13 +34,15 @@ using Android.Views;
 using Android.Widget;
 
 using GPodder.DataStructures;
+using GPodder.PortaPodder.Activities;
 
 namespace GPodder.PortaPodder {
 
   /// <summary>
   /// Episode player extention of media player
   /// </summary>
-  public class EpisodePlayer {
+  [Service]
+  public class EpisodePlayer : Service {
 
     /// <summary>
     /// The episode.
@@ -50,102 +52,79 @@ namespace GPodder.PortaPodder {
     /// <summary>
     /// The player.
     /// </summary>
-    private MediaPlayer player = null;
+    private static MediaPlayer player = null;
 
     /// <summary>
-    /// The seek bar reference
+    /// Initializes a new instance of the <see cref="GPodder.PortaPodder.EpisodePlayer"/> class.
     /// </summary>
-    private SeekBar seekBar = null;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PortaPodder.EpisodePlayer"/> class.
-    /// </summary>
-    /// <param name='episode'>Episode.</param>
-    /// <param name='context'>Context.</param>
-    /// <param name='uri'>local uri to the file</param>
-    public EpisodePlayer(Episode episode, Context context, Android.Net.Uri uri, SeekBar seekBar) {
-      this.episode = episode;
-      this.seekBar = seekBar;
-      player = MediaPlayer.Create(context, uri);
-
-      // since this is probably the first time the player has had access to the duration of the show
-      // we are going to set the duration property of the episode here
-      if(episode.Duration == 0) {
-        episode.Duration = player.Duration;
-      }
-      seekBar.Max = episode.Duration;
-      player.SeekTo(episode.PlayerPosition);
-      player.Completion += delegate(object sender, EventArgs e) {
-        this.episode.PlayerPosition = this.episode.Duration;
-      };
-      player.SeekComplete += delegate(object sender, EventArgs e) {
-        this.episode.PlayerPosition = this.player.CurrentPosition;
-        this.seekBar.Progress = this.player.CurrentPosition;
-      };
-    }
-
-    /// <summary>
-    /// Gets the episode.
-    /// </summary>
-    /// <value>The episode.</value>
-    public Episode Episode {
-      get {
-        return episode;
-      }
-    }
-
-    /// <summary>
-    /// Gets the current position.
-    /// </summary>
-    /// <value>The current position.</value>
-    public int CurrentPosition {
-      get {
-        return player.CurrentPosition;
-      }
+    public EpisodePlayer() {
     }
 
     /// <summary>
     /// Gets a value indicating whether this instance is playing.
     /// </summary>
     /// <value><c>true</c> if this instance is playing; otherwise, <c>false</c>.</value>
-    public bool IsPlaying {
+    public static bool IsPlaying {
       get {
-        return player.IsPlaying;
+        return player != null && player.IsPlaying;
       }
     }
 
     /// <summary>
-    /// Seeks to specified time position.
+    /// Raises the bind event.
     /// </summary>
-    /// <param name='msec'>
-    /// the offset in milliseconds from the start to seek to
-    /// </param>
-    public void SeekTo(int msec) {
-      player.SeekTo(msec);
+    /// <param name='intent'>Intent.</param>
+    public override IBinder OnBind(Intent intent) {
+      return null;
     }
 
     /// <summary>
-    /// Pauses playback.
+    /// Ons the create.
     /// </summary>
-    public void Pause() {
-      player.Pause();
-      episode.PlayerPosition = player.CurrentPosition;
+    public override void OnCreate() {
+      base.OnCreate();
     }
 
     /// <summary>
-    /// Start this instance and play
+    /// Raises the destroy event.
     /// </summary>
-    public void Start() {
+    public override void OnDestroy() {
+      base.OnDestroy();
+      stop();
+    }
+
+    /// <summary>
+    /// Ons the start.
+    /// </summary>
+    /// <param name='intent'> Intent.</param>
+    /// <param name='startId'>Start identifier.</param>
+    public override void OnStart(Intent intent, int startId) {
+      base.OnStart(intent, startId);
+      stop();
+
+      episode = EpisodeList.SelectedEpisode;
+      player = MediaPlayer.Create(PortaPodderApp.Context, Android.Net.Uri.Parse(PortaPodderDataSource.GetEpisodeLocation(episode)));
+      player.SeekTo(episode.PlayerPosition);
       player.Start();
     }
 
     /// <summary>
-    /// Stop this instance.
+    /// Stop this instance of the media player.
     /// </summary>
-    public void Stop() {
+    private void stop() {
+      if(player == null) {
+        return;
+      }
+
+      // record the position of the episode currently playing prior to stopping.
+      if(episode != null) {
+        episode.PlayerPosition = player.CurrentPosition;
+      }
+
+      // now stop the media player
       player.Stop();
-      episode.PlayerPosition = player.CurrentPosition;
     }
+
   }
 }
 

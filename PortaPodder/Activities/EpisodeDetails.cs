@@ -47,21 +47,6 @@ namespace GPodder.PortaPodder.Activities {
   public class EpisodeDetails : Activity {
 
     /// <summary>
-    /// The media controller
-    /// </summary>
-    private static EpisodePlayer player = null;
-
-    /// <summary>
-    /// Gets the player.
-    /// </summary>
-    /// <value>The player.</value>
-    public static EpisodePlayer Player {
-      get {
-        return player;
-      }
-    }
-
-    /// <summary>
     /// Raises the create event.
     /// </summary>
     /// <param name='bundle'>Bundle.</param>
@@ -80,9 +65,9 @@ namespace GPodder.PortaPodder.Activities {
 
       // set an event for the player to seek to the requested position
       FindViewById<SeekBar>(Resource.EpisodeDetails.seek).ProgressChanged += delegate(object sender, SeekBar.ProgressChangedEventArgs e){
-        if(player != null){
+        /*if(player != null){
           player.SeekTo(e.Progress);
-        }
+        }*/
       };
     }
 
@@ -99,6 +84,7 @@ namespace GPodder.PortaPodder.Activities {
       FindViewById<Button>(Resource.EpisodeDetails.SkipBack).Enabled = downloaded;
       SeekBar seek = FindViewById<SeekBar>(Resource.EpisodeDetails.seek);
       seek.Enabled = downloaded;
+      seek.Max = downloaded ? EpisodeList.SelectedEpisode.Duration : 1;
       seek.Progress = downloaded ? EpisodeList.SelectedEpisode.PlayerPosition : 0;
     }
 
@@ -108,9 +94,11 @@ namespace GPodder.PortaPodder.Activities {
     /// <param name='sender'>Sender.</param>
     /// <param name='e'>E.</param>
     private void skipBackwards(object sender, EventArgs e) {
+      /*
       if(player != null) {
         player.SeekTo(player.CurrentPosition - 10 * 1000);
       }
+      */
     }
 
     /// <summary>
@@ -119,9 +107,11 @@ namespace GPodder.PortaPodder.Activities {
     /// <param name='sender'>Sender.</param>
     /// <param name='e'>E.</param>
     private void skipForwards(object sender, EventArgs e) {
+      /*
       if(player != null) {
         player.SeekTo(player.CurrentPosition + 10 * 1000);
       }
+      */
     }
 
     /// <summary>
@@ -129,10 +119,13 @@ namespace GPodder.PortaPodder.Activities {
     /// </summary>
     /// <param name='sender'>Sender.</param>
     /// <param name='e'>E.</param>
-    private void stopPlaying(object sender = null, EventArgs e = null) {
-      if(player != null) {
-        player.Stop();
-        player = null;
+    private void stopPlaying(object sender, EventArgs e) {
+      try {
+        // stop the playing service
+        StopService(new Intent(this, typeof(EpisodePlayer)));
+      }
+      catch(Exception exc) {
+        PortaPodderApp.LogMessage(exc);
       }
     }
 
@@ -143,33 +136,8 @@ namespace GPodder.PortaPodder.Activities {
     /// <param name='e'>E.</param>
     private void playPodcast(object sender, EventArgs e) {
       try {
-        // check to see if a different uri is playing and reset the player
-        if(player != null && player.Episode != EpisodeList.SelectedEpisode) {
-          stopPlaying();
-        }
-
-        // if the player is not setup, then we need to set it up
-        if(player == null) {
-          // make sure the file exists on the file system
-          string fileLocation = PortaPodderDataSource.GetEpisodeLocation(EpisodeList.SelectedEpisode);
-          Uri setupToPlay = new Uri(fileLocation);
-          if(!File.Exists(fileLocation)) {
-            return;
-          }
-
-          // setup the player along with the seek bar max
-          SeekBar seekBar = FindViewById<SeekBar>(Resource.EpisodeDetails.seek);
-          Android.Net.Uri uri = Android.Net.Uri.Parse(setupToPlay.ToString());
-          player = new EpisodePlayer(EpisodeList.SelectedEpisode, this, uri, seekBar);
-        }
-
-        // if the player is already playing we just need to resume
-        if(!player.IsPlaying) {
-          player.Start();
-        }
-        else {
-          player.Pause();
-        }
+        // stop the playing service
+        StartService(new Intent(this, typeof(EpisodePlayer)));
       }
       catch(Exception exc) {
         PortaPodderApp.LogMessage(exc);
@@ -292,4 +260,3 @@ namespace GPodder.PortaPodder.Activities {
     }
   }
 }
-

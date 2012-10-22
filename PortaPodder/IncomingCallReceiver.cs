@@ -35,9 +35,7 @@ namespace GPodder.PortaPodder {
       case CallState.Ringing:
       case CallState.Offhook:
         // stop media player
-        if(EpisodeDetails.Player != null){
-          EpisodeDetails.Player.Stop();
-        }
+        PortaPodderApp.Context.StopService(new Intent(PortaPodderApp.Context, typeof(EpisodePlayer)));
         break;
       case CallState.Idle:
       default:
