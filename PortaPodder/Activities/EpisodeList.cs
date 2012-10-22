@@ -42,7 +42,7 @@ namespace GPodder.PortaPodder.Activities {
   /// Activity for showing the directory of current podcasts
   /// </summary>
   [Activity (Label = "PortaPodder", MainLauncher = true)]
-  public class EpisodeList : ExpandableListActivity {
+  public class EpisodeList : Activity , ExpandableListView.IOnChildClickListener{
 
     /// <summary>
     /// The key for the selected device in the prefernces
@@ -80,19 +80,27 @@ namespace GPodder.PortaPodder.Activities {
     JavaList<IList<IDictionary<string, string>>> episodeList = new JavaList<IList<IDictionary<string, string>>>();
 
     /// <summary>
+    /// The episode list.
+    /// </summary>
+    private ExpandableListView episodeListView = null;
+
+    /// <summary>
     /// Raises the create event.
     /// </summary>
     /// <param name='bundle'>Bundle.</param>
     protected override void OnCreate(Bundle bundle) {
       base.OnCreate(bundle);
-      ExpandableListView.SetOnChildClickListener(this);
-      SetListAdapter(expandableAdapter);
+      SetContentView(Resource.Layout.EpisodesList);
+      episodeListView = FindViewById<ExpandableListView>(Resource.EpisodeList.expandableEpisodeList);
+      episodeListView.SetAdapter(expandableAdapter);
+      episodeListView.SetOnChildClickListener(this);
 
       // add all pre-existing episodes
       foreach(Episode episode in Server.Episodes) {
         expandableAdapter.Add(episode);
       }
       expandableAdapter.NotifyDataSetChanged();
+      setTitleText();
 
       // add the hook for adding episodes
       Server.EpisodeAdded += delegate(Episode episode){
@@ -108,6 +116,14 @@ namespace GPodder.PortaPodder.Activities {
     }
 
     /// <summary>
+    /// Sets the title text.
+    /// </summary>
+    private void setTitleText() {
+      string msg = "Episodes: " + Server.Episodes.Count + (Server.Episodes.Count == 0 ? " (Try Syncing?)" : string.Empty);
+      FindViewById<TextView>(Resource.EpisodeList.episodeNumber).Text = msg;
+    }
+
+    /// <summary>
     ///  Callback method to be invoked when a child in this expandable list has been clicked.
     /// </summary>
     /// <param name='parent'>The ExpandableListView where the click happened</param>
@@ -115,7 +131,7 @@ namespace GPodder.PortaPodder.Activities {
     /// <param name='groupPosition'>The group position that contains the child that was clicked</param>
     /// <param name='childPosition'>The child position within the group</param>
     /// <param name='id'>The row id of the child that was clicked</param>
-    public override bool OnChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+    public bool OnChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
       if(v is ViewGroup){
         TextView tv = v.FindViewById<TextView>(Android.Resource.Id.Text1);
 
@@ -127,7 +143,7 @@ namespace GPodder.PortaPodder.Activities {
           }
         }
       }
-      return base.OnChildClick(parent, v, groupPosition, childPosition, id);
+      return true;
     }
 
     /// <param name='menu'>
@@ -149,7 +165,8 @@ namespace GPodder.PortaPodder.Activities {
         StartActivity(new Intent(this, typeof(SubscriptionInteraction)));
         return true;
       case Resource.Id.Refresh:
-        ExpandableListView.Enabled = false;
+        episodeListView.Enabled = false;
+        RunOnUiThread(() => {FindViewById<TextView>(Resource.EpisodeList.episodeNumber).Text = "Syncing...";});
         BackgroundWorker worker = new BackgroundWorker(delegate(ref bool stop) {
           try{
             Server.UpdateForDevice();
@@ -158,7 +175,10 @@ namespace GPodder.PortaPodder.Activities {
             PortaPodderApp.LogMessage(exc);
           }
           finally{
-            RunOnUiThread(()=> {ExpandableListView.Enabled = true;});
+            RunOnUiThread(()=> {
+              episodeListView.Enabled = true;
+              setTitleText();
+            });
           }
         });
         worker.Execute();

@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent"
-  android:id="@+episodeList/layout">
-  <TextView
-    android:text="Medium Text"
-    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:id="@+episodeList/loginText" />
-  <ListView
-    android:minWidth="25px"
-    android:minHeight="25px"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:id="@+episodeList/episodeList" />
-    
+    android:layout_height="fill_parent"
+    android:id="@+episodeList/layout">
+    <TextView
+        android:text="Episodes"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+episodeList/episodeNumber" />
+    <ExpandableListView
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+episodeList/expandableEpisodeList" />
 </LinearLayout>

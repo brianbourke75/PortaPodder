@@ -83,14 +83,14 @@ namespace GPodder.PortaPodder
 		public partial class EpisodeList
 		{
 			
+			// aapt resource value: 0x7f090001
+			public const int episodeNumber = 2131296257;
+			
 			// aapt resource value: 0x7f090002
-			public const int episodeList = 2131296258;
+			public const int expandableEpisodeList = 2131296258;
 			
 			// aapt resource value: 0x7f090000
 			public const int layout = 2131296256;
-			
-			// aapt resource value: 0x7f090001
-			public const int loginText = 2131296257;
 			
 			private EpisodeList()
 			{
