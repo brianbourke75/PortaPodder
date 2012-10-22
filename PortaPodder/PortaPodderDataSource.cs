@@ -112,7 +112,6 @@ namespace GPodder.PortaPodder {
       catch(Exception exc) {
         throw new Exception("Could not insert device " + device.Id, exc);
       }
-      PortaPodderApp.LogMessage("Inserted the device " + device.Id);
     }
 
     /// <summary>
@@ -171,7 +170,6 @@ namespace GPodder.PortaPodder {
       catch(Exception exc) {
         throw new Exception("Could not update episode " + episode.Url, exc);
       }
-      PortaPodderApp.LogMessage("Updated the episode " + episode.Url);
     }
 
     /// <summary>
@@ -226,7 +224,6 @@ namespace GPodder.PortaPodder {
       catch(Exception exc) {
         throw new Exception("Could not delete episode " + episode.Url, exc);
       }
-      PortaPodderApp.LogMessage("Deleted the episode " + episode.Url);
     }
 
     /// <summary>
@@ -257,7 +254,6 @@ namespace GPodder.PortaPodder {
       catch(Exception exc) {
         throw new Exception("Could not insert subscription " + sub.Title, exc);
       }
-      PortaPodderApp.LogMessage("Inserted the subscription " + sub.Title);
     }
 
     /// <summary>
@@ -271,7 +267,6 @@ namespace GPodder.PortaPodder {
       catch(Exception exc) {
         throw new Exception("Could not udpate subscription " + sub.Title, exc);
       }
-      PortaPodderApp.LogMessage("Updated the subscription " + sub.Title);
     }
 
     /// <summary>
@@ -305,7 +300,6 @@ namespace GPodder.PortaPodder {
       catch(Exception exc) {
         throw new Exception("Could not delete subscription " + subscription.Title, exc);
       }
-      PortaPodderApp.LogMessage("Deleted the subscription " + subscription.Title);
     }
 
     /// <summary>

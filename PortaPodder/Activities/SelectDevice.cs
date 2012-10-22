@@ -115,6 +115,7 @@ namespace GPodder.PortaPodder.Activities {
 
       // add all items to the adapter list
       ArrayAdapter<Device> adapter = (ArrayAdapter<Device>)FindViewById<ListView>(Resource.SelectDevice.deviceListView).Adapter;
+      adapter.Clear();
       foreach(string deviceId in ids) {
         adapter.Add(Server.GetDevice(deviceId));
       }
