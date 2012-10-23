@@ -2,6 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
   <item android:id="@+id/subscription"
         android:title="View Subscriptions" />
-  <item android:id="@+id/Refresh"
-        android:title="Refresh" />
+  <item android:id="@+id/Sync"
+        android:title="Sync" />
 </menu>

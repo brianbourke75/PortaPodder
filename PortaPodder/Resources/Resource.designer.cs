@@ -101,7 +101,7 @@ namespace GPodder.PortaPodder
 		{
 			
 			// aapt resource value: 0x7f070003
-			public const int Refresh = 2131165187;
+			public const int Sync = 2131165187;
 			
 			// aapt resource value: 0x7f070001
 			public const int devices = 2131165185;

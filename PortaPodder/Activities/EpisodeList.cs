@@ -164,7 +164,7 @@ namespace GPodder.PortaPodder.Activities {
       case Resource.Id.subscription:
         StartActivity(new Intent(this, typeof(SubscriptionInteraction)));
         return true;
-      case Resource.Id.Refresh:
+      case Resource.Id.Sync:
         episodeListView.Enabled = false;
         RunOnUiThread(() => {FindViewById<TextView>(Resource.EpisodeList.episodeNumber).Text = "Syncing...";});
         BackgroundWorker worker = new BackgroundWorker(delegate(ref bool stop) {
