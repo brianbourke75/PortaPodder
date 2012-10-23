@@ -110,6 +110,9 @@ namespace GPodder.PortaPodder {
       Server.EpisodeRemoved += delegate(Episode episode) {
         datasource.DeleteEpisode(episode);
       };
+      Episode.EpisodeUpdates += delegate(Episode episode) {
+        datasource.InsertOrUpdate(episode);
+      };
 
       // hooks for subscriptions
       Server.SubscriptionAdded += delegate(Subscription subscription) {

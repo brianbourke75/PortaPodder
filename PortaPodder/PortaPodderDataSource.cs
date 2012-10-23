@@ -372,6 +372,8 @@ namespace GPodder.PortaPodder {
       episode.Title = cursor.GetString(cursor.GetColumnIndex(Episode.COL_TITLE));
       episode.Url = stringToUrl(cursor.GetString(cursor.GetColumnIndex(Episode.COL_URL)));
       episode.Website = stringToUrl(cursor.GetString(cursor.GetColumnIndex(Episode.COL_WEBSITE)));
+      episode.PlayerPosition = cursor.GetInt(cursor.GetColumnIndex(Episode.COL_PLAYER_POSITION));
+      episode.Duration = cursor.GetInt(cursor.GetColumnIndex(Episode.COL_DURATION));
       return episode;
     }
 

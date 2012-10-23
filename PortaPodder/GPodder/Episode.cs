@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -31,6 +32,15 @@ namespace GPodder.DataStructures {
   /// </summary>
   [DataContract]
   public class Episode : PodcastItem, IComparable{
+
+    #region delegate types
+
+    /// <summary>
+    /// the delegate definition for the updated episode
+    /// </summary>      
+    public delegate void EpisodeUpdated(Episode episode);
+
+    #endregion
 
     #region enumerations
 
@@ -59,6 +69,11 @@ namespace GPodder.DataStructures {
     #endregion
 
     #region members
+
+    /// <summary>
+    /// The episode updated callbacks.
+    /// </summary>
+    private static List<EpisodeUpdated> episodeUpdatedCallbacks = new List<EpisodeUpdated>();
 
     /// <summary>
     /// The name of the episodes table in databases
@@ -162,6 +177,24 @@ namespace GPodder.DataStructures {
 
     #endregion
 
+    #region events
+
+    /// <summary>
+    /// Occurs when episode updates.
+    /// </summary>
+    public static event EpisodeUpdated EpisodeUpdates {
+      add {
+        if(!episodeUpdatedCallbacks.Contains(value)){
+          episodeUpdatedCallbacks.Add(value);
+        }
+      }
+      remove {
+        episodeUpdatedCallbacks.Remove(value);
+      }
+    }
+
+    #endregion
+
     #region create
 
     /// <summary>
@@ -196,7 +229,12 @@ namespace GPodder.DataStructures {
         return playerPosition;
       }
       set {
-        playerPosition = value;
+        if(playerPosition != value){
+          playerPosition = value;
+          foreach(EpisodeUpdated callback in episodeUpdatedCallbacks){
+            callback(this);
+          }
+        }
       }
     }
 
