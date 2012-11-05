@@ -468,7 +468,8 @@ namespace GPodder.DataStructures {
       }
 
       // get a list of updates and parse them
-      string jsonString = getResponseString(new Uri(GPodderLocation + "/api/2/updates/" + connectedUser.Username + "/" + selectedDevice.Id + JSONExtension + "?since=" + lastUpdate));
+      Uri updateUri = new Uri(GPodderLocation + "api/2/updates/" + connectedUser.Username + "/" + selectedDevice.Id + JSONExtension + "?since=" + lastUpdate + "&include_actions=true");
+      string jsonString = getResponseString(updateUri);
       DeviceUpdates deviceUpdates = JsonConvert.DeserializeObject<DeviceUpdates>(jsonString);
 
       // mark this as the time it was last updated
