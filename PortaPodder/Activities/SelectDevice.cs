@@ -59,10 +59,10 @@ namespace GPodder.PortaPodder.Activities {
       deviceListView.ItemClick += new EventHandler<AdapterView.ItemClickEventArgs>(deviceSelected);
 
       // add hooks for adding and removing devices
-      Server.DeviceRemoved += delegate(Device theDevice) { 
+      MyGPO.DeviceRemoved += delegate(Device theDevice) { 
         RunOnUiThread(() => adapter.Remove(theDevice)); 
       };
-      Server.DeviceAdded += delegate(Device theDevice) { 
+      MyGPO.DeviceAdded += delegate(Device theDevice) { 
         RunOnUiThread(() => adapter.Add(theDevice)); 
       };
     }
@@ -83,7 +83,7 @@ namespace GPodder.PortaPodder.Activities {
     public override bool OnOptionsItemSelected(IMenuItem item) {
       switch(item.ItemId) {
       case Resource.Id.subscription:
-        Server.GetDevicesFromServer();
+        MyGPO.GetDevicesFromServer();
         return true;
       default:
         return base.OnOptionsItemSelected(item);
@@ -97,15 +97,15 @@ namespace GPodder.PortaPodder.Activities {
       base.OnStart();
 
       // check to see if we have selected a user
-      if(Server.ConnectedUser == null) {
+      if(MyGPO.ConnectedUser == null) {
         StartActivity(typeof(Authentication));
         return;
       }
 
       // if there is only one device, then we need to auto select it!
-      string[] ids = Server.GetDevicesIds();
+      string[] ids = MyGPO.GetDevicesIds();
       if(ids.Length == 1) {
-        Server.SelectedDevice = Server.GetDevice(ids[0]);
+        MyGPO.SelectedDevice = MyGPO.GetDevice(ids[0]);
         Finish();
         return;
       }
@@ -117,7 +117,7 @@ namespace GPodder.PortaPodder.Activities {
       ArrayAdapter<Device> adapter = (ArrayAdapter<Device>)FindViewById<ListView>(Resource.SelectDevice.deviceListView).Adapter;
       adapter.Clear();
       foreach(string deviceId in ids) {
-        adapter.Add(Server.GetDevice(deviceId));
+        adapter.Add(MyGPO.GetDevice(deviceId));
       }
     }
 
@@ -129,7 +129,7 @@ namespace GPodder.PortaPodder.Activities {
     private void deviceSelected(object sender, AdapterView.ItemClickEventArgs e) {
       object selectedObject = e.Parent.GetItemAtPosition(e.Position);
       PropertyInfo propertyInfo = selectedObject.GetType().GetProperty("Instance");
-      Server.SelectedDevice = propertyInfo.GetValue(selectedObject, null) as Device;
+      MyGPO.SelectedDevice = propertyInfo.GetValue(selectedObject, null) as Device;
       Finish();
     }
   }

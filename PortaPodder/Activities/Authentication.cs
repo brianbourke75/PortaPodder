@@ -170,7 +170,7 @@ namespace GPodder.PortaPodder.Activities {
         string password = passwordEdit.Text;
         
         // setup the server with the username and password
-        Server.ConnectedUser = new User(username, password);
+        MyGPO.ConnectedUser = new User(username, password);
         
         // should the login be successful, we will put the username and password into the preferences
         ISharedPreferencesEditor editor = PortaPodderApp.prefs.Edit();
@@ -179,12 +179,12 @@ namespace GPodder.PortaPodder.Activities {
         editor.Commit();
         
         // we are going to attempt to get the lists of devices and only if this returns correctly authenticated do we continue to finish this activity
-        Server.GetDevicesFromServer();
+        MyGPO.GetDevicesFromServer();
       });
       worker.Completed += delegate(Exception exc) {
         RunOnUiThread(() => setChildrenEnableState(true));
         if(exc != null){
-          Server.ConnectedUser = null;
+          MyGPO.ConnectedUser = null;
           PortaPodderApp.LogMessage(exc);
           RunOnUiThread(() => Toast.MakeText(this, "Unable to authenticate user with this password.", ToastLength.Short).Show());
         }

@@ -96,22 +96,25 @@ namespace GPodder.PortaPodder.Activities {
       episodeListView.SetOnChildClickListener(this);
 
       // add all pre-existing episodes
-      foreach(Episode episode in Server.Episodes) {
-        expandableAdapter.Add(episode);
-      }
+      expandableAdapter.Add(MyGPO.Episodes);
       expandableAdapter.NotifyDataSetChanged();
       setTitleText();
 
       // add the hook for adding episodes
-      Server.EpisodeAdded += delegate(Episode episode){
-        expandableAdapter.Add(episode);
-        RunOnUiThread(() => expandableAdapter.NotifyDataSetChanged());
+      MyGPO.EpisodeAdded += delegate(List<Episode> episodes){
+        PortaPodderApp.LogMessage("Adding " + episodes.Count + " to activity");
+        RunOnUiThread(() => {
+          expandableAdapter.Add(episodes);
+          expandableAdapter.NotifyDataSetChanged();
+        });
       };
 
       // add the hook for adding episodes
-      Server.EpisodeRemoved += delegate(Episode episode){
-        expandableAdapter.Remove(episode);
-        RunOnUiThread(() => expandableAdapter.NotifyDataSetChanged());
+      MyGPO.EpisodeRemoved += delegate(List<Episode> episodes){
+        RunOnUiThread(() => {
+          expandableAdapter.Remove(episodes);
+          expandableAdapter.NotifyDataSetChanged();
+        });
       };
     }
 
@@ -119,7 +122,7 @@ namespace GPodder.PortaPodder.Activities {
     /// Sets the title text.
     /// </summary>
     private void setTitleText() {
-      string msg = "Episodes: " + Server.Episodes.Count + (Server.Episodes.Count == 0 ? " (Try Syncing?)" : string.Empty);
+      string msg = "Episodes: " + MyGPO.Episodes.Count + (MyGPO.Episodes.Count == 0 ? " (Try Syncing?)" : string.Empty);
       FindViewById<TextView>(Resource.EpisodeList.episodeNumber).Text = msg;
     }
 
@@ -135,7 +138,7 @@ namespace GPodder.PortaPodder.Activities {
       if(v is ViewGroup){
         TextView tv = v.FindViewById<TextView>(Android.Resource.Id.Text1);
 
-        foreach(Episode episode in Server.Episodes){
+        foreach(Episode episode in MyGPO.Episodes){
           if(episode.Title == tv.Text){
             SelectedEpisode = episode;
             StartActivity(new Intent(this, typeof(EpisodeDetails)));
@@ -165,20 +168,17 @@ namespace GPodder.PortaPodder.Activities {
         StartActivity(new Intent(this, typeof(SubscriptionInteraction)));
         return true;
       case Resource.Id.Sync:
-        episodeListView.Enabled = false;
+
         RunOnUiThread(() => {FindViewById<TextView>(Resource.EpisodeList.episodeNumber).Text = "Syncing...";});
         BackgroundWorker worker = new BackgroundWorker(delegate(ref bool stop) {
           try{
-            Server.UpdateForDevice();
+            MyGPO.SyncDevice();
           }
           catch(Exception exc){
             PortaPodderApp.LogMessage(exc);
           }
           finally{
-            RunOnUiThread(()=> {
-              episodeListView.Enabled = true;
-              setTitleText();
-            });
+            RunOnUiThread(()=> {setTitleText();});
           }
         });
         worker.Execute();
@@ -196,7 +196,7 @@ namespace GPodder.PortaPodder.Activities {
       base.OnStart();
 
       // check to see if we have a valid device
-      if(Server.SelectedDevice == null) {
+      if(MyGPO.SelectedDevice == null) {
         // if the preferences does not contain
         StartActivity(typeof(SelectDevice));
         return;
@@ -231,16 +231,18 @@ namespace GPodder.PortaPodder.Activities {
       /// Add the specified episode.
       /// </summary>
       /// <param name='episode'>Episode.</param>
-      public void Add(Episode episode) {
-        // make sure the subscription is there before we add the episode
-        if(!podcasts.ContainsKey(episode.Parent)) {
-          podcasts.Add(episode.Parent, new SortedList<DateTime, Episode>(new ReverseDateTime()));
-        }
+      public void Add(List<Episode> episodes) {
+        foreach(Episode episode in episodes) {
+          // make sure the subscription is there before we add the episode
+          if(!podcasts.ContainsKey(episode.Parent)) {
+            podcasts.Add(episode.Parent, new SortedList<DateTime, Episode>(new ReverseDateTime()));
+          }
 
-        // now add the episode
-        SortedList<DateTime, Episode> subcriptionList = podcasts[episode.Parent];
-        if(!subcriptionList.ContainsValue(episode) && !subcriptionList.ContainsKey(episode.Released)) {
-          subcriptionList.Add(episode.Released, episode);
+          // now add the episode
+          SortedList<DateTime, Episode> subcriptionList = podcasts[episode.Parent];
+          if(!subcriptionList.ContainsValue(episode) && !subcriptionList.ContainsKey(episode.Released)) {
+            subcriptionList.Add(episode.Released, episode);
+          }
         }
       }
 
@@ -248,13 +250,18 @@ namespace GPodder.PortaPodder.Activities {
       /// Remove the specified episode.
       /// </summary>
       /// <param name='episode'>Episode.</param>
-      public void Remove(Episode episode) {
-        // first remove the episode
-        podcasts[episode.Parent].Remove(episode.Released);
-
-        // now check for empty subscriptions
-        if(podcasts[episode.Parent].Count == 0) {
-          podcasts.Remove(episode.Parent);
+      public void Remove(List<Episode> episodes) {
+        Episode[] episodeList = episodes.ToArray();
+        foreach(Episode episode in episodeList) {
+          // first remove the episode
+          if(podcasts.ContainsKey(episode.Parent) && podcasts[episode.Parent].ContainsKey(episode.Released)) {
+            podcasts[episode.Parent].Remove(episode.Released);
+        
+            // now check for empty subscriptions
+            if(podcasts[episode.Parent].Count == 0) {
+              podcasts.Remove(episode.Parent);
+            }
+          }
         }
       }
 

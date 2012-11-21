@@ -147,6 +147,10 @@ namespace GPodder.PortaPodder {
     /// </summary>
     /// <param name='episode'>Episode.</param>
     public bool InsertOrUpdate(Episode episode) {
+      if(dbHelper == null || dbHelper.WritableDatabase == null || episode == null || episode.Url == null) {
+        return false;
+      }
+
       // attempt to query the database for this item
       ICursor cursor = dbHelper.WritableDatabase.Query(Episode.TABLE_NAME, null, Episode.COL_URL + " = ?", new string[]{episode.Url.ToString()}, null, null, null);
       if(cursor.Count > 0) {
@@ -154,7 +158,7 @@ namespace GPodder.PortaPodder {
         return false;
       }
       else {
-        Insert(episode);
+        Insert(new List<Episode>(new Episode[]{episode}));
         return true;
       }
     }
@@ -176,14 +180,52 @@ namespace GPodder.PortaPodder {
     /// Insert the specified episode.
     /// </summary>
     /// <param name='episode'>Episode.</param>
-    public void Insert(Episode episode){
-      try{
-        dbHelper.WritableDatabase.InsertOrThrow(Episode.TABLE_NAME, null, createContentValues(episode));
+    public void Insert(List<Episode> episodes) {
+      SQLiteDatabase db = dbHelper.WritableDatabase;
+
+      DatabaseUtils.InsertHelper ih = new DatabaseUtils.InsertHelper(db, Episode.TABLE_NAME);
+      int colDescription = ih.GetColumnIndex(Episode.COL_DESCRIPTION);
+      int colDuration = ih.GetColumnIndex(Episode.COL_DURATION);
+      int colMyGPOLink = ih.GetColumnIndex(Episode.COL_MYGPO_LINK);
+      int colPosition = ih.GetColumnIndex(Episode.COL_PLAYER_POSITION);
+      int colPodcastTitle = ih.GetColumnIndex(Episode.COL_PODCAST_TITLE);
+      int colPodcastUrl = ih.GetColumnIndex(Episode.COL_PODCAST_URL);
+      int colReleased = ih.GetColumnIndex(Episode.COL_RELEASED);
+      int colStatus = ih.GetColumnIndex(Episode.COL_STATUS);
+      int colTitle = ih.GetColumnIndex(Episode.COL_TITLE);
+      int colUrl = ih.GetColumnIndex(Episode.COL_URL);
+      int colWebsite = ih.GetColumnIndex(Episode.COL_WEBSITE);
+
+      try {
+        db.BeginTransaction();
+        foreach(Episode episode in episodes) {
+          ih.PrepareForInsert();
+
+          ih.Bind(colDescription, episode.Description);
+          ih.Bind(colDuration, episode.Duration);
+          ih.Bind(colMyGPOLink, episode.MygpoLink != null ? episode.MygpoLink.ToString() : string.Empty);
+          ih.Bind(colPosition, episode.PlayerPosition);
+          ih.Bind(colPodcastTitle, episode.PodcastTitle);
+          ih.Bind(colPodcastUrl, episode.PodcastUrl != null ? episode.PodcastUrl.ToString() : string.Empty);
+          ih.Bind(colReleased, episode.Released.ToString());
+          ih.Bind(colStatus, episode.Status.ToString());
+          ih.Bind(colTitle, episode.Title);
+          ih.Bind(colUrl, episode.Url != null ? episode.Url.ToString() : string.Empty);
+          ih.Bind(colWebsite, episode.Website != null ? episode.Website.ToString() : string.Empty);
+
+          ih.Execute();
+        }
+        ih.PrepareForInsert();
+        db.SetTransactionSuccessful();
       }
-      catch(Exception exc) {
-        throw new Exception("Could not insert episode " + episode.Url, exc);
+      finally{
+        if(ih != null){
+          ih.Close();
+        }
+        if(db != null){
+          db.EndTransaction();
+        }
       }
-      PortaPodderApp.LogMessage("Inserted the episode " + episode.Url);
     }
 
     /// <summary>

@@ -232,7 +232,12 @@ namespace GPodder.DataStructures {
         if(playerPosition != value){
           playerPosition = value;
           foreach(EpisodeUpdated callback in episodeUpdatedCallbacks){
-            callback(this);
+            try{
+              callback(this);
+            }
+            catch(Exception exc){
+              MyGPO.LogMessage(exc.Message);
+            }
           }
         }
       }
@@ -245,7 +250,7 @@ namespace GPodder.DataStructures {
     public Subscription Parent {
       get {
         if(parent == null){
-          foreach(Subscription subscription in Server.Subcriptions){
+          foreach(Subscription subscription in MyGPO.Subcriptions){
             if(subscription.Title == podcastTitle){
               parent = subscription;
               break;
@@ -355,7 +360,17 @@ namespace GPodder.DataStructures {
         return status;
       }
       set {
-        status = value;
+        if(status != value){
+          status = value;
+          foreach(EpisodeUpdated callback in episodeUpdatedCallbacks){
+            try{
+              callback(this);
+            }
+            catch(Exception exc){
+              MyGPO.LogMessage(exc.Message);
+            }
+          }
+        }
       }
     }
 

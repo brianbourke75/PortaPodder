@@ -33,7 +33,7 @@ namespace GPodder.DataStructures {
   /// <summary>
   /// This class will fetch and push all of the data to and from the GPodder server
   /// </summary>
-  public static class Server {
+  public static class MyGPO {
 
     #region members
 
@@ -145,7 +145,7 @@ namespace GPodder.DataStructures {
     ///<summary>
     /// this defines a method callback to be used when episodes are updated
     /// </summary>
-    public delegate void EpisodeUpdatedMethod(Episode episode);
+    public delegate void EpisodeUpdatedMethod(List<Episode> episode);
 
     /// <summary>
     /// definition for methods to be called back for logging
@@ -242,7 +242,7 @@ namespace GPodder.DataStructures {
     /// <summary>
     /// Occurs when log message.
     /// </summary>
-    public static event LogMethod LogMessage {
+    public static event LogMethod LogMessageEvent {
       add {
         if(!loggingCallbacks.Contains(value)) {
           loggingCallbacks.Add(value);
@@ -359,7 +359,7 @@ namespace GPodder.DataStructures {
     /// Logs the message to callbacks
     /// </summary>
     /// <param name='message'>Message.</param>
-    private static void logMessage(string message) {
+    public static void LogMessage(string message) {
       foreach(LogMethod callback in loggingCallbacks) {
         callback(message);
       }
@@ -372,32 +372,30 @@ namespace GPodder.DataStructures {
     /// <param name='subscriptions'></param>
     /// <param name='episodes'></param>
     public static void Initialize(List<Device> devices, string selectedDeviceId, List<Subscription> subscriptions, List<Episode> episodes, long lastUpdate) {
-      logMessage("Intializing data");
+      LogMessage("Intializing data");
 
       // do this without triggering any hooks
-      Server.devices.AddRange(devices);
+      MyGPO.devices.AddRange(devices);
       if(!string.IsNullOrWhiteSpace(selectedDeviceId)) {
-        Server.selectedDevice = GetDevice(selectedDeviceId);
+        MyGPO.selectedDevice = GetDevice(selectedDeviceId);
       }
-      Server.subscriptions.AddRange(subscriptions);
-      Server.episodes.AddRange(episodes);
-      Server.lastUpdate = lastUpdate;
-      logMessage("Done initializing data");
+      MyGPO.subscriptions.AddRange(subscriptions);
+      MyGPO.episodes.AddRange(episodes);
+      MyGPO.lastUpdate = lastUpdate;
+      LogMessage("Done initializing data");
     }
 
     /// <summary>
     /// Pulls the devices from server.
     /// </summary>
     public static void GetDevicesFromServer() {
-      logMessage("Getting devices from Server");
-
       // if there is no connected user this is an error condition
       if(ConnectedUser == null) {
         throw new Exception("Cannot get devices without a user");
       }
 
       // get the response from the server
-      string t = getResponseString(new Uri(Server.GPodderLocation + Server.GPodderAPI + @"devices/" + ConnectedUser.Username + JSONExtension));
+      string t = getResponseString(new Uri(GPodderLocation + GPodderAPI + @"devices/" + ConnectedUser.Username + JSONExtension));
 
       // parse the json into a list of devices
       List<Device> serverList = JsonConvert.DeserializeObject<List<Device>>(t);
@@ -424,7 +422,7 @@ namespace GPodder.DataStructures {
       // reselect the selected device
       selectedDevice = GetDevice(id);
 
-      logMessage("Done getting devices from Server");
+      LogMessage("Done getting devices from Server");
     }
 
     /// <summary>
@@ -455,9 +453,8 @@ namespace GPodder.DataStructures {
     /// <summary>
     /// update the device
     /// </summary>
-    public static void UpdateForDevice() {
-      logMessage("Getting data from Server for selected device");
-
+    public static void SyncDevice() {
+      DateTime start = DateTime.Now;
       // if there is no connected user this is an error condition
       if(ConnectedUser == null) {
         throw new Exception("Cannot get episodes without a user");
@@ -467,123 +464,165 @@ namespace GPodder.DataStructures {
         throw new Exception("Cannot get episodes without a device");
       }
 
+      //lastUpdate = (long)(start-new DateTime(1970,1,1)).TotalMilliseconds;
+      //lastUpdate -= (360L * 24L * 60L * 60L);
+      //logWithTimeTracking(start, "Getting data from Server for device " + selectedDevice.Id + " with the Timestamp " + lastUpdate);
+
       // get a list of updates and parse them
       Uri updateUri = new Uri(GPodderLocation + "api/2/updates/" + connectedUser.Username + "/" + selectedDevice.Id + JSONExtension + "?since=" + lastUpdate + "&include_actions=true");
       string jsonString = getResponseString(updateUri);
       DeviceUpdates deviceUpdates = JsonConvert.DeserializeObject<DeviceUpdates>(jsonString);
 
+      logWithTimeTracking(start, "Done Parsing and with the following updates - Added|Removed|Updated: " + deviceUpdates.Add.Count + "|" + deviceUpdates.Remove.Count + "|" + deviceUpdates.Updates.Count);
+
       // mark this as the time it was last updated
       lastUpdate = deviceUpdates.Timestamp;
       foreach(UpdatedDateTimeMethod callback in updatedCallbacks) {
-        try{
+        try {
           callback(lastUpdate);
         }
-        catch(Exception exc){
-          logMessage(exc.Message);
+        catch(Exception exc) {
+          LogMessage(exc.Message);
         }
       }
 
+      logWithTimeTracking(start, "Done updating timestamp");
+
       // perform the updates specified
-      foreach (Subscription added in deviceUpdates.Add) {
-        if (!subscriptions.Contains(added)) {
+      foreach(Subscription added in deviceUpdates.Add) {
+        if(!subscriptions.Contains(added)) {
           subscriptions.Add(added);
 
           // trigger hooks
-          foreach(SubscriptionUpdatedMethod callback in subsciptionAddedCallbacks){
-            try{
+          foreach(SubscriptionUpdatedMethod callback in subsciptionAddedCallbacks) {
+            try {
               callback(added);
             }
-            catch(Exception exc){
-              logMessage(exc.Message);
+            catch(Exception exc) {
+              LogMessage(exc.Message);
             }
           }
         }
       }
-      foreach (string removed in deviceUpdates.Remove) {
+
+      logWithTimeTracking(start, "Done Adding subscriptions");
+
+      foreach(string removed in deviceUpdates.Remove) {
         // get the subscription via the url
         Subscription toBeRemoved = null;
-        foreach(Subscription subscription in subscriptions){
-          if(subscription.Url.ToString() == removed){
+        foreach(Subscription subscription in subscriptions) {
+          if(subscription.Url.ToString() == removed) {
             toBeRemoved = subscription;
             break;
           }
         }
 
         // check to make sure we found the right subscription
-        if(toBeRemoved == null){
+        if(toBeRemoved == null) {
           continue;
         }
 
         // prior to removing the subscription, we have to also remove all of the child episodes
         Episode[] episodeList = episodes.ToArray();
-        foreach(Episode episode in episodeList){
-          if(episode.Parent == toBeRemoved){
-            removeEpisode(episode);
+        foreach(Episode episode in episodeList) {
+          if(episode.Parent == toBeRemoved) {
+            removeEpisodes(new List<Episode>(new Episode[]{episode}));
           }
         }
 
         subscriptions.Remove(toBeRemoved);
 
         // trigger hooks
-        foreach(SubscriptionUpdatedMethod callback in subsciptionRemovedCallbacks){
-          try{
+        foreach(SubscriptionUpdatedMethod callback in subsciptionRemovedCallbacks) {
+          try {
             callback(toBeRemoved);
           }
-          catch(Exception exc){
-            logMessage(exc.Message);
+          catch(Exception exc) {
+            LogMessage(exc.Message);
           }
         }
       }
-      foreach (Episode updated in deviceUpdates.Updates) {
 
-        // when we do this we are just going to remove the episode and then readd it
-        // in order to do the full update
-        if (episodes.Contains(updated)) {
-          removeEpisode(updated);
-        }
+      logWithTimeTracking(start, "Done removing Subscriptions");
 
-        // we have been getting some episodes with no title so let's look for some critical data first
-        if(string.IsNullOrEmpty(updated.Title) || updated.Url == null){
+      List<Episode> updatedAdd = new List<Episode>();
+      List<Episode> updatedRemoved = new List<Episode>();
+
+      foreach(Episode updated in deviceUpdates.Updates) {
+        // we have been getting some episodes with no title so let's look for some critical data first and also not considering any 
+        // episodes which are older than a year
+        if(string.IsNullOrEmpty(updated.Title) || updated.Url == null || (start - updated.Released).TotalDays > 360){
           continue;
-        }
-
-        episodes.Add(updated);
-        // trigger hooks
-        foreach(EpisodeUpdatedMethod callback in episodeAddedCallbacks){
-          try{
-            callback(updated);
-          }
-          catch(Exception exc){
-            logMessage(exc.Message);
-          }
         }
 
         // add the updated episode to it's parent for quick reference later
         Subscription parent = findByTitle(updated.PodcastTitle);
-        if(parent != null){
-          if(!parent.Shows.Contains(updated)){
-            parent.Shows.Add(updated);
-          }
+        if(parent == null){
+          continue;
+        }
+        if(!parent.Shows.Contains(updated)){
+          parent.Shows.Add(updated);
+        }
+
+        switch(updated.Status) {
+        case Episode.EpisodeStatus.Delete:
+          updatedRemoved.Add(updated);
+          break;
+        case Episode.EpisodeStatus.Play:
+        case Episode.EpisodeStatus.New:
+        case Episode.EpisodeStatus.Download:
+          updatedAdd.Add(updated);
+          break;
         }
       }
 
-      logMessage("Done getting devices from Server");
+      logWithTimeTracking(start, "Done catagorizing episodes");
+
+      removeEpisodes(updatedRemoved);
+
+      logWithTimeTracking(start, "Done Removing episodes");
+
+      episodes.AddRange(updatedAdd);
+
+      logWithTimeTracking(start, "Done adding episodes to memory");
+      
+      // trigger hooks
+      foreach(EpisodeUpdatedMethod callback in episodeAddedCallbacks){
+        try{
+          callback(episodes);
+          logWithTimeTracking(start, "Call back to add episode: " + callback.Method.Name);
+        }
+        catch(Exception exc){
+          LogMessage(exc.Message);
+        }
+      }
+
+      logWithTimeTracking(start, "Done Syncing with server");
+    }
+
+    private static void logWithTimeTracking(DateTime start, string msg){
+      string prefix = "[" + (DateTime.Now - start).TotalSeconds + "sec]";
+      LogMessage(prefix + msg);
     }
 
     /// <summary>
     /// Removes the episode.
     /// </summary>
     /// <param name='episode'>Episode.</param>
-    private static void removeEpisode(Episode episode) {
-      episodes.Remove(episode);
+    private static void removeEpisodes(List<Episode> episodesRemoved) {
+      foreach(Episode episode in episodesRemoved) {
+        if(episodes.Contains(episode)){
+          episodes.Remove(episode);
+        }
+      }
       
       // trigger hooks
       foreach(EpisodeUpdatedMethod callback in episodeRemovedCallbacks){
         try{
-          callback(episode);
+          callback(episodes);
         }
         catch(Exception exc){
-          logMessage(exc.Message);
+          LogMessage(exc.Message);
         }
       }
     }

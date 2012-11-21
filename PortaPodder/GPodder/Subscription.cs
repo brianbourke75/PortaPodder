@@ -146,7 +146,7 @@ namespace GPodder.DataStructures {
       get {
         if(shows == null){
           shows = new List<Episode>();
-          foreach(Episode episode in Server.Episodes){
+          foreach(Episode episode in MyGPO.Episodes){
             if(episode.PodcastTitle == title){
               shows.Add(episode);
             }

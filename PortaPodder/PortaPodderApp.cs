@@ -72,61 +72,67 @@ namespace GPodder.PortaPodder {
       if(prefs.Contains(EncryptedPreferences.KEY_PASSWORD) && prefs.Contains(EncryptedPreferences.KEY_USERNAME)){
         string username = prefs.GetString(EncryptedPreferences.KEY_USERNAME, string.Empty);
         string password = prefs.GetString(EncryptedPreferences.KEY_PASSWORD, string.Empty);
-        Server.ConnectedUser = new User(username, password);
+        MyGPO.ConnectedUser = new User(username, password);
       }
 
       // the datasource
       datasource = new PortaPodderDataSource();
 
       // get a list of initialization parameters from the prefernces and database
+      DateTime start = DateTime.Now;
       List<Device> storedDevices = datasource.GetAllDevices();
       List<Subscription> subscriptions = datasource.GetSubscriptions();
       List<Episode> episodes = datasource.GetEpisodes();
+      PortaPodderApp.LogMessage("It took " + (DateTime.Now - start).TotalSeconds + " seconds to load data");
+
       string selectedDevice = prefs.GetString(EncryptedPreferences.KEY_SELECTED_DEVICE, string.Empty);
       long lastUpdated = prefs.GetLong(EncryptedPreferences.KEY_LAST_UPDATED, 0);
 
       // setup the server from the database
-      Server.Initialize(storedDevices, selectedDevice, subscriptions, episodes, lastUpdated);
+      MyGPO.Initialize(storedDevices, selectedDevice, subscriptions, episodes, lastUpdated);
 
       // add hooks for removing and adding devices
-      Server.DeviceAdded += delegate(Device theDevice) {
+      MyGPO.DeviceAdded += delegate(Device theDevice) {
         datasource.InsertOrUpdate(theDevice);
       };
-      Server.DeviceRemoved += delegate(Device theDevice) {
+      MyGPO.DeviceRemoved += delegate(Device theDevice) {
         datasource.DeleteDevice(theDevice);
       };
 
       // hook for changing the device
-      Server.SelectedDeviceChanged += delegate(Device theDevice) {
+      MyGPO.SelectedDeviceChanged += delegate(Device theDevice) {
         ISharedPreferencesEditor editor = prefs.Edit();
         editor.PutString(EncryptedPreferences.KEY_SELECTED_DEVICE, theDevice != null ? theDevice.Id : string.Empty);
         editor.Commit();
       };
 
       // hooks for episodes
-      Server.EpisodeAdded += delegate(Episode episode) {
-        datasource.InsertOrUpdate(episode);
+      MyGPO.EpisodeAdded += delegate(List<Episode> addedEpisodes) {
+        PortaPodderApp.LogMessage("Adding " + addedEpisodes.Count + " to database");
+        datasource.Insert(addedEpisodes);
       };
-      Server.EpisodeRemoved += delegate(Episode episode) {
-        datasource.DeleteEpisode(episode);
+      MyGPO.EpisodeRemoved += delegate(List<Episode> removedEpisodes) {
+        foreach(Episode episode in removedEpisodes){
+          datasource.DeleteEpisode(episode);
+        }
       };
       Episode.EpisodeUpdates += delegate(Episode episode) {
         datasource.InsertOrUpdate(episode);
       };
 
       // hooks for subscriptions
-      Server.SubscriptionAdded += delegate(Subscription subscription) {
+      MyGPO.SubscriptionAdded += delegate(Subscription subscription) {
         datasource.InsertOrUpdate(subscription);
       };
-      Server.SubscriptionRemoved += delegate(Subscription subscription) {
+      MyGPO.SubscriptionRemoved += delegate(Subscription subscription) {
         datasource.DeleteSubscription(subscription);
       };
-
+        
       // log the message
-      Server.LogMessage += new Server.LogMethod(LogMessage);
+      MyGPO.LogMessageEvent += new MyGPO.LogMethod(LogMessage);
 
       // write the last updated time to the preferences
-      Server.UpdatedDateTime += delegate(long updated) {
+      MyGPO.UpdatedDateTime += delegate(long updated) {
         ISharedPreferencesEditor editor = prefs.Edit();
         editor.PutLong(EncryptedPreferences.KEY_LAST_UPDATED, updated);
         editor.Commit();

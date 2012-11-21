@@ -45,22 +45,22 @@ namespace PortaPodderTester {
 
         // set the user
         WriteLine("Password for brianbourke75");
-        Server.ConnectedUser = new User("brianbourke75", ReadPassword());
+        MyGPO.ConnectedUser = new User("brianbourke75", ReadPassword());
 
-        Server.GetDevicesFromServer();
+        MyGPO.GetDevicesFromServer();
 
         DisplayDevices();
 
         // select an arbitrary device
-        Server.SelectedDevice = Server.GetDevice(Server.GetDevicesIds()[0]);
+        MyGPO.SelectedDevice = MyGPO.GetDevice(MyGPO.GetDevicesIds()[0]);
 
-        Server.UpdateForDevice();
+        MyGPO.SyncDevice();
 
         Console.WriteLine("Make some changes");
 
         Console.ReadLine();
 
-        Server.UpdateForDevice();
+        MyGPO.SyncDevice();
 
         DisplaySubscriptions();
 
@@ -90,14 +90,14 @@ namespace PortaPodderTester {
     /// </summary>
     public static void DisplayDevices() {
       WriteLine("---Getting Devices---"); ;
-      if (Server.GetDevicesIds().Length == 0) {
+      if (MyGPO.GetDevicesIds().Length == 0) {
         WriteLine("No devices found!");
         return;
       }
 
       // write out all of the 
-      foreach (string deviceId in Server.GetDevicesIds()) {
-        Device device = Server.GetDevice(deviceId);
+      foreach (string deviceId in MyGPO.GetDevicesIds()) {
+        Device device = MyGPO.GetDevice(deviceId);
         WriteLine("ID: " + device.Id);
         WriteLine("Caption: " + device.Caption);
         WriteLine("Type: " + device.Type);
@@ -112,12 +112,12 @@ namespace PortaPodderTester {
     public static void DisplaySubscriptions() {
       WriteLine("---Getting Subscriptions for device---");
 
-      if(Server.Subcriptions.Count == 0) {
+      if(MyGPO.Subcriptions.Count == 0) {
         WriteLine("No Subscriptions!");
       }
 
       // arbitrarly choose the first device
-      foreach (Subscription subsciption in Server.Subcriptions) {
+      foreach (Subscription subsciption in MyGPO.Subcriptions) {
         WriteLine("Title: " + subsciption.Title);
         WriteLine("Description: " + subsciption.Description);
         WriteLine("Website: " + subsciption.Website);
@@ -138,11 +138,11 @@ namespace PortaPodderTester {
     public static void DisplayEpisodes() {
       WriteLine("---Getting Episodes---");
 
-      if(Server.Episodes.Count == 0) {
+      if(MyGPO.Episodes.Count == 0) {
         WriteLine("No Episodes found");
       }
 
-      foreach(Episode episode in Server.Episodes){
+      foreach(Episode episode in MyGPO.Episodes){
         WriteLine("Title: " + episode.Title);
         //WriteLine("Description: " + episode.Description);
         WriteLine("Podcast Title: " + episode.PodcastTitle);

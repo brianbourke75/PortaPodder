@@ -70,7 +70,7 @@ namespace GPodder.PortaPodder.Activities {
 
       // create the title view
       titleText = new TextView(this);
-      titleText.Text = "Subscriptions for the device:" + Server.SelectedDevice.Caption;
+      titleText.Text = "Subscriptions for the device:" + MyGPO.SelectedDevice.Caption;
       layout.AddView(titleText);
 
       // the list view of subscriptions
@@ -89,13 +89,13 @@ namespace GPodder.PortaPodder.Activities {
       base.OnStart();
 
       // check to see if we have a valid device
-      if(Server.SelectedDevice == null) {
+      if(MyGPO.SelectedDevice == null) {
         StartActivity(typeof(SelectDevice));
         return;
       }
 
       ArrayAdapter<Subscription> adapter = (ArrayAdapter<Subscription>)subscriptionListView.Adapter;
-      foreach(Subscription subscription in Server.Subcriptions) {
+      foreach(Subscription subscription in MyGPO.Subcriptions) {
         adapter.Add(subscription);
       }
     } 
